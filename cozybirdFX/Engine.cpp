@@ -1,9 +1,14 @@
 #include "Engine.h"
+#include "SpriteRenderer.h"
+
+#include <GLFW/glfw3.h>
 
 Engine::Engine(GLFWwindow* window) :
     m_window(window)
 {
-
+    // Instantiate renderers.
+    auto spriteRenderer{ std::make_unique<SpriteRenderer>() };
+    m_renderers.push_back(std::move(spriteRenderer));
 }
 
 Engine::~Engine()
@@ -32,11 +37,21 @@ void Engine::handleInput()
 void Engine::update()
 {
     // TODO: Update values here.
+    for (const auto& renderer : m_renderers)
+    {
+        renderer->update();
+    }
 }
 
 void Engine::render()
 {
-    // TODO: Integrate renderer functionality here.
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // TODO: Integrate renderer functionality here.
+    for (const auto& renderer : m_renderers)
+    {
+        renderer->render();
+    }
+
     glfwSwapBuffers(m_window);
 }

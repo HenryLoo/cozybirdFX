@@ -1,6 +1,11 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include <memory>
+#include <vector>
+
+class Renderer;
+
+struct GLFWwindow;
 
 class Engine
 {
@@ -23,4 +28,7 @@ private:
 
 	// The application window.
 	GLFWwindow* m_window;
+
+	// Hold all renderers.
+	std::vector<std::unique_ptr<Renderer>> m_renderers;
 };
