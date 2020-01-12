@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Renderer.h"
+#include "Shader.h"
 
 #include <glad/glad.h>
+#include <memory>
 
 class SpriteRenderer : public Renderer
 {
@@ -15,7 +17,7 @@ public:
 
 private:
 	// The renderer's shader program.
-	GLuint m_shaderProgram;
+	std::unique_ptr<Shader> m_shader;
 
 	// Vertex array object.
 	GLuint m_vao;
