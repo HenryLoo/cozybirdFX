@@ -2,6 +2,7 @@
 
 #include "Renderer.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 #include <memory>
@@ -27,4 +28,7 @@ private:
 
 	// Element buffer object.
 	GLuint m_ebo;
+
+	// TODO: Remove this later.
+	std::unique_ptr<Texture> m_texture;
 };
