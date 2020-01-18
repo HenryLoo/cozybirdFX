@@ -12,7 +12,7 @@ class SpriteRenderer : public Renderer
 public:
 	SpriteRenderer();
 
-	virtual void update();
+	virtual void update(float deltaTime);
 
 	virtual void render();
 

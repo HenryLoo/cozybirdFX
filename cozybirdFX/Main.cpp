@@ -6,9 +6,16 @@
 #include <iostream>
 #include <memory>
 
-void framebufferSizeCallback(GLFWwindow* window, int width, int height)
+// Set the viewport to determine the size of the rendering window.
+void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
+
+    Engine *engine{ (Engine *)glfwGetWindowUserPointer(window) };
+    if (engine != nullptr)
+    {
+        engine->updateNewWindowSize();
+    }
 }
 
 int main()
@@ -43,12 +50,18 @@ int main()
         return -1;
     }
     
-    // Set viewport and window resize callback.
+    // Set viewport.
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Set window resize callback.
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+
+    // Set swap interval.
+    glfwSwapInterval(1);
 
     // Start the engine.
     std::unique_ptr<Engine> engine{ std::make_unique<Engine>(window) };
+    glfwSetWindowUserPointer(window, engine.get());
 	if (engine != nullptr)
 		engine->start();
 
