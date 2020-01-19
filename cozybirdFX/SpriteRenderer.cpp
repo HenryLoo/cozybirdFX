@@ -1,14 +1,15 @@
 #include "SpriteRenderer.h"
+#include "AssetLoader.h"
 
 // TODO: Transform test, remove this later.
 glm::mat4 model{ glm::mat4(1.0f) };
 glm::mat4 mvp;
 
-SpriteRenderer::SpriteRenderer()
+SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 {
     // TODO: Clean up this initialization code.
     m_shader = std::make_unique<Shader>("sprite.vs", "sprite.fs");
-    m_texture = std::make_unique<Texture>("sprite.png");
+    m_texture = assetLoader->load<Texture>("sprite.png");
 
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.

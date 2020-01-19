@@ -1,14 +1,20 @@
 #include "Engine.h"
 #include "SpriteRenderer.h"
 
+#include "TextureLoader.h"
+
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 Engine::Engine(GLFWwindow *window) :
     m_window(window)
 {
+    // Initialize asset loader.
+    m_assetLoader = std::make_unique<AssetLoader>();
+    m_assetLoader->registerLoader<Texture>(new TextureLoader());
+
     // Instantiate renderers.
-    auto spriteRenderer{ std::make_unique<SpriteRenderer>() };
+    auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
     m_renderers.push_back(std::move(spriteRenderer));
 }
 
@@ -29,7 +35,6 @@ void Engine::start()
 		{
 			m_hasNewWindowSize = false;
 			Renderer::updateWindowSize(m_window);
-            std::cout << "UPDATE" << std::endl;
 		}
 
         double currentFrame{ glfwGetTime() };

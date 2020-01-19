@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AssetLoader.h"
+
 #include <memory>
 #include <vector>
 
@@ -36,4 +38,6 @@ private:
 	std::vector<std::unique_ptr<Renderer>> m_renderers;
 
 	bool m_hasNewWindowSize{ true };
+
+	std::unique_ptr<AssetLoader> m_assetLoader;
 };

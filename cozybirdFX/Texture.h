@@ -1,12 +1,11 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <string>
+#include "IAsset.h"
 
-class Texture
+class Texture : public IAsset
 {
 public:
-	Texture(const std::string &filePath);
+	Texture(unsigned int textureId, int width, int height, int numChannels);
 	~Texture();
 
 	// Bind to this texture.
@@ -14,7 +13,7 @@ public:
 
 private:
 	// This texture's id.
-	GLuint m_textureId{ 0 };
+	unsigned int m_textureId{ 0 };
 
 	// Texture properties.
 	int m_width{ 0 };

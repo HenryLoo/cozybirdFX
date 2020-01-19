@@ -7,10 +7,12 @@
 #include <glad/glad.h>
 #include <memory>
 
+class AssetLoader;
+
 class SpriteRenderer : public Renderer
 {
 public:
-	SpriteRenderer();
+	SpriteRenderer(AssetLoader *assetLoader);
 
 	virtual void update(float deltaTime);
 
@@ -30,5 +32,5 @@ private:
 	GLuint m_ebo;
 
 	// TODO: Remove this later.
-	std::unique_ptr<Texture> m_texture;
+	std::shared_ptr<Texture> m_texture;
 };
