@@ -1,6 +1,8 @@
 #include "SpriteRenderer.h"
 #include "AssetLoader.h"
 
+#include <glad/glad.h>
+
 // TODO: Transform test, remove this later.
 glm::mat4 model{ glm::mat4(1.0f) };
 glm::mat4 mvp;
@@ -8,7 +10,7 @@ glm::mat4 mvp;
 SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 {
     // TODO: Clean up this initialization code.
-    m_shader = std::make_unique<Shader>("sprite.vs", "sprite.fs");
+    m_shader = assetLoader->load<Shader>({ "sprite.vs", "sprite.fs" });
     m_texture = assetLoader->load<Texture>("sprite.png");
 
     // Create the vertex array object and bind to it.

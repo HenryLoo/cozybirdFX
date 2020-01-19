@@ -18,7 +18,8 @@ TextureLoader::TextureLoader() : ITypeLoader(TEXTURE_PATH)
 
 }
 
-std::shared_ptr<IAsset> TextureLoader::interpretAsset(char *dataBuffer, int bufferLength) const
+std::shared_ptr<IAsset> TextureLoader::interpretAsset(
+    const std::vector<AssetBuffer> &data) const
 {
     // Create the texture.
     GLuint textureId{ 0 };
@@ -32,17 +33,17 @@ std::shared_ptr<IAsset> TextureLoader::interpretAsset(char *dataBuffer, int buff
     // Load the texture from the buffer.
     stbi_set_flip_vertically_on_load(true);
     int width, height, numChannels;
-    stbi_uc *data{ stbi_load_from_memory((stbi_uc *)dataBuffer, bufferLength, 
-        &width, &height, &numChannels, 0) };
+    stbi_uc *loadedImage{ stbi_load_from_memory((stbi_uc *)data[0].buffer, 
+        data[0].length, &width, &height, &numChannels, 0) };
 
     std::shared_ptr<Texture> texture{ nullptr };
-    if (data)
+    if (loadedImage)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, loadedImage);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         // Clean up.
-        stbi_image_free(data);
+        stbi_image_free(loadedImage);
 
         texture = std::make_shared<Texture>(textureId, width, height, numChannels);
     }

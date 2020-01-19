@@ -15,12 +15,19 @@ public:
 	// Load an asset into a byte array, given its file path.
 	// After loading, try to interpret the asset using the
 	// specific loader's interpretAsset implementation.
-	std::shared_ptr<IAsset> load(const std::string &fileName);
+	std::shared_ptr<IAsset> load(const std::initializer_list<std::string> &fileNames);
 
 protected:
+	struct AssetBuffer
+	{
+		char *buffer;
+		int length;
+	};
+
 	// Interpret the loaded byte array into a specific asset type.
 	// The specific loader subclass should implement this.
-	virtual std::shared_ptr<IAsset> interpretAsset(char *dataBuffer, int bufferLength) const = 0;
+	virtual std::shared_ptr<IAsset> interpretAsset(
+		const std::vector<AssetBuffer> &data) const = 0;
 
 private:
 	// Load an asset from the cache if it exists.

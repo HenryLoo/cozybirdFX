@@ -14,43 +14,52 @@ ITypeLoader::ITypeLoader(const std::string &typePath) :
 
 }
 
-std::shared_ptr<IAsset> ITypeLoader::load(const std::string &fileName)
+std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::string> &fileNames)
 {
 	// First, check cache for this asset.
-	std::shared_ptr<IAsset> cached{ loadCached(fileName) };
+	const std::string assetName{ *fileNames.begin() };
+	std::shared_ptr<IAsset> cached{ loadCached(assetName) };
 	if (cached != nullptr)
 		return cached;
 
-	// Get the file path.
-	const std::string filePath{ ASSET_PATH + m_typePath + fileName };
-
-	// If asset was not found in cache, then load it.
-	std::ifstream stream(filePath, std::ifstream::binary);
-	if (!stream.is_open())
+	std::vector<AssetBuffer> data;
+	for (const std::string &fileName : fileNames)
 	{
-		std::cout << "ITypeLoader::load: Failed to open file in stream '"
-			<< filePath << "'" << std::endl;
+		// Get the file path.
+		const std::string filePath{ ASSET_PATH + m_typePath + fileName };
+
+		// If asset was not found in cache, then load it.
+		std::ifstream stream(filePath, std::ifstream::binary);
+		if (!stream.is_open())
+		{
+			std::cout << "ITypeLoader::load: Failed to open file in stream '"
+				<< filePath << "'" << std::endl;
+		}
+
+		// Get the file size.
+		stream.seekg(0, stream.end);
+		int length{ static_cast<int>(stream.tellg()) };
+		stream.seekg(0, stream.beg);
+
+		// Read the data from the stream into the buffer.
+		char *buffer{ new char[length] };
+		stream.read(buffer, length);
+		stream.close();
+
+		data.push_back({ buffer, length });
+
+		std::cout << "ITypeLoader::load: '" << filePath << "', size: " << length << std::endl;
 	}
 
-	// Get the file size.
-	stream.seekg(0, stream.end);
-	int length{ static_cast<int>(stream.tellg()) };
-	stream.seekg(0, stream.beg);
-
-	// Read the data from the stream into the buffer.
-	char *buffer{ new char[length] };
-	stream.read(buffer, length);
-
 	// Interpret the asset.
-	std::shared_ptr<IAsset> asset{ interpretAsset(buffer, length) };
-	std::cout << "ITypeLoader::load: '" << filePath << "', size: " << length << std::endl;
+	std::shared_ptr<IAsset> asset{ interpretAsset(data) };
 
 	// Clean up.
-	stream.close();
-	delete[] buffer;
+	for (auto &item : data)
+		delete[] item.buffer;
 
 	// Cache the loaded asset.
-	cache(filePath, asset);
+	cache(assetName, asset);
 
 	return asset;
 }

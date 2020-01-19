@@ -2,6 +2,7 @@
 #include "SpriteRenderer.h"
 
 #include "TextureLoader.h"
+#include "ShaderLoader.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -12,6 +13,7 @@ Engine::Engine(GLFWwindow *window) :
     // Initialize asset loader.
     m_assetLoader = std::make_unique<AssetLoader>();
     m_assetLoader->registerLoader<Texture>(new TextureLoader());
+    m_assetLoader->registerLoader<Shader>(new ShaderLoader());
 
     // Instantiate renderers.
     auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
