@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Assets">
       <UniqueIdentifier>{8c3631dc-8ef4-4da0-813d-4589b1195d8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ECS">
+      <UniqueIdentifier>{65acd9de-2c81-4535-9d39-46390a737076}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ECS">
+      <UniqueIdentifier>{4c0862e2-683e-42b4-9a54-61e399d3c778}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -66,6 +72,15 @@
     <ClInclude Include="ShaderLoader.h">
       <Filter>Header Files\Asset Loaders</Filter>
     </ClInclude>
+    <ClInclude Include="ECSComponent.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="ECSSystem.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.h">
+      <Filter>Header Files\ECS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -97,6 +112,12 @@
     </ClCompile>
     <ClCompile Include="ShaderLoader.cpp">
       <Filter>Source Files\Asset Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="ECSSystem.cpp">
+      <Filter>Source Files\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Source Files\ECS</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
