@@ -3,10 +3,6 @@
 
 #include <glad/glad.h>
 
-// TODO: Transform test, remove this later.
-glm::mat4 model{ glm::mat4(1.0f) };
-glm::mat4 mvp;
-
 SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 {
     // TODO: Clean up this initialization code.
@@ -64,17 +60,7 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 
 void SpriteRenderer::update(float deltaTime)
 {
-    // TODO: Transform test, remove this later.
-    model = glm::rotate(model, glm::radians(90.0f) * deltaTime, 
-        glm::vec3(0.0, 1.0, 0.0));
 
-    glm::mat4 view{ glm::mat4(1.0f) };
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    glm::mat4 proj{ glm::perspective(glm::radians(45.0f), 
-        (float) m_windowSize.x / m_windowSize.y, 0.1f, 100.0f) };
-
-    mvp = proj * view * model;
 }
 
 void SpriteRenderer::render()
@@ -82,8 +68,27 @@ void SpriteRenderer::render()
     // TODO: Replace this test rendering code.
     m_texture->bind();
     m_shader->use();
-    m_shader->setMat4("mvp", mvp);
     glBindVertexArray(m_vao);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glm::mat4 view{ glm::mat4(1.0f) };
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 proj{ glm::perspective(glm::radians(45.0f),
+        (float)m_windowSize.x / m_windowSize.y, 0.1f, 100.0f) };
+
+    for (auto it = m_models.begin(); it != m_models.end(); ++it)
+    {
+        glm::mat4 mvp = proj * view * (*it);
+        m_shader->setMat4("mvp", mvp);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
     glBindVertexArray(0);
+
+    m_models.clear();
+}
+
+void SpriteRenderer::addSprite(glm::mat4 model)
+{
+    m_models.push_back(model);
 }

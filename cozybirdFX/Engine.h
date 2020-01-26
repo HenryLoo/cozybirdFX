@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AssetLoader.h"
+#include "EntityManager.h"
 
 #include <memory>
 #include <vector>
@@ -40,4 +41,5 @@ private:
 	bool m_hasNewWindowSize{ true };
 
 	std::unique_ptr<AssetLoader> m_assetLoader;
+	std::unique_ptr<EntityManager> m_entityManager;
 };

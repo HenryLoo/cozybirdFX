@@ -15,9 +15,17 @@ Engine::Engine(GLFWwindow *window) :
     m_assetLoader->registerLoader<Texture>(new TextureLoader());
     m_assetLoader->registerLoader<Shader>(new ShaderLoader());
 
-    // Instantiate renderers.
+    // Instantiate entity manager.
     auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
+    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get());
+
+    // Instantiate renderers.
     m_renderers.push_back(std::move(spriteRenderer));
+
+    int testId{ m_entityManager->createEntity() };
+    m_entityManager->addComponent(testId, ECSComponent::COMPONENT_POSITION);
+    m_entityManager->addComponent(testId, ECSComponent::COMPONENT_SPRITE);
+    m_entityManager->addComponent(testId, ECSComponent::COMPONENT_TRANSFORM);
 }
 
 Engine::~Engine()
@@ -59,9 +67,13 @@ void Engine::handleInput()
 void Engine::update(float deltaTime)
 {
     // TODO: Update values here.
+    if (m_entityManager != nullptr)
+        m_entityManager->update(deltaTime);
+
     for (const auto &renderer : m_renderers)
     {
-        renderer->update(deltaTime);
+        if (renderer != nullptr)
+            renderer->update(deltaTime);
     }
 }
 
@@ -72,7 +84,8 @@ void Engine::render()
     // TODO: Integrate renderer functionality here.
     for (const auto &renderer : m_renderers)
     {
-        renderer->render();
+        if (renderer != nullptr)
+            renderer->render();
     }
 
     glfwSwapBuffers(m_window);

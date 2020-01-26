@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include <list>
 #include <memory>
 
 class AssetLoader;
@@ -16,6 +17,8 @@ public:
 	virtual void update(float deltaTime);
 
 	virtual void render();
+
+	void addSprite(glm::mat4 model);
 
 private:
 	// The renderer's shader program.
@@ -32,4 +35,7 @@ private:
 
 	// TODO: Remove this later.
 	std::shared_ptr<Texture> m_texture;
+
+	// Hold model matrices for all sprites to render.
+	std::list<glm::mat4> m_models;
 };

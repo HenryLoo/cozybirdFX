@@ -8,9 +8,12 @@ public:
 	ECSSystem(EntityManager &manager, unsigned long componentsMask);
 
 	// Update all entities and their components.
-	virtual void update(float deltaTime) = 0;
+	void update(float deltaTime);
 
 protected:
+	// Implement specific per-entity updates.
+	virtual void updateEntity(int entityId, float deltaTime) = 0;
+
 	// Hold a reference to the entity manager.
 	EntityManager &m_manager;
 

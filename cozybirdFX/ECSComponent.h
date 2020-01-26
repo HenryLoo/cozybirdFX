@@ -7,11 +7,11 @@ namespace ECSComponent
 	// Defines the different component bitmasks, in powers of 2.
 	enum Type
 	{
-		NONE = 0,
-		POSITION = 1,
-		VELOCITY = 2,
-		TRANSFORM = 4,
-		SPRITE = 8,
+		COMPONENT_NONE = 0,
+		COMPONENT_POSITION = 1,
+		COMPONENT_VELOCITY = 2,
+		COMPONENT_TRANSFORM = 4,
+		COMPONENT_SPRITE = 8,
 	};
 
 	struct Position
