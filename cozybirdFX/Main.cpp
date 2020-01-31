@@ -59,6 +59,9 @@ int main()
     // Set swap interval.
     glfwSwapInterval(1);
 
+    // Set sticky keys to prevent missing polled input.
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+
     // Start the engine.
     std::unique_ptr<Engine> engine{ std::make_unique<Engine>(window) };
     glfwSetWindowUserPointer(window, engine.get());
