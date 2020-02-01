@@ -1,15 +1,22 @@
 #include "ECSSystem.h"
 #include "EntityManager.h"
 
-ECSSystem::ECSSystem(EntityManager &manager, unsigned long componentsMask) :
-	m_manager(manager), m_componentsMask(componentsMask)
+ECSSystem::ECSSystem(EntityManager &entityManager, unsigned long componentsMask) :
+	m_entityManager(entityManager), m_componentsMask(componentsMask)
 {
 }
 
 void ECSSystem::update(float deltaTime)
 {
-	for (int i = 0; i < m_manager.getNumEntities(); ++i)
+	updateSystem(deltaTime);
+
+	for (int i = 0; i < m_entityManager.getNumEntities(); ++i)
 	{
 		updateEntity(i, deltaTime);
 	}
+}
+
+void ECSSystem::updateSystem(float deltaTime)
+{
+	// Do nothing by default.
 }

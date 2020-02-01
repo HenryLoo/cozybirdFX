@@ -6,6 +6,8 @@
 #include <memory>
 #include <vector>
 
+struct GLFWwindow;
+
 class SpriteRenderer;
 
 class EntityManager
@@ -53,4 +55,5 @@ private:
 	std::vector<ECSComponent::Velocity> m_componentVelocities;
 	std::vector<ECSComponent::Transform> m_componentTransforms;
 	std::vector<ECSComponent::Sprite> m_componentSprites;
+	std::vector<ECSComponent::Decay> m_componentDecays;
 };

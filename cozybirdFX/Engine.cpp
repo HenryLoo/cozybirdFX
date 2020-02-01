@@ -52,49 +52,11 @@ void Engine::start()
     }
 }
 
-bool isF1Pressed{ false };
-bool isF2Pressed{ false };
 void Engine::handleInput()
 {
     glfwPollEvents();
 
     // TODO: Integrate input manager here.
-
-
-    // TODO: Test entity, remove this later.
-    int f1State{ glfwGetKey(m_window, GLFW_KEY_F1) };
-    int f2State{ glfwGetKey(m_window, GLFW_KEY_F2) };
-    if (f1State && !isF1Pressed)
-    {
-        isF1Pressed = true;
-        int id{ m_entityManager->createEntity() };
-        std::cout << "Creating entity " << id << ", Num entities: " << 
-            m_entityManager->getNumEntities() << std::endl;
-        m_entityManager->addComponent(id, ECSComponent::COMPONENT_POSITION);
-        m_entityManager->addComponent(id, ECSComponent::COMPONENT_SPRITE);
-        m_entityManager->addComponent(id, ECSComponent::COMPONENT_TRANSFORM);
-    }
-    else if (!f1State)
-    {
-        isF1Pressed = false;
-    }
-    
-    if (f2State && !isF2Pressed)
-    {
-        isF2Pressed = true;
-        int numEntities{ m_entityManager->getNumEntities() };
-        if (numEntities > 0)
-        {
-            int id{ rand() % numEntities };
-            m_entityManager->deleteEntity(id);
-            std::cout << "Deleting entity " << id << ", Num entities: " <<
-                m_entityManager->getNumEntities() << std::endl;
-        }
-    }
-    else if (!f2State)
-    {
-        isF2Pressed = false;
-    }
 }
 
 void Engine::update(float deltaTime)

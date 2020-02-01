@@ -12,6 +12,7 @@ namespace ECSComponent
 		COMPONENT_VELOCITY = 2,
 		COMPONENT_TRANSFORM = 4,
 		COMPONENT_SPRITE = 8,
+		COMPONENT_DECAY = 16,
 	};
 
 	struct Position
@@ -39,5 +40,11 @@ namespace ECSComponent
 
 		// Blended colour.
 		glm::vec4 rgba{ 1.f };
+	};
+
+	struct Decay
+	{
+		// Duration of time in seconds before this entity should be deleted.
+		float duration;
 	};
 }

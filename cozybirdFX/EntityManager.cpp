@@ -1,4 +1,6 @@
 #include "EntityManager.h"
+#include "EmitterSystem.h"
+#include "PhysicsSystem.h"
 #include "SpriteSystem.h"
 
 EntityManager::EntityManager(SpriteRenderer *sRenderer)
@@ -8,8 +10,14 @@ EntityManager::EntityManager(SpriteRenderer *sRenderer)
 	m_componentVelocities.resize(MAX_ENTITIES);
 	m_componentTransforms.resize(MAX_ENTITIES);
 	m_componentSprites.resize(MAX_ENTITIES);
+	m_componentDecays.resize(MAX_ENTITIES);
 
 	// Initialize ECSSystems.
+	addSystem(new EmitterSystem(*this, m_componentSprites, 
+		m_componentPositions, m_componentVelocities,
+		m_componentTransforms, m_componentDecays));
+	addSystem(new PhysicsSystem(*this, m_componentPositions, 
+		m_componentVelocities));
 	addSystem(new SpriteSystem(*this, sRenderer, m_componentSprites, 
 		m_componentPositions, m_componentTransforms));
 }
@@ -33,6 +41,7 @@ int EntityManager::createEntity()
 	m_componentVelocities[entityId] = {};
 	m_componentTransforms[entityId] = {};
 	m_componentSprites[entityId] = {};
+	m_componentDecays[entityId] = {};
 
 	++m_numEntities;
 
@@ -57,6 +66,7 @@ void EntityManager::deleteEntity(int entityId)
 	std::swap(m_componentVelocities[entityId], m_componentVelocities[lastId]);
 	std::swap(m_componentTransforms[entityId], m_componentTransforms[lastId]);
 	std::swap(m_componentSprites[entityId], m_componentSprites[lastId]);
+	std::swap(m_componentDecays[entityId], m_componentDecays[lastId]);
 
 	--m_numEntities;
 }

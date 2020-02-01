@@ -34,7 +34,4 @@ void SpriteSystem::updateEntity(int entityId, float deltaTime)
 	model = glm::rotate(model, m_transforms[entityId].rotation.z, glm::vec3(0.f, 0.f, 1.f));
 
 	m_sRenderer->addSprite(model);
-
-	// TODO: Test rotation update. Remove this later.
-	m_transforms[entityId].rotation.y += glm::radians(90.0f) * deltaTime;
 }

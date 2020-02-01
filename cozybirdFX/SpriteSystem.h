@@ -16,6 +16,7 @@ public:
 		std::vector<ECSComponent::Position> &positions,
 		std::vector<ECSComponent::Transform> &transforms);
 
+protected:
 	virtual void updateEntity(int entityId, float deltaTime);
 
 private:
