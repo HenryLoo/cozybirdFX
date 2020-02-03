@@ -13,6 +13,7 @@ class EmitterSystem : public ECSSystem
 {
 public:
 	EmitterSystem(EntityManager &manager,
+		AssetLoader *assetLoader,
 		std::vector<ECSComponent::Sprite> &sprites,
 		std::vector<ECSComponent::Position> &positions,
 		std::vector<ECSComponent::Velocity> &velocities,

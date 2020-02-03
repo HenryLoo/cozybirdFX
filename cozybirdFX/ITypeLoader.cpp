@@ -25,6 +25,13 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 	std::vector<AssetBuffer> data;
 	for (const std::string &fileName : fileNames)
 	{
+		// Skip if no file name.
+		if (fileName.empty())
+		{
+			data.push_back({});
+			continue;
+		}
+
 		// Get the file path.
 		const std::string filePath{ ASSET_PATH + m_typePath + fileName };
 

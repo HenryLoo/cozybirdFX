@@ -9,11 +9,12 @@
 struct GLFWwindow;
 
 class SpriteRenderer;
+class AssetLoader;
 
 class EntityManager
 {
 public:
-	EntityManager(SpriteRenderer *sRenderer);
+	EntityManager(SpriteRenderer *sRenderer, AssetLoader *assetLoader);
 
 	// Call the update function for each ECSSystem to update all entities.
 	void update(float deltaTime);

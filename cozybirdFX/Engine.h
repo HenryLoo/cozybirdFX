@@ -2,6 +2,7 @@
 
 #include "AssetLoader.h"
 #include "EntityManager.h"
+#include "Emitter.h"
 
 #include <memory>
 #include <vector>
@@ -30,7 +31,7 @@ private:
 	void update(float deltaTime);
 
 	// Consult all renderers to draw elements to the current scene.
-	void render();
+	void render(float deltaTime);
 
 	// The application window.
 	GLFWwindow *m_window{ nullptr };
@@ -42,4 +43,6 @@ private:
 
 	std::unique_ptr<AssetLoader> m_assetLoader;
 	std::unique_ptr<EntityManager> m_entityManager;
+
+	std::unique_ptr<Emitter> m_emitter;
 };

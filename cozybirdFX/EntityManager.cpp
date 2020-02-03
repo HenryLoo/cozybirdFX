@@ -3,7 +3,7 @@
 #include "PhysicsSystem.h"
 #include "SpriteSystem.h"
 
-EntityManager::EntityManager(SpriteRenderer *sRenderer)
+EntityManager::EntityManager(SpriteRenderer *sRenderer, AssetLoader *assetLoader)
 {
 	m_entities.resize(MAX_ENTITIES);
 	m_componentPositions.resize(MAX_ENTITIES);
@@ -13,7 +13,7 @@ EntityManager::EntityManager(SpriteRenderer *sRenderer)
 	m_componentDecays.resize(MAX_ENTITIES);
 
 	// Initialize ECSSystems.
-	addSystem(new EmitterSystem(*this, m_componentSprites, 
+	addSystem(new EmitterSystem(*this, assetLoader, m_componentSprites,
 		m_componentPositions, m_componentVelocities,
 		m_componentTransforms, m_componentDecays));
 	addSystem(new PhysicsSystem(*this, m_componentPositions, 

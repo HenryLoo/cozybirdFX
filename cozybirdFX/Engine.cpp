@@ -3,6 +3,7 @@
 
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
+#include "Emitter.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -17,10 +18,12 @@ Engine::Engine(GLFWwindow *window) :
 
     // Instantiate entity manager.
     auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
-    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get());
+    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), m_assetLoader.get());
 
     // Instantiate renderers.
-    m_renderers.push_back(std::move(spriteRenderer));
+    //m_renderers.push_back(std::move(spriteRenderer));
+
+    m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
 }
 
 Engine::~Engine()
@@ -48,7 +51,7 @@ void Engine::start()
 
         handleInput();
         update(deltaTime);
-        render();
+        render(deltaTime);
     }
 }
 
@@ -72,16 +75,19 @@ void Engine::update(float deltaTime)
     }
 }
 
-void Engine::render()
+void Engine::render(float deltaTime)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // TODO: Integrate renderer functionality here.
-    for (const auto &renderer : m_renderers)
-    {
-        if (renderer != nullptr)
-            renderer->render();
-    }
+    //// TODO: Integrate renderer functionality here.
+    //for (const auto &renderer : m_renderers)
+    //{
+    //    if (renderer != nullptr)
+    //        renderer->render();
+    //}
+
+    m_emitter->update(deltaTime);
+    m_emitter->render();
 
     glfwSwapBuffers(m_window);
 }

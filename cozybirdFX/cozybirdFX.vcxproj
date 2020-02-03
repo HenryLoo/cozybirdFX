@@ -162,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECSSystem.cpp" />
+    <ClCompile Include="Emitter.cpp" />
     <ClCompile Include="EmitterSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EntityManager.cpp" />

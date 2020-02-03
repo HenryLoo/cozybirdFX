@@ -21,9 +21,7 @@ std::shared_ptr<IAsset> ShaderLoader::interpretAsset(
     GLuint vertexShader{ glCreateShader(GL_VERTEX_SHADER) };
     std::string vertexSrc(data[0].buffer);
     vertexSrc = vertexSrc.substr(0, data[0].length);
-
     const char *vertexCSrc{ vertexSrc.c_str() };
-
     glShaderSource(vertexShader, 1, &vertexCSrc, NULL);
     glCompileShader(vertexShader);
 
@@ -37,43 +35,57 @@ std::shared_ptr<IAsset> ShaderLoader::interpretAsset(
         std::cout << "ShaderLoader: Failed to compile vertex shader.\n" << infoLog << std::endl;
     }
 
-    // Compile fragment shader.
-    GLuint fragmentShader{ glCreateShader(GL_FRAGMENT_SHADER) };
-    std::string fragSrc(data[1].buffer);
-    fragSrc = fragSrc.substr(0, data[1].length);
-    const char *fragCSrc{ fragSrc.c_str() };
-    glShaderSource(fragmentShader, 1, &fragCSrc, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
+    // Compile fragment shader (optional).
+    GLuint fragmentShader{ 0 };
+    bool hasFragmentShader{ data[1].length > 0 };
+    if (hasFragmentShader)
     {
-        glGetShaderInfoLog(fragmentShader, LOG_SIZE, NULL, infoLog);
-        std::cout << "ShaderLoader: Failed to compile fragment shader.\n" << infoLog << std::endl;
+        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        std::string fragSrc(data[1].buffer);
+        fragSrc = fragSrc.substr(0, data[1].length);
+        const char *fragCSrc{ fragSrc.c_str() };
+        glShaderSource(fragmentShader, 1, &fragCSrc, NULL);
+        glCompileShader(fragmentShader);
+
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(fragmentShader, LOG_SIZE, NULL, infoLog);
+            std::cout << "ShaderLoader: Failed to compile fragment shader.\n" << infoLog << std::endl;
+        }
     }
 
-    // Link the shader program.
-    GLuint programId{ glCreateProgram() };
-
-    glAttachShader(programId, vertexShader);
-    glAttachShader(programId, fragmentShader);
-    glLinkProgram(programId);
-
-    glGetProgramiv(programId, GL_LINK_STATUS, &success);
-    if (!success)
+    // Compile geometry shader (optional).
+    GLuint geometryShader{ 0 };
+    bool hasGeometryShader{ data.size() == 3 };
+    if (hasGeometryShader)
     {
-        glGetProgramInfoLog(programId, LOG_SIZE, NULL, infoLog);
-        std::cout << "ShaderLoader: Failed to link shader program.\n" << infoLog << std::endl;
-    }
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        std::string geometrySrc(data[2].buffer);
+        geometrySrc = geometrySrc.substr(0, data[2].length);
+        const char *geometryCSrc{ geometrySrc.c_str() };
+        glShaderSource(geometryShader, 1, &geometryCSrc, NULL);
+        glCompileShader(geometryShader);
 
-    // Clean up.
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+        glGetShaderiv(geometryShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(geometryShader, LOG_SIZE, NULL, infoLog);
+            std::cout << "ShaderLoader: Failed to compile geometry shader.\n" << infoLog << std::endl;
+        }
+    }
 
     std::shared_ptr<Shader> shader{ nullptr };
     if (success)
     {
+        GLuint programId{ glCreateProgram() };
         shader = std::make_shared<Shader>(programId);
+
+        shader->setVertexShader(vertexShader);
+        if (hasFragmentShader)
+            shader->setFragmentShader(fragmentShader);
+        if (hasGeometryShader)
+            shader->setGeometryShader(geometryShader);
     }
 
     return shader;
