@@ -7,35 +7,60 @@ layout(points) out;
 layout(max_vertices = 50) out;
 
 // Particle attributes from the vertex shader.
-in vec3 vsPosition[];
-in vec3 vsVelocity[];
+in vec2 vsPosition[];
+in vec2 vsVelocity[];
 in vec3 vsColour[];
 in float vsDuration[];
 in float vsSize[];
 in int vsType[];
 
 // Particle attributes to output for transform feedback.
-out vec3 gsPosition;
-out vec3 gsVelocity;
+out vec2 gsPosition;
+out vec2 gsVelocity;
 out vec3 gsColour;
 out float gsDuration;
 out float gsSize;
 out int gsType;
 
 // Emitter properties.
-uniform vec3 emPos;
-uniform vec3 emVelocityMin;
-uniform vec3 emVelocityOffset;
+uniform vec2 emPos;
+uniform vec2 emVelocityMin;
+uniform vec2 emVelocityOffset;
+uniform vec2 emAcceleration;
 uniform vec3 emColour;
-uniform float emDuration;
+uniform float emDurationMin;
+uniform float emDurationOffset;
 uniform float emSize;
 uniform int emNumToGenerate;
 
-uniform vec3 gravityVector;
 uniform float deltaTime;
+
+uniform float randomSeed;
+float localSeed;
+
+// Rand and noise functions from:
+// https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+float rand(float n)
+{
+    return fract(sin(n) * 43758.5453123);
+}
+
+float noise()
+{
+	float fl = floor(localSeed);
+    float fc = fract(localSeed);
+
+    // Update the local seed so that the next call within this iteration
+    // will have different results.
+    localSeed = localSeed * rand(randomSeed) + 43758.5453123 * rand(localSeed);
+	return mix(rand(fl), rand(fl + 1.0), fc);
+}
 
 void main()
 {
+    // Store a writable copy of the seed.
+    localSeed = randomSeed;
+
     // Set output values.
     gsPosition = vsPosition[0];
     gsVelocity = vsVelocity[0];
@@ -44,7 +69,7 @@ void main()
     if (vsType[0] != 0)
     {
         gsPosition += gsVelocity * deltaTime;
-        gsVelocity += gravityVector * deltaTime;
+        gsVelocity += emAcceleration * deltaTime;
     }
 
     gsColour = vsColour[0];
@@ -64,14 +89,13 @@ void main()
         {
             // Set the new particle attributes from emitter properties.
             gsPosition = emPos;
-            vec3 velOffset = vec3(
-                emVelocityOffset.x,
-                emVelocityOffset.y,
-                emVelocityOffset.z
+            vec2 velOffset = vec2(
+                emVelocityOffset.x * noise(),
+                emVelocityOffset.y * noise()
             );
             gsVelocity = emVelocityMin + velOffset;
             gsColour = emColour;
-            gsDuration = emDuration;
+            gsDuration = emDurationMin + emDurationOffset * noise();
             gsSize = emSize;
 
             // Emit the particle.

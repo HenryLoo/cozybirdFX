@@ -5,6 +5,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <random>
 
 namespace
 {
@@ -25,12 +26,9 @@ namespace
 
 Emitter::Emitter(AssetLoader *assetLoader)
 {
-    m_texture = assetLoader->load<Texture>("sprite.png");
-
     // Create update shader program.
 	m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
-    for (int i = 0; i < NUM_PARTICLE_ATTRIBUTES; ++i)
-	    glTransformFeedbackVaryings(m_updateShader->getProgramId(), 
+    glTransformFeedbackVaryings(m_updateShader->getProgramId(), 
             NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
 	m_updateShader->link();
 
@@ -56,27 +54,27 @@ Emitter::Emitter(AssetLoader *assetLoader)
 
         // Position
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)0);
 
         // Velocity
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(2 * sizeof(float)));
 
         // Colour
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(6 * sizeof(float)));
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(4 * sizeof(float)));
 
         // Duration
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(9 * sizeof(float)));
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(7 * sizeof(float)));
 
         // Size
         glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(10 * sizeof(float)));
+        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(8 * sizeof(float)));
 
         // Type
         glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(11 * sizeof(float)));
+        glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(9 * sizeof(float)));
     }
 }
 
@@ -86,13 +84,22 @@ void Emitter::update(float deltaTime)
 
     // Set emitter uniforms for the update shader.
     m_updateShader->setFloat("deltaTime", deltaTime);
-    m_updateShader->setVec3("emPos", m_position);
-    m_updateShader->setVec3("emVelocityMin", m_velocityMin);
-    m_updateShader->setVec3("emVelocityOffset", m_velocityOffset);
+    m_updateShader->setVec2("emPos", m_position);
+    m_updateShader->setVec2("emVelocityMin", m_velocityMin);
+    m_updateShader->setVec2("emVelocityOffset", m_velocityOffset);
+    m_updateShader->setVec2("emAcceleration", m_acceleration);
     m_updateShader->setVec3("emColour", m_colour);
-    m_updateShader->setFloat("emDuration", m_duration);
+    m_updateShader->setFloat("emDurationMin", m_durationMin);
+    m_updateShader->setFloat("emDurationOffset", m_durationOffset);
     m_updateShader->setFloat("emSize", m_size);
 
+    // Set the seed.
+    std::random_device randdev;
+    std::mt19937 generator(randdev());
+    std::uniform_real_distribution<> distrib(-1, 1);
+    m_updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
+
+    // Update spawn timer and flag the emitter to spawn particles if necessary.
     m_spawnTimer += deltaTime;
     if (m_spawnTimer >= m_timeToSpawn)
     {
@@ -141,7 +148,7 @@ void Emitter::update(float deltaTime)
 void Emitter::render()
 {
     glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
     // Disable writing to depth buffer.
     glDepthMask(0);
@@ -188,4 +195,59 @@ void Emitter::clear()
 int Emitter::getNumParticles() const
 {
     return m_numParticles;
+}
+
+void Emitter::setTexture(std::shared_ptr<Texture> texture)
+{
+    m_texture = texture;
+}
+
+void Emitter::setNumToGenerate(int num)
+{
+    m_numToGenerate = num;
+}
+
+void Emitter::setPosition(glm::vec2 position)
+{
+    m_position = position;
+}
+
+void Emitter::setTimeToSpawn(float duration)
+{
+    m_timeToSpawn = duration;
+}
+
+void Emitter::setVelocityMin(glm::vec2 velocity)
+{
+    m_velocityMin = velocity;
+}
+
+void Emitter::setVelocityOffset(glm::vec2 velocity)
+{
+    m_velocityOffset = velocity;
+}
+
+void Emitter::setAcceleration(glm::vec2 acceleration)
+{
+    m_acceleration = acceleration;
+}
+
+void Emitter::setSize(float size)
+{
+    m_size = size;
+}
+
+void Emitter::setColour(glm::vec3 colour)
+{
+    m_colour = colour;
+}
+
+void Emitter::setDurationMin(float duration)
+{
+    m_durationMin = duration;
+}
+
+void Emitter::setDurationOffset(float duration)
+{
+    m_durationOffset = duration;
 }

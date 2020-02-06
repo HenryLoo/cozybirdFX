@@ -4,30 +4,6 @@
 
 #include <memory>
 
-//struct Emitter
-//{
-//	// The origin of the emitter.
-//	glm::vec3 position{ 0.f };
-//
-//	// The rate of particle generation.
-//	float spawnRate{ 0.f };
-//
-//	// The current time left before spawning another particle.
-//	float spawnTimer{ 0.f };
-//
-//	// The speed at which the particle moves at.
-//	float speed{ 0.f };
-//
-//	// The size of the particle.
-//	glm::vec3 size{ 1.f };
-//
-//	// The colour of the particle.
-//	glm::vec4 colour{ 1.f };
-//
-//	// The time to live for the particle.
-//	float duration{ 0.f };
-//};
-
 class AssetLoader;
 class Shader;
 class Texture;
@@ -44,6 +20,19 @@ public:
 
 	int getNumParticles() const;
 
+	// Property setters.
+	void setTexture(std::shared_ptr<Texture> texture);
+	void setNumToGenerate(int num);
+	void setPosition(glm::vec2 position);
+	void setTimeToSpawn(float duration);
+	void setVelocityMin(glm::vec2 velocity);
+	void setVelocityOffset(glm::vec2 velocity);
+	void setAcceleration(glm::vec2 acceleration);
+	void setSize(float size);
+	void setColour(glm::vec3 colour);
+	void setDurationMin(float duration);
+	void setDurationOffset(float duration);
+
 private:
 	enum ParticleType
 	{
@@ -53,8 +42,8 @@ private:
 
 	struct Particle
 	{
-		glm::vec3 position;
-		glm::vec3 velocity;
+		glm::vec2 position;
+		glm::vec2 velocity;
 		glm::vec3 colour;
 		float duration;
 		float size;
@@ -86,10 +75,10 @@ private:
 	int m_numParticles{ 1 };
 
 	// The number of particles to generate.
-	int m_numToGenerate{ 30 };
+	int m_numToGenerate{ 0 };
 
 	// The origin of the emitter.
-	glm::vec3 m_position{ 0.f };
+	glm::vec2 m_position{ 0.f };
 
 	// The time before spawning a new particle.
 	float m_timeToSpawn{ 0.5f };
@@ -99,8 +88,11 @@ private:
 
 	// The velocity at which the particle moves at.
 	// Defines the minimum velocity and the offset from that minimum.
-	glm::vec3 m_velocityMin{ 0.f, 0.2f, 0.f };
-	glm::vec3 m_velocityOffset{ 0.f };
+	glm::vec2 m_velocityMin{ 0.f };
+	glm::vec2 m_velocityOffset{ 0.f };
+
+	// Acceleration vector.
+	glm::vec2 m_acceleration{ 0.f };
 
 	// The size of the particle.
 	float m_size{ 1.f };
@@ -109,7 +101,8 @@ private:
 	glm::vec3 m_colour{ 1.f };
 
 	// The time to live for the particle.
-	float m_duration{ 3.f };
+	float m_durationMin{ 1.f };
+	float m_durationOffset{ 0.5f };
 
 	std::shared_ptr<Shader> m_updateShader{ nullptr };
 	std::shared_ptr<Shader> m_renderShader{ nullptr };

@@ -10,7 +10,7 @@ out vec4 FragColour;
 void main()
 {
     vec4 textureColour = texture2D(textureSampler, texCoord);
-    if(textureColour.a == 0.0)
+    if (textureColour.a == 0.0)
         discard;
 
     FragColour = vec4(textureColour.xyz, 1.0) * particleColour;

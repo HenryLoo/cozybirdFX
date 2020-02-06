@@ -21,9 +21,20 @@ Engine::Engine(GLFWwindow *window) :
     m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), m_assetLoader.get());
 
     // Instantiate renderers.
-    //m_renderers.push_back(std::move(spriteRenderer));
+    m_renderers.push_back(std::move(spriteRenderer));
 
+    // Test emitter.
     m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
+    m_emitter->setTexture(m_assetLoader->load<Texture>("particle.png"));
+    m_emitter->setNumToGenerate(30);
+    m_emitter->setTimeToSpawn(0.5f);
+    m_emitter->setVelocityMin({ -0.5f, -0.5f });
+    m_emitter->setVelocityOffset({ 1.f, 1.f });
+    m_emitter->setAcceleration({ 0.f, 0.f });
+    m_emitter->setSize(0.5f);
+    m_emitter->setColour({ 0.4f, 0.6f, 1.f });
+    m_emitter->setDurationMin(2.f);
+    m_emitter->setDurationOffset(0.3f);
 }
 
 Engine::~Engine()
@@ -79,12 +90,12 @@ void Engine::render(float deltaTime)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    //// TODO: Integrate renderer functionality here.
-    //for (const auto &renderer : m_renderers)
-    //{
-    //    if (renderer != nullptr)
-    //        renderer->render();
-    //}
+    // TODO: Integrate renderer functionality here.
+    for (const auto &renderer : m_renderers)
+    {
+        if (renderer != nullptr)
+            renderer->render();
+    }
 
     m_emitter->update(deltaTime);
     m_emitter->render();
