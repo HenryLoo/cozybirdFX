@@ -15,11 +15,10 @@ namespace
 
 TextureLoader::TextureLoader() : ITypeLoader(TEXTURE_PATH)
 {
-
 }
 
 std::shared_ptr<IAsset> TextureLoader::interpretAsset(
-    const std::vector<AssetBuffer> &data) const
+    const std::vector<AssetBuffer> &data, int flag) const
 {
     // Create the texture.
     GLuint textureId{ 0 };

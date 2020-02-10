@@ -8,6 +8,7 @@
 #include <vector>
 
 class Renderer;
+class Font;
 
 struct GLFWwindow;
 
@@ -45,4 +46,7 @@ private:
 	std::unique_ptr<EntityManager> m_entityManager;
 
 	std::unique_ptr<Emitter> m_emitter;
+
+	// TODO: Remove this later.
+	std::shared_ptr<Font> m_font;
 };

@@ -93,6 +93,18 @@
     <ClInclude Include="EmitterSystem.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FontLoader.h">
+      <Filter>Header Files\Asset Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header Files\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -142,6 +154,15 @@
     </ClCompile>
     <ClCompile Include="Emitter.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FontLoader.cpp">
+      <Filter>Source Files\Asset Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Source Files\Renderers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

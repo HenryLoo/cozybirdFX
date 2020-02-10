@@ -14,10 +14,16 @@ ITypeLoader::ITypeLoader(const std::string &typePath) :
 
 }
 
-std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::string> &fileNames)
+std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::string> &fileNames, 
+	int flag)
 {
+	// Get the asset's name.
+	std::string flagStr{ "" };
+	if (flag)
+		flagStr = "_" + std::to_string(flag);
+	const std::string assetName{ *fileNames.begin() + flagStr };
+
 	// First, check cache for this asset.
-	const std::string assetName{ *fileNames.begin() };
 	std::shared_ptr<IAsset> cached{ loadCached(assetName) };
 	if (cached != nullptr)
 		return cached;
@@ -59,7 +65,7 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 	}
 
 	// Interpret the asset.
-	std::shared_ptr<IAsset> asset{ interpretAsset(data) };
+	std::shared_ptr<IAsset> asset{ interpretAsset(data, flag) };
 
 	// Clean up.
 	for (auto &item : data)

@@ -25,13 +25,13 @@ private:
 	std::shared_ptr<Shader> m_shader;
 
 	// Vertex array object.
-	unsigned int m_vao;
+	unsigned int m_VAO;
 	
 	// Vertex buffer object.
-	unsigned int m_vbo;
+	unsigned int m_VBO;
 
 	// Element buffer object.
-	unsigned int m_ebo;
+	unsigned int m_EBO;
 
 	// TODO: Remove this later.
 	std::shared_ptr<Texture> m_texture;

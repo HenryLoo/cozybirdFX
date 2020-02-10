@@ -1,8 +1,11 @@
 #include "Engine.h"
 #include "SpriteRenderer.h"
+#include "TextRenderer.h"
 
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
+#include "FontLoader.h"
+#include "Font.h"
 #include "Emitter.h"
 
 #include <GLFW/glfw3.h>
@@ -15,26 +18,37 @@ Engine::Engine(GLFWwindow *window) :
     m_assetLoader = std::make_unique<AssetLoader>();
     m_assetLoader->registerLoader<Texture>(new TextureLoader());
     m_assetLoader->registerLoader<Shader>(new ShaderLoader());
-
-    // Instantiate entity manager.
-    auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
-    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), m_assetLoader.get());
+    m_assetLoader->registerLoader<Font>(new FontLoader());
 
     // Instantiate renderers.
-    m_renderers.push_back(std::move(spriteRenderer));
+    auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
+    auto textRenderer{ std::make_unique<TextRenderer>(m_assetLoader.get()) };
 
-    // Test emitter.
+    // Instantiate entity manager.
+    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), m_assetLoader.get());
+
+    // TODO: Test emitter, remove this later.
     m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
     m_emitter->setTexture(m_assetLoader->load<Texture>("particle.png"));
     m_emitter->setNumToGenerate(30);
     m_emitter->setTimeToSpawn(0.5f);
-    m_emitter->setVelocityMin({ -0.5f, -0.5f });
-    m_emitter->setVelocityOffset({ 1.f, 1.f });
+    m_emitter->setVelocityMin({ -32.f, -32.f });
+    m_emitter->setVelocityOffset({ 64.f, 64.f });
     m_emitter->setAcceleration({ 0.f, 0.f });
-    m_emitter->setSize(0.5f);
+    m_emitter->setSize(32.f);
     m_emitter->setColour({ 0.4f, 0.6f, 1.f });
     m_emitter->setDurationMin(2.f);
     m_emitter->setDurationOffset(0.3f);
+
+    // TODO: Remove this later.
+    m_font = m_assetLoader->load<Font>("default.ttf", 16);
+    TextRenderer::Properties prop;
+    prop.text = "Test message!";
+    textRenderer->addText(m_font.get(), prop);
+
+    // Add renderers to the list.
+    m_renderers.push_back(std::move(spriteRenderer));
+    m_renderers.push_back(std::move(textRenderer));
 }
 
 Engine::~Engine()

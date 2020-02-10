@@ -15,7 +15,7 @@ ShaderLoader::ShaderLoader() : ITypeLoader(SHADER_PATH)
 }
 
 std::shared_ptr<IAsset> ShaderLoader::interpretAsset(
-    const std::vector<AssetBuffer> &data) const
+    const std::vector<AssetBuffer> &data, int flag) const
 {
     // Compile vertex shader.
     GLuint vertexShader{ glCreateShader(GL_VERTEX_SHADER) };

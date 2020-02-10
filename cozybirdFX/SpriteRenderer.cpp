@@ -7,20 +7,21 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 {
     // TODO: Clean up this initialization code.
     m_shader = assetLoader->load<Shader>({ "sprite.vs", "sprite.fs" });
-    m_shader->link();
+    if (m_shader != nullptr)
+        m_shader->link();
     m_texture = assetLoader->load<Texture>("particle.png");
 
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.
-    glGenVertexArrays(1, &m_vao);
-    glBindVertexArray(m_vao);
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
 
     // Create the vertex buffer object and bind to it.
-    glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glGenBuffers(1, &m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
     // Copy the vertices into the buffer for OpenGL.
-    float vertices[]
+    const float vertices[]
     {
         // position        // texCoord
         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,   // top right
@@ -32,8 +33,8 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Create the element buffer object and bind to it.
-    glGenBuffers(1, &m_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glGenBuffers(1, &m_EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 
     // Copy indices into the element buffer for OpenGL.
     unsigned int indices[]
@@ -69,7 +70,7 @@ void SpriteRenderer::render()
     // TODO: Replace this test rendering code.
     m_texture->bind();
     m_shader->use();
-    glBindVertexArray(m_vao);
+    glBindVertexArray(m_VAO);
 
     glm::mat4 view{ glm::mat4(1.0f) };
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));

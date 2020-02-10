@@ -16,9 +16,11 @@ public:
 	// Load an asset through its specific TypeLoader, given its type as 
 	// the template.
 	template<typename T>
-	std::shared_ptr<T> load(const std::string &fileName);
+	std::shared_ptr<T> load(const std::string &fileName, 
+		int flag = 0);
 	template<typename T>
-	std::shared_ptr<T> load(const std::initializer_list<std::string> &fileNames);
+	std::shared_ptr<T> load(const std::initializer_list<std::string> &fileNames, 
+		int flag = 0);
 
 	// Register a TypeLoader to use for loading assets of a specific asset 
 	// type. The asset type is specified in the template.
@@ -31,13 +33,15 @@ private:
 };
 
 template<typename T>
-inline std::shared_ptr<T> AssetLoader::load(const std::string &fileName)
+inline std::shared_ptr<T> AssetLoader::load(const std::string &fileName, 
+	int flag)
 {
-	return load<T>({ fileName });
+	return load<T>({ fileName }, flag);
 }
 
 template<typename T>
-inline std::shared_ptr<T> AssetLoader::load(const std::initializer_list<std::string> &fileNames)
+inline std::shared_ptr<T> AssetLoader::load(const std::initializer_list<std::string> &fileNames, 
+	int flag)
 {
 	const std::string fileName{ *fileNames.begin() };
 
@@ -52,7 +56,7 @@ inline std::shared_ptr<T> AssetLoader::load(const std::initializer_list<std::str
 	}
 
 	// Use the TypeLoader to load the asset.
-	std::shared_ptr<IAsset> asset{ loaderIt->second->load(fileNames) };
+	std::shared_ptr<IAsset> asset{ loaderIt->second->load(fileNames, flag) };
 	if (asset == nullptr)
 	{
 		std::cout << "AssetLoader::load: Could not load '"
