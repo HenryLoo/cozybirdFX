@@ -3,6 +3,7 @@
 #include "AssetLoader.h"
 #include "EntityManager.h"
 #include "Emitter.h"
+#include "InputManager.h"
 
 #include <memory>
 #include <vector>
@@ -44,6 +45,7 @@ private:
 
 	std::unique_ptr<AssetLoader> m_assetLoader;
 	std::unique_ptr<EntityManager> m_entityManager;
+	std::unique_ptr<InputManager> m_inputManager;
 
 	std::unique_ptr<Emitter> m_emitter;
 

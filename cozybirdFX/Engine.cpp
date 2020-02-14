@@ -20,6 +20,9 @@ Engine::Engine(GLFWwindow *window) :
     m_assetLoader->registerLoader<Shader>(new ShaderLoader());
     m_assetLoader->registerLoader<Font>(new FontLoader());
 
+    // Instantiate the input manager.
+    m_inputManager = std::make_unique<InputManager>(m_window);
+
     // Instantiate renderers.
     auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
     auto textRenderer{ std::make_unique<TextRenderer>(m_assetLoader.get()) };

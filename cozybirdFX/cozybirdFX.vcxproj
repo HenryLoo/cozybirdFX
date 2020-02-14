@@ -173,6 +173,7 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="ITypeLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
