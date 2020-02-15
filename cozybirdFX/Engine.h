@@ -10,6 +10,7 @@
 
 class Renderer;
 class Font;
+class UIContainer;
 
 struct GLFWwindow;
 
@@ -51,4 +52,5 @@ private:
 
 	// TODO: Remove this later.
 	std::shared_ptr<Font> m_font;
+	std::shared_ptr<UIContainer> m_uiContainer;
 };

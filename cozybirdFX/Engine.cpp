@@ -1,12 +1,14 @@
 #include "Engine.h"
 #include "SpriteRenderer.h"
 #include "TextRenderer.h"
+#include "UIRenderer.h"
 
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
 #include "FontLoader.h"
 #include "Font.h"
 #include "Emitter.h"
+#include "UIContainer.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -25,6 +27,7 @@ Engine::Engine(GLFWwindow *window) :
 
     // Instantiate renderers.
     auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
+    auto uiRenderer{ std::make_unique<UIRenderer>(m_assetLoader.get()) };
     auto textRenderer{ std::make_unique<TextRenderer>(m_assetLoader.get()) };
 
     // Instantiate entity manager.
@@ -49,8 +52,14 @@ Engine::Engine(GLFWwindow *window) :
     prop.text = "Test message!";
     textRenderer->addText(m_font.get(), prop);
 
+    // TODO: Test UI, remove this later.
+    m_uiContainer = std::make_shared<UIContainer>(glm::vec2(64.f, 64.f),
+        glm::vec2(300.f, 300.f));
+    m_uiContainer->addToRenderer(uiRenderer.get());
+
     // Add renderers to the list.
     m_renderers.push_back(std::move(spriteRenderer));
+    m_renderers.push_back(std::move(uiRenderer));
     m_renderers.push_back(std::move(textRenderer));
 }
 
@@ -67,11 +76,11 @@ void Engine::start()
     while (!glfwWindowShouldClose(m_window))
     {
         // If the window size was changed, update the renderer.
-		if (m_hasNewWindowSize)
-		{
-			m_hasNewWindowSize = false;
-			Renderer::updateWindowSize(m_window);
-		}
+        if (m_hasNewWindowSize)
+        {
+            m_hasNewWindowSize = false;
+            Renderer::updateWindowSize(m_window);
+        }
 
         double currentFrame{ glfwGetTime() };
         float deltaTime{ static_cast<float>(currentFrame - lastFrame) };
