@@ -53,6 +53,9 @@ int main()
     // Set viewport.
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    // Disable depth testing.
+    glDisable(GL_DEPTH_TEST);
+
     // Set window resize callback.
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 

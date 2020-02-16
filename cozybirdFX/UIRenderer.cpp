@@ -17,12 +17,11 @@ UIRenderer::UIRenderer(AssetLoader *assetLoader)
 
 	// Configure vertex buffer object with quad vertices.
 	const GLfloat vertices[]
-	{
-		// Pos      // Tex
-		0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
+	{ 
+		0.0f, 1.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f,
+		1.0f, 1.0f,
 	};
 
 	glGenBuffers(1, &m_verticesVBO);
@@ -44,36 +43,44 @@ UIRenderer::UIRenderer(AssetLoader *assetLoader)
 
 	// Configure vertex attributes.
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat),
 		(GLvoid *)0);
 
-	// Configure colour buffer object.
-	glGenBuffers(1, &m_colourVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_colourVBO);
+	// Configure border buffer object.
+	glGenBuffers(1, &m_borderVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_borderVBO);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),
 		(GLvoid *)0);
 	glVertexAttribDivisor(1, 1);
+
+	// Configure colour buffer object.
+	glGenBuffers(2, &m_colourVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_colourVBO);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+		(GLvoid *)0);
+	glVertexAttribDivisor(2, 1);
 
 	// Configure model buffer object.
 	glGenBuffers(1, &m_modelVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_modelVBO);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4),
-		(GLvoid *)0);
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4),
-		(GLvoid *)sizeof(glm::vec4));
+		(GLvoid *)0);
 	glEnableVertexAttribArray(4);
 	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4),
-		(GLvoid *)(2 * sizeof(glm::vec4)));
+		(GLvoid *)sizeof(glm::vec4));
 	glEnableVertexAttribArray(5);
 	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4),
+		(GLvoid *)(2 * sizeof(glm::vec4)));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4),
 		(GLvoid *)(3 * sizeof(glm::vec4)));
-	glVertexAttribDivisor(2, 1);
 	glVertexAttribDivisor(3, 1);
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
+	glVertexAttribDivisor(6, 1);
 
 	// Unbind VBO and VAO.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -84,6 +91,7 @@ UIRenderer::~UIRenderer()
 {
 	glDeleteBuffers(1, &m_verticesEBO);
 	glDeleteBuffers(1, &m_verticesVBO);
+	glDeleteBuffers(1, &m_borderVBO);
 	glDeleteBuffers(1, &m_colourVBO);
 	glDeleteBuffers(1, &m_modelVBO);
 	glDeleteVertexArrays(1, &m_VAO);
@@ -117,12 +125,19 @@ void UIRenderer::render()
 		0.0f));
 
 	// Instance vectors.
+	std::vector<glm::vec3> borders;
 	std::vector<glm::vec4> colours;
 	std::vector<glm::mat4> modelMatrices;
 
 	// Iterate through all UI elements to prepare values for rendering.
 	for (const auto &thisElement : m_elements)
 	{
+		// Set the UI element's border.
+		// The x, y members correspond to the UI element's width and height.
+		// The z member is a flag to indicate whether the element has a border.
+		borders.push_back(glm::vec3(thisElement.size.x, 
+			thisElement.size.y, thisElement.hasBorder));
+
 		// Set the UI element's colour.
 		colours.push_back(thisElement.colour);
 
@@ -134,6 +149,11 @@ void UIRenderer::render()
 			glm::vec3(thisElement.size.x, thisElement.size.y, 1.f));
 		modelMatrices.push_back(modelMatrix);
 	}
+
+	// Bind sizes.
+	glBindBuffer(GL_ARRAY_BUFFER, m_borderVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * borders.size(),
+		&borders[0], GL_STATIC_DRAW);
 
 	// Bind colours.
 	glBindBuffer(GL_ARRAY_BUFFER, m_colourVBO);
@@ -157,9 +177,6 @@ void UIRenderer::render()
 
 	// Unbind texture.
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// Reset blend.
-	glDisable(GL_BLEND);
 }
 
 void UIRenderer::addElement(const Properties &prop)

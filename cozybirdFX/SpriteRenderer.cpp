@@ -51,13 +51,6 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    // Enable blending.
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Enable depth testing.
-    glEnable(GL_DEPTH_TEST);
 }
 
 void SpriteRenderer::update(float deltaTime)
@@ -67,6 +60,10 @@ void SpriteRenderer::update(float deltaTime)
 
 void SpriteRenderer::render()
 {
+    // Enable blending.
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // TODO: Replace this test rendering code.
     m_texture->bind();
     m_shader->use();

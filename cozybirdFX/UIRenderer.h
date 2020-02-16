@@ -45,7 +45,7 @@ private:
 	unsigned int m_VAO;
 
 	// Vertex buffer objects.
-	unsigned int m_verticesVBO, m_colourVBO, m_modelVBO;
+	unsigned int m_verticesVBO, m_borderVBO, m_colourVBO, m_modelVBO;
 
 	// Element buffer object.
 	unsigned int m_verticesEBO;

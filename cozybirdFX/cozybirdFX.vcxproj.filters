@@ -120,6 +120,9 @@
     <ClInclude Include="UIContainer.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UIButton.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -186,6 +189,12 @@
       <Filter>Source Files\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="UIContainer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IUserInterface.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>

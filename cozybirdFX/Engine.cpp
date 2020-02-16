@@ -9,6 +9,7 @@
 #include "Font.h"
 #include "Emitter.h"
 #include "UIContainer.h"
+#include "UIButton.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -46,21 +47,20 @@ Engine::Engine(GLFWwindow *window) :
     m_emitter->setDurationMin(2.f);
     m_emitter->setDurationOffset(0.3f);
 
-    // TODO: Remove this later.
-    m_font = m_assetLoader->load<Font>("default.ttf", 16);
-    TextRenderer::Properties prop;
-    prop.text = "Test message!";
-    textRenderer->addText(m_font.get(), prop);
-
     // TODO: Test UI, remove this later.
-    m_uiContainer = std::make_shared<UIContainer>(glm::vec2(64.f, 64.f),
-        glm::vec2(300.f, 300.f));
-    m_uiContainer->addToRenderer(uiRenderer.get());
+    auto container{ std::make_shared<UIContainer>(glm::vec2(64.f, 64.f),
+        glm::vec2(300.f, 300.f)) };
+    auto button{ std::make_shared<UIButton>("Button", 
+        []() { std::cout << "Clicked" << std::endl; },
+        glm::vec2(32.f, 32.f), glm::vec2(100.f, 32.f)) };
+    container->addElement(button);
+    container->addToRenderer(uiRenderer.get(), textRenderer.get());
+    m_uiElements.push_back(container);
 
     // Add renderers to the list.
-    m_renderers.push_back(std::move(spriteRenderer));
     m_renderers.push_back(std::move(uiRenderer));
     m_renderers.push_back(std::move(textRenderer));
+    m_renderers.push_back(std::move(spriteRenderer));
 }
 
 Engine::~Engine()
@@ -97,6 +97,10 @@ void Engine::handleInput()
     glfwPollEvents();
 
     // TODO: Integrate input manager here.
+    for (const auto &element : m_uiElements)
+    {
+        element->handleInput(m_inputManager.get());
+    }
 }
 
 void Engine::update(float deltaTime)
@@ -114,6 +118,7 @@ void Engine::update(float deltaTime)
 
 void Engine::render(float deltaTime)
 {
+    glClearColor(0.f, 0.f, 0.f, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // TODO: Integrate renderer functionality here.

@@ -43,7 +43,7 @@ public:
 	virtual void render();
 
 	// Add a text to the map to be rendered.
-	void addText(Font *font, const Properties &prop);
+	void addText(const Properties &prop, Font *font = nullptr);
 
 	// Remove all text from the map.
 	void clearText();
@@ -51,6 +51,9 @@ public:
 private:
 	// The renderer's shader program.
 	std::shared_ptr<Shader> m_shader;
+
+	// The renderer's default font.
+	std::shared_ptr<Font> m_font;
 
 	// Vertex array object.
 	unsigned int m_VAO;

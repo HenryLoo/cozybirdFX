@@ -15,15 +15,18 @@ InputManager::InputManager(GLFWwindow *window)
 	glfwSetKeyCallback(window, KeyCallBack);
 }
 
-bool InputManager::isMouseDown(int button) const
+bool InputManager::isMouseDown(int button, bool isReleaseOnCheck) const
 {
 	if (button < 0 || button >= m_mouseStates.size())
 		return false;
 
-	return m_mouseStates[button] != GLFW_RELEASE;
+	bool isDown{ m_mouseStates[button] != GLFW_RELEASE };
+	if (isReleaseOnCheck)
+		m_mouseStates[button] = GLFW_RELEASE;
+	return isDown;
 }
 
-bool InputManager::isKeyDown(int key) const
+bool InputManager::isKeyDown(int key, bool isReleaseOnCheck) const
 {
 	int scanCode{ glfwGetKeyScancode(key) };
 	auto it{ m_keyStates.find(scanCode) };
@@ -35,7 +38,15 @@ bool InputManager::isKeyDown(int key) const
 	}
 
 	// Otherwise, return the state.
+	bool isDown{ it->second };
+	if (isReleaseOnCheck)
+		it->second = GLFW_RELEASE;
 	return it->second;
+}
+
+glm::vec2 InputManager::getMousePos() const
+{
+	return m_mousePos;
 }
 
 void InputManager::MousePositionCallback(GLFWwindow *window,
@@ -51,8 +62,8 @@ void InputManager::MouseButtonCallback(GLFWwindow *window,
 	if (button < 0 || button >= m_mouseStates.size())
 		return;
 
-	std::cout << "Mouse button: " << button << ", Action: " << action << 
-		", x: " << m_mousePos.x << ", y: " << m_mousePos.y << std::endl;
+	/*std::cout << "Mouse button: " << button << ", Action: " << action << 
+		", x: " << m_mousePos.x << ", y: " << m_mousePos.y << std::endl;*/
 
 	m_mouseStates[button] = (action != GLFW_RELEASE);
 }
@@ -63,7 +74,7 @@ void InputManager::KeyCallBack(GLFWwindow *window, int key,
 	bool state{ action != GLFW_RELEASE };
 	auto it{ m_keyStates.find(key) };
 
-	std::cout << "Key: " << key << ", Action: " << action << std::endl;
+	//std::cout << "Key: " << key << ", Action: " << action << std::endl;
 
 	// State for this key was not found, so insert it.
 	if (it == m_keyStates.end())

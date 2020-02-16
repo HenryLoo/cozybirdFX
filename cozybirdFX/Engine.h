@@ -10,7 +10,7 @@
 
 class Renderer;
 class Font;
-class UIContainer;
+class IUserInterface;
 
 struct GLFWwindow;
 
@@ -51,6 +51,5 @@ private:
 	std::unique_ptr<Emitter> m_emitter;
 
 	// TODO: Remove this later.
-	std::shared_ptr<Font> m_font;
-	std::shared_ptr<UIContainer> m_uiContainer;
+	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
 };

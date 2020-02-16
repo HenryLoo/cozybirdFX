@@ -12,8 +12,9 @@ public:
 	InputManager(GLFWwindow *window);
 
 	// Check input states.
-	bool isMouseDown(int button) const;
-	bool isKeyDown(int key) const;
+	bool isMouseDown(int button, bool isReleaseOnCheck = false) const;
+	bool isKeyDown(int key, bool isReleaseOnCheck = false) const;
+	glm::vec2 getMousePos() const;
 
 	// Callback functions for GLFW.
 	static void MousePositionCallback(GLFWwindow *window,

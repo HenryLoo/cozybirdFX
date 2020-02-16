@@ -11,6 +11,8 @@ TextRenderer::TextRenderer(AssetLoader *assetLoader)
     if (m_shader != nullptr)
         m_shader->link();
 
+	m_font = assetLoader->load<Font>("default.ttf", 16);
+
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.
     glGenVertexArrays(1, &m_VAO);
@@ -255,16 +257,14 @@ void TextRenderer::render()
 
 		// Unbind texture.
 		glBindTexture(GL_TEXTURE_2D, 0);
-
-		// Reset blend.
-		glDisable(GL_BLEND);
 	}
 }
 
-void TextRenderer::addText(Font *font, const Properties &prop)
+void TextRenderer::addText(const Properties &prop, Font *font)
 {
+	// Use the default font if no font provided.
 	if (font == nullptr)
-		return;
+		font = m_font.get();
 
 	auto it{ m_texts.find(font) };
 

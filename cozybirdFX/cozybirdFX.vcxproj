@@ -164,6 +164,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="IUserInterface.h" />
+    <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIRenderer.h" />
     <ClInclude Include="UIContainer.h" />
   </ItemGroup>
@@ -178,6 +179,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="ITypeLoader.cpp" />
+    <ClCompile Include="IUserInterface.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="Renderer.cpp" />
@@ -188,6 +190,7 @@
     <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIRenderer.cpp" />
     <ClCompile Include="UIContainer.cpp" />
   </ItemGroup>
