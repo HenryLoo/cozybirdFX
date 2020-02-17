@@ -49,16 +49,22 @@ Engine::Engine(GLFWwindow *window) :
     m_emitter->setDurationOffset(0.3f);
 
     // TODO: Test UI, remove this later.
-    auto container{ std::make_shared<UIContainer>(glm::vec2(64.f, 64.f),
-        glm::vec2(300.f, 300.f)) };
+    glm::ivec2 windowSize;
+    glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
+    auto container{ std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
+        glm::vec2(-1.f, -1.f)) };
     auto button{ std::make_shared<UIButton>("Button", 
         []() { std::cout << "Clicked" << std::endl; },
-        glm::vec2(32.f, 32.f), glm::vec2(100.f, 32.f)) };
+        glm::vec2(0.f, 0.f), glm::vec2(100.f, 32.f)) };
     container->addElement(button);
-    auto slider{ std::make_shared<UISlider>("Slider", glm::vec2(0, 255),
-        glm::vec2(32.f, 72.f), glm::vec2(255.f, 24.f)) };
-    slider->setValue(50);
-    container->addElement(slider);
+    for (int i = 0; i < 10; ++i)
+    {
+        container->addNewLine();
+        auto slider{ std::make_shared<UISlider>("Slider " + std::to_string(i), glm::vec2(0, 255),
+        glm::vec2(0.f, 0.f), glm::vec2(255.f, 24.f)) };
+        slider->setValue(50);
+        container->addElement(slider);
+    }
     container->addToRenderer(uiRenderer.get(), textRenderer.get());
     m_uiElements.push_back(container);
 

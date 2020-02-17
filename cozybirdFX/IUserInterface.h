@@ -38,4 +38,7 @@ protected:
 
 	// Flag for if this element has a border.
 	bool m_hasBorder{ false };
+
+	// Flag for if any element is clicked.
+	static bool m_isClicked;
 };

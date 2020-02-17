@@ -165,6 +165,7 @@
     <ClInclude Include="TextureLoader.h" />
     <ClInclude Include="IUserInterface.h" />
     <ClInclude Include="UIButton.h" />
+    <ClInclude Include="UIList.h" />
     <ClInclude Include="UIRenderer.h" />
     <ClInclude Include="UIContainer.h" />
     <ClInclude Include="UISlider.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UIList.cpp" />
     <ClCompile Include="UIRenderer.cpp" />
     <ClCompile Include="UIContainer.cpp" />
     <ClCompile Include="UISlider.cpp" />

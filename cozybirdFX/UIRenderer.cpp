@@ -179,10 +179,12 @@ void UIRenderer::render()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-std::vector<UIRenderer::Properties>::iterator UIRenderer::addElement(const Properties &prop)
+std::list<UIRenderer::Properties>::iterator UIRenderer::addElement(const Properties &prop)
 {
 	m_elements.push_back(prop);
-	return m_elements.end() - 1;
+
+	// Return the iterator the element that was just added.
+	return std::prev(std::end(m_elements));
 }
 
 void UIRenderer::clearElements()

@@ -1,6 +1,8 @@
 #include "IUserInterface.h"
 #include "UIRenderer.h"
 
+bool IUserInterface::m_isClicked{ false };
+
 IUserInterface::IUserInterface(glm::vec2 position, glm::vec2 size,
 	glm::vec4 colour, bool hasBorder) : m_position(position),
 	m_size(size), m_colour(colour), m_hasBorder(hasBorder)

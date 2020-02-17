@@ -5,8 +5,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-
 namespace
 {
 	const float TEXT_OFFSET{ 4.f };
@@ -22,18 +20,19 @@ UISlider::UISlider(std::string label, glm::ivec2 range, glm::vec2 position,
 
 void UISlider::handleInput(InputManager *inputManager)
 {
-	// Call the action if left clicked inside the button's bounds.
+	// Activate slider if the mouse is inside the bar's bounds.
 	glm::vec2 mousePos{ inputManager->getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
-	if (((mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
+	if ((!IUserInterface::m_isClicked || m_isClicked) &&
+		((mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
 		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y) || 
 		m_isClicked) && inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
-		m_isClicked = true;
+		IUserInterface::m_isClicked = m_isClicked = true;
 
 		float offset{ mousePos.x - pos.x };
 		int val{ static_cast<int>(offset / m_size.x * m_range.y) };
-		if (m_value != val && m_valueText != nullptr)
+		if (m_value != val)
 		{
 			setValue(val);
 			updateBar();
@@ -43,7 +42,7 @@ void UISlider::handleInput(InputManager *inputManager)
 	// Disable clicked flag on left click release.
 	if (m_isClicked && !inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
-		m_isClicked = false;
+		IUserInterface::m_isClicked = m_isClicked = false;
 	}
 }
 

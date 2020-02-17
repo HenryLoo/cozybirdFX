@@ -32,7 +32,7 @@ public:
 	virtual void render();
 
 	// Add a UI element to the list to be rendered.
-	std::vector<Properties>::iterator addElement(const Properties &prop);
+	std::list<Properties>::iterator addElement(const Properties &prop);
 
 	// Remove all text from the list.
 	void clearElements();
@@ -51,5 +51,5 @@ private:
 	unsigned int m_verticesEBO;
 
 	// UI elements to render.
-	std::vector<Properties> m_elements;
+	std::list<Properties> m_elements;
 };

@@ -43,7 +43,7 @@ public:
 	virtual void render();
 
 	// Add a text to the map to be rendered.
-	std::vector<Properties>::iterator addText(const Properties &prop, Font *font = nullptr);
+	std::list<Properties>::iterator addText(const Properties &prop, Font *font = nullptr);
 
 	// Remove all text from the map.
 	void clearText();
@@ -67,5 +67,5 @@ private:
 	// Text to render.
 	// Group text strings to render by common fonts, to minimize texture binds
 	// and draw calls.
-	std::unordered_map<Font *, std::vector<Properties>> m_texts;
+	std::unordered_map<Font *, std::list<Properties>> m_texts;
 };

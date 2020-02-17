@@ -132,7 +132,7 @@ void TextRenderer::render()
 	for (auto it = m_texts.begin(); it != m_texts.end(); ++it)
 	{
 		Font *thisFont{ it->first };
-		const std::vector<Properties> &thisTexts{ it->second };
+		const std::list<Properties> &thisTexts{ it->second };
 
 		// Instance vectors.
 		std::vector<glm::vec4> clips;
@@ -260,7 +260,7 @@ void TextRenderer::render()
 	}
 }
 
-std::vector<TextRenderer::Properties>::iterator TextRenderer::addText(const Properties &prop, Font *font)
+std::list<TextRenderer::Properties>::iterator TextRenderer::addText(const Properties &prop, Font *font)
 {
 	// Use the default font if no font provided.
 	if (font == nullptr)
@@ -272,13 +272,17 @@ std::vector<TextRenderer::Properties>::iterator TextRenderer::addText(const Prop
 	if (it != m_texts.end())
 	{
 		it->second.push_back(prop);
-		return it->second.end() - 1;
+		
+		// Return the iterator the element that was just added.
+		return std::prev(std::end(it->second));
 	}
 	// No text already using this font.
 	else
 	{
-		auto result{ m_texts.insert({ font, std::vector<Properties>{ prop } }) };
-		return result.first->second.end() - 1;
+		auto result{ m_texts.insert({ font, std::list<Properties>{ prop } }) };
+
+		// Return the iterator the element that was just added.
+		return std::prev(std::end(result.first->second));
 	}
 }
 
