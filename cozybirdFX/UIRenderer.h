@@ -32,7 +32,7 @@ public:
 	virtual void render();
 
 	// Add a UI element to the list to be rendered.
-	void addElement(const Properties &prop);
+	std::vector<Properties>::iterator addElement(const Properties &prop);
 
 	// Remove all text from the list.
 	void clearElements();

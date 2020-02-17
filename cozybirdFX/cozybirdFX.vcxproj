@@ -167,6 +167,7 @@
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIRenderer.h" />
     <ClInclude Include="UIContainer.h" />
+    <ClInclude Include="UISlider.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECSSystem.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIRenderer.cpp" />
     <ClCompile Include="UIContainer.cpp" />
+    <ClCompile Include="UISlider.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

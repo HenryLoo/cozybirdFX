@@ -166,11 +166,11 @@ void TextRenderer::render()
 				// Calculate alignment offsets.
 				if (thisText.align == TextAlign::CENTER)
 				{
-					alignOffsetX = (thisText.pos.x - textWidth) / 2;
+					alignOffsetX = (thisText.size.x - textWidth) / 2;
 				}
 				else if (thisText.align == TextAlign::RIGHT)
 				{
-					alignOffsetX = thisText.pos.x - textWidth;
+					alignOffsetX = thisText.size.x - textWidth;
 				}
 			}
 
@@ -260,7 +260,7 @@ void TextRenderer::render()
 	}
 }
 
-void TextRenderer::addText(const Properties &prop, Font *font)
+std::vector<TextRenderer::Properties>::iterator TextRenderer::addText(const Properties &prop, Font *font)
 {
 	// Use the default font if no font provided.
 	if (font == nullptr)
@@ -271,12 +271,14 @@ void TextRenderer::addText(const Properties &prop, Font *font)
 	// This font is already being used by some other text.
 	if (it != m_texts.end())
 	{
-		m_texts[font].push_back(prop);
+		it->second.push_back(prop);
+		return it->second.end() - 1;
 	}
 	// No text already using this font.
 	else
 	{
-		m_texts.insert({ font, std::vector<Properties>{ prop } });
+		auto result{ m_texts.insert({ font, std::vector<Properties>{ prop } }) };
+		return result.first->second.end() - 1;
 	}
 }
 

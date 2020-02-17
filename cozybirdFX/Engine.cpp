@@ -10,6 +10,7 @@
 #include "Emitter.h"
 #include "UIContainer.h"
 #include "UIButton.h"
+#include "UISlider.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -54,6 +55,10 @@ Engine::Engine(GLFWwindow *window) :
         []() { std::cout << "Clicked" << std::endl; },
         glm::vec2(32.f, 32.f), glm::vec2(100.f, 32.f)) };
     container->addElement(button);
+    auto slider{ std::make_shared<UISlider>("Slider", glm::vec2(0, 255),
+        glm::vec2(32.f, 72.f), glm::vec2(255.f, 24.f)) };
+    slider->setValue(50);
+    container->addElement(slider);
     container->addToRenderer(uiRenderer.get(), textRenderer.get());
     m_uiElements.push_back(container);
 

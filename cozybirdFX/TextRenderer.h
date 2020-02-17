@@ -43,7 +43,7 @@ public:
 	virtual void render();
 
 	// Add a text to the map to be rendered.
-	void addText(const Properties &prop, Font *font = nullptr);
+	std::vector<Properties>::iterator addText(const Properties &prop, Font *font = nullptr);
 
 	// Remove all text from the map.
 	void clearText();
