@@ -72,8 +72,7 @@ void SpriteRenderer::render()
     glm::mat4 view{ glm::mat4(1.0f) };
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    glm::mat4 proj{ glm::perspective(glm::radians(45.0f),
-        (float)m_windowSize.x / m_windowSize.y, 0.1f, 100.0f) };
+    glm::mat4 proj{ getPerspectiveMatrix() };
 
     for (auto it = m_models.begin(); it != m_models.end(); ++it)
     {

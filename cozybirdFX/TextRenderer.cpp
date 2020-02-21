@@ -122,11 +122,7 @@ void TextRenderer::render()
 	// Use orthographic projection, since we won't be needing perspective for text.
 	// This allows us to use vertex coordinates as screen coordinates.
 	m_shader->use();
-	m_shader->setMat4("projection", glm::ortho(
-		0.0f,
-		static_cast<float>(m_windowSize.x),
-		static_cast<float>(m_windowSize.y),
-		0.0f));
+	m_shader->setMat4("projection", getOrthographicMatrix());
 
 	// Iterate through in-use fonts.
 	for (auto it = m_texts.begin(); it != m_texts.end(); ++it)

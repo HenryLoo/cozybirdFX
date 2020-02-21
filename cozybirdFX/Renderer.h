@@ -16,5 +16,9 @@ public:
 	static void updateWindowSize(GLFWwindow *window);
 
 protected:
+	// Get projection matrices.
+	glm::mat4 getPerspectiveMatrix() const;
+	glm::mat4 getOrthographicMatrix() const;
+
 	static glm::ivec2 m_windowSize;
 };

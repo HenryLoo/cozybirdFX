@@ -118,11 +118,7 @@ void UIRenderer::render()
 	// Use orthographic projection, since we won't be needing perspective for UI.
 	// This allows us to use vertex coordinates as screen coordinates.
 	m_shader->use();
-	m_shader->setMat4("projection", glm::ortho(
-		0.0f,
-		static_cast<float>(m_windowSize.x),
-		static_cast<float>(m_windowSize.y),
-		0.0f));
+	m_shader->setMat4("projection", getOrthographicMatrix());
 
 	// Instance vectors.
 	std::vector<glm::vec3> borders;
