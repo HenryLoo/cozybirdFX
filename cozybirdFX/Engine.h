@@ -11,6 +11,8 @@
 class Renderer;
 class Font;
 class IUserInterface;
+class UISlider;
+class UITextField;
 
 struct GLFWwindow;
 
@@ -52,4 +54,8 @@ private:
 
 	// TODO: Remove this later.
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
+	std::shared_ptr<UISlider> m_rSlider;
+	std::shared_ptr<UISlider> m_gSlider;
+	std::shared_ptr<UISlider> m_bSlider;
+	std::shared_ptr<UITextField> m_xField;
 };

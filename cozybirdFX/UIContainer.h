@@ -27,6 +27,7 @@ public:
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
 private:
+	// Adjust the size of this container based on the size of its contents.
 	void fitContents();
 
 	// Hold other UI elements in this container.

@@ -11,6 +11,7 @@
 #include "UIContainer.h"
 #include "UIButton.h"
 #include "UISlider.h"
+#include "UITextField.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -57,14 +58,30 @@ Engine::Engine(GLFWwindow *window) :
         []() { std::cout << "Clicked" << std::endl; },
         glm::vec2(0.f, 0.f), glm::vec2(100.f, 32.f)) };
     container->addElement(button);
-    for (int i = 0; i < 10; ++i)
-    {
-        container->addNewLine();
-        auto slider{ std::make_shared<UISlider>("Slider " + std::to_string(i), glm::vec2(0, 255),
-        glm::vec2(0.f, 0.f), glm::vec2(255.f, 24.f)) };
-        slider->setValue(50);
-        container->addElement(slider);
-    }
+
+    container->addNewLine();
+    m_rSlider = std::make_shared<UISlider>("R", glm::vec2(0, 255),
+        glm::vec2(0.f, 0.f), glm::vec2(255.f, 24.f));
+    m_rSlider->setValue(50);
+    container->addElement(m_rSlider);
+
+    container->addNewLine();
+    m_gSlider = std::make_shared<UISlider>("G", glm::vec2(0, 255),
+        glm::vec2(0.f, 0.f), glm::vec2(255.f, 24.f));
+    m_gSlider->setValue(50);
+    container->addElement(m_gSlider);
+
+    container->addNewLine();
+    m_bSlider = std::make_shared<UISlider>("B", glm::vec2(0, 255),
+        glm::vec2(0.f, 0.f), glm::vec2(255.f, 24.f));
+    m_bSlider->setValue(50);
+    container->addElement(m_bSlider);
+
+    container->addNewLine();
+    m_xField = std::make_shared<UITextField>("x", glm::vec2(0.f, 0.f), 
+        glm::vec2(255.f, 24.f));
+    container->addElement(m_xField);
+
     container->addToRenderer(uiRenderer.get(), textRenderer.get());
     m_uiElements.push_back(container);
 
@@ -125,6 +142,12 @@ void Engine::update(float deltaTime)
         if (renderer != nullptr)
             renderer->update(deltaTime);
     }
+
+    // Update emitter with slider options.
+    float red{ m_rSlider->getValue() / 255.f };
+    float green{ m_gSlider->getValue() / 255.f };
+    float blue{ m_bSlider->getValue() / 255.f };
+    m_emitter->setColour(glm::vec3(red, green, blue));
 }
 
 void Engine::render(float deltaTime)

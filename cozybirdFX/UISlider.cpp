@@ -77,7 +77,7 @@ void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	bar.hasBorder = true;
 	uRenderer->addElement(bar);
 
-	// Add the slider's bar to the renderer.
+	// Add the slider's fill to the renderer.
 	UIRenderer::Properties fill;
 	fill.pos = m_position + m_offset;
 	fill.pos.x += FILL_OFFSET / 2;
