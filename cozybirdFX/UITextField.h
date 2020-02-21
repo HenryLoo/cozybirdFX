@@ -19,7 +19,7 @@ public:
 	// Get the text field's current value.
 	void getValue(std::string &output) const;
 	void getValue(int &output) const;
-	void getValue(double &output) const;
+	void getValue(float &output) const;
 
 private:
 	void setActivation(bool isActivated, InputManager *inputManager);

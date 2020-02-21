@@ -58,4 +58,16 @@ private:
 	std::shared_ptr<UISlider> m_gSlider;
 	std::shared_ptr<UISlider> m_bSlider;
 	std::shared_ptr<UITextField> m_xField;
+	std::shared_ptr<UITextField> m_yField;
+	std::shared_ptr<UITextField> m_numGenField;
+	std::shared_ptr<UITextField> m_spawnTimeField;
+	std::shared_ptr<UITextField> m_velMinXField;
+	std::shared_ptr<UITextField> m_velOffsetXField;
+	std::shared_ptr<UITextField> m_velMinYField;
+	std::shared_ptr<UITextField> m_velOffsetYField;
+	std::shared_ptr<UITextField> m_accelXField;
+	std::shared_ptr<UITextField> m_accelYField;
+	std::shared_ptr<UITextField> m_sizeField;
+	std::shared_ptr<UITextField> m_durationMinField;
+	std::shared_ptr<UITextField> m_durationOffsetField;
 };

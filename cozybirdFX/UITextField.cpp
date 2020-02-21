@@ -4,6 +4,7 @@
 #include "UIRenderer.h"
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 namespace
 {
@@ -30,13 +31,13 @@ void UITextField::handleInput(InputManager *inputManager)
 		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y)
 	{
 		if (!IUserInterface::m_isClicked &&
-			inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1, true))
+			inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
 		{
 			setActivation(true, inputManager);
 		}
 	}
 	// Deactivate text field when clicking outside the field's bounds.
-	else if (inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
+	else if (m_isActivated && inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
 		setActivation(false, inputManager);
 	}
@@ -111,19 +112,19 @@ void UITextField::getValue(int &output) const
 	}
 	catch (std::invalid_argument &)
 	{
-		*m_uiColour = ERROR_COLOUR;
+		//*m_uiColour = ERROR_COLOUR;
 	}
 }
 
-void UITextField::getValue(double &output) const
+void UITextField::getValue(float &output) const
 {
 	try
 	{
-		output = std::stod(*m_value);
+		output = std::stof(*m_value);
 	}
 	catch (std::invalid_argument &)
 	{
-		*m_uiColour = ERROR_COLOUR;
+		//*m_uiColour = ERROR_COLOUR;
 	}
 }
 
