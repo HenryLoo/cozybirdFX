@@ -12,6 +12,7 @@
 #include "UIButton.h"
 #include "UISlider.h"
 #include "UITextField.h"
+#include "UIText.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -45,87 +46,115 @@ Engine::Engine(GLFWwindow *window) :
     glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
     auto container{ std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, -1.f)) };
-    auto button{ std::make_shared<UIButton>("Button", 
-        []() { std::cout << "Clicked" << std::endl; },
-        glm::vec2(0.f, 0.f), glm::vec2(100.f, 32.f)) };
-    container->addElement(button);
+    //auto button{ std::make_shared<UIButton>("Button", 
+    //    []() { std::cout << "Clicked" << std::endl; },
+    //    glm::vec2(0.f, 0.f), glm::vec2(100.f, 32.f)) };
+    //container->addElement(button);
 
-    container->addNewLine();
+    auto colourLabel{ std::make_shared<UIText>("Colour", glm::vec2(200, 16.f)) };
+    container->addElement(colourLabel);
+
+    container->addNewHalfLine();
     m_rSlider = std::make_shared<UISlider>("R", glm::vec2(0, 255),
-        glm::vec2(0.f, 0.f), glm::vec2(356.f, 24.f));
+        glm::vec2(356.f, 24.f));
     m_rSlider->setValue(50);
     container->addElement(m_rSlider);
 
-    container->addNewLine();
-    m_gSlider = std::make_shared<UISlider>("G", glm::vec2(0, 255),
-        glm::vec2(0.f, 0.f), glm::vec2(356.f, 24.f));
+    container->addNewHalfLine();
+    m_gSlider = std::make_shared<UISlider>("G", glm::vec2(0, 255), 
+        glm::vec2(356.f, 24.f));
     m_gSlider->setValue(50);
     container->addElement(m_gSlider);
 
-    container->addNewLine();
+    container->addNewHalfLine();
     m_bSlider = std::make_shared<UISlider>("B", glm::vec2(0, 255),
-        glm::vec2(0.f, 0.f), glm::vec2(356.f, 24.f));
+        glm::vec2(356.f, 24.f));
     m_bSlider->setValue(50);
     container->addElement(m_bSlider);
 
     container->addNewLine();
-    m_xField = std::make_shared<UITextField>("x", glm::vec2(0.f, 0.f), 
-        glm::vec2(170.f, 24.f));
+    auto posLabel{ std::make_shared<UIText>("Position", glm::vec2(200, 16.f)) };
+    container->addElement(posLabel);
+
+    container->addNewHalfLine();
+    m_xField = std::make_shared<UITextField>("x", glm::vec2(170.f, 24.f));
+    m_xField->setValue(0.f);
     container->addElement(m_xField);
 
-    m_yField = std::make_shared<UITextField>("y", glm::vec2(0.f, 0.f),
-        glm::vec2(170.f, 24.f));
+    m_yField = std::make_shared<UITextField>("y", glm::vec2(170.f, 24.f));
+    m_yField->setValue(0.f);
     container->addElement(m_yField);
 
     container->addNewLine();
-    m_numGenField = std::make_shared<UITextField>("Particle Density", glm::vec2(0.f, 0.f),
+    m_numGenField = std::make_shared<UITextField>("Particle Density", 
         glm::vec2(356.f, 24.f));
+    m_numGenField->setValue(30);
     container->addElement(m_numGenField);
 
     container->addNewLine();
-    m_spawnTimeField = std::make_shared<UITextField>("Time to Spawn (s)", glm::vec2(0.f, 0.f),
+    m_spawnTimeField = std::make_shared<UITextField>("Time to Spawn (s)", 
         glm::vec2(356.f, 24.f));
+    m_spawnTimeField->setValue(0.5f);
     container->addElement(m_spawnTimeField);
 
     container->addNewLine();
-    m_sizeField = std::make_shared<UITextField>("Particle Size", glm::vec2(0.f, 0.f),
+    m_sizeField = std::make_shared<UITextField>("Particle Size",
         glm::vec2(356.f, 24.f));
+    m_sizeField->setValue(32.f);
     container->addElement(m_sizeField);
 
     container->addNewLine();
-    m_durationMinField = std::make_shared<UITextField>("Min Duration", glm::vec2(0.f, 0.f),
-        glm::vec2(220.f, 24.f));
+    auto durationLabel{ std::make_shared<UIText>("Duration", glm::vec2(200, 16.f)) };
+    container->addElement(durationLabel);
+
+    container->addNewHalfLine();
+    m_durationMinField = std::make_shared<UITextField>("Min",
+        glm::vec2(170.f, 24.f));
+    m_durationMinField->setValue(2.f);
     container->addElement(m_durationMinField);
 
-    m_durationOffsetField = std::make_shared<UITextField>("Offset", glm::vec2(0.f, 0.f),
-        glm::vec2(120.f, 24.f));
-    container->addElement(m_durationOffsetField);
-
-    container->addNewLine();
-    m_velMinXField = std::make_shared<UITextField>("Min Vel x", glm::vec2(0.f, 0.f),
-        glm::vec2(220.f, 24.f));
-    container->addElement(m_velMinXField);
-
-    m_velOffsetXField = std::make_shared<UITextField>("Offset", glm::vec2(0.f, 0.f),
-        glm::vec2(120.f, 24.f));
-    container->addElement(m_velOffsetXField);
-
-    container->addNewLine();
-    m_velMinYField = std::make_shared<UITextField>("Min Vel y", glm::vec2(0.f, 0.f),
-        glm::vec2(220.f, 24.f));
-    container->addElement(m_velMinYField);
-
-    m_velOffsetYField = std::make_shared<UITextField>("Offset", glm::vec2(0.f, 0.f),
-        glm::vec2(120.f, 24.f));
-    container->addElement(m_velOffsetYField);
-
-    container->addNewLine();
-    m_accelXField = std::make_shared<UITextField>("Accel x", glm::vec2(0.f, 0.f),
+    m_durationMaxField = std::make_shared<UITextField>("Max",
         glm::vec2(170.f, 24.f));
+    m_durationMaxField->setValue(2.3f);
+    container->addElement(m_durationMaxField);
+
+    container->addNewLine();
+    auto velXLabel{ std::make_shared<UIText>("Velocity.x", glm::vec2(200, 16.f)) };
+    container->addElement(velXLabel);
+
+    container->addNewHalfLine();
+    m_velXMinField = std::make_shared<UITextField>("Min", glm::vec2(170.f, 24.f));
+    m_velXMinField->setValue(-32.f);
+    container->addElement(m_velXMinField);
+
+    m_velXMaxField = std::make_shared<UITextField>("Max", glm::vec2(170.f, 24.f));
+    m_velXMaxField->setValue(32.f);
+    container->addElement(m_velXMaxField);
+
+    container->addNewLine();
+    auto velYLabel{ std::make_shared<UIText>("Velocity.y", glm::vec2(200, 16.f)) };
+    container->addElement(velYLabel);
+
+    container->addNewHalfLine();
+    m_velYMinField = std::make_shared<UITextField>("Min", glm::vec2(170.f, 24.f));
+    m_velYMinField->setValue(-32.f);
+    container->addElement(m_velYMinField);
+
+    m_velYMaxField = std::make_shared<UITextField>("Max", glm::vec2(170.f, 24.f));
+    m_velYMaxField->setValue(32.f);
+    container->addElement(m_velYMaxField);
+
+    container->addNewLine();
+    auto accelLabel{ std::make_shared<UIText>("Acceleration", glm::vec2(200, 16.f)) };
+    container->addElement(accelLabel);
+
+    container->addNewHalfLine();
+    m_accelXField = std::make_shared<UITextField>("x", glm::vec2(170.f, 24.f));
+    m_accelXField->setValue(0.f);
     container->addElement(m_accelXField);
 
-    m_accelYField = std::make_shared<UITextField>("Accel y", glm::vec2(0.f, 0.f),
-        glm::vec2(170.f, 24.f));
+    m_accelYField = std::make_shared<UITextField>("y", glm::vec2(170.f, 24.f));
+    m_accelYField->setValue(0.f);
     container->addElement(m_accelYField);
 
     container->addToRenderer(uiRenderer.get(), textRenderer.get());
@@ -198,50 +227,68 @@ void Engine::update(float deltaTime)
     m_emitter->setColour(glm::vec3(red, green, blue));
 
     // Set position.
-    float x{ 0 };
-    m_xField->getValue(x);
-    float y{ 0 };
-    m_yField->getValue(y);
-    m_emitter->setPosition({ x, y });
+    glm::vec2 pos;
+    bool isPosX{ m_xField->getValue(pos.x) };
+    bool isPosY{ m_yField->getValue(pos.y) };
+    if (isPosX || isPosY)
+        m_emitter->setPosition(pos);
 
     // Set number of particles to generate.
-    int numToGen{ 30 };
-    m_numGenField->getValue(numToGen);
-    m_emitter->setNumToGenerate(numToGen);
+    int numToGen;
+    if (m_numGenField->getValue(numToGen))
+        m_emitter->setNumToGenerate(numToGen);
 
     // Set spawn time.
-    float spawnTime{ 0.5f };
-    m_spawnTimeField->getValue(spawnTime);
-    m_emitter->setTimeToSpawn(spawnTime);
+    float spawnTime;
+    if (m_spawnTimeField->getValue(spawnTime))
+        m_emitter->setTimeToSpawn(spawnTime);
 
     // Set velocity.
-    glm::vec2 vel{ -32.f, -32.f };
-    glm::vec2 velOffset{ 64.f, 64.f };
-    m_velMinXField->getValue(vel.x);
-    m_velMinYField->getValue(vel.y);
-    m_velOffsetXField->getValue(velOffset.x);
-    m_velOffsetYField->getValue(velOffset.x);
-    m_emitter->setVelocityMin(vel);
-    m_emitter->setVelocityOffset(velOffset);
+    glm::vec2 velMin;
+    bool isVelXMin{ m_velXMinField->getValue(velMin.x) };
+    bool isVelYMin{ m_velYMinField->getValue(velMin.y) };
+    if (isVelXMin || isVelYMin)
+        m_emitter->setVelocityMin(velMin);
+
+    // Convert max to offset.
+    glm::vec2 velMax;
+    bool isVelXMax{ m_velXMaxField->getValue(velMax.x) };
+    bool isVelYMax{ m_velYMaxField->getValue(velMax.y) };
+    if (isVelXMin || isVelYMin || isVelXMax || isVelYMax)
+    {
+        glm::vec2 velOffset{ velMax.x - velMin.x, velMax.y - velMin.y };
+        velOffset = glm::clamp(velOffset, { 0.f, 0.f }, velOffset);
+        std::cout << velOffset.x << ", " << velOffset.y << std::endl;
+        m_emitter->setVelocityOffset(velOffset);
+    }
 
     // Set acceleration.
-    glm::vec2 accel{ 0.f };
-    m_accelXField->getValue(accel.x);
-    m_accelYField->getValue(accel.y);
-    m_emitter->setAcceleration(accel);
+    glm::vec2 accel;
+    bool isAccelX{ m_accelXField->getValue(accel.x) };
+    bool isAccelY{ m_accelYField->getValue(accel.y) };
+    if (isAccelX || isAccelY)
+        m_emitter->setAcceleration(accel);
 
     // Set particle size.
-    float size{ 32.f };
-    m_sizeField->getValue(size);
-    m_emitter->setSize(size);
+    float size;
+    if (m_sizeField->getValue(size))
+        m_emitter->setSize(size);
 
     // Set duration.
-    float duration{ 2.f };
-    float durationOffset{ 0.3f };
-    m_durationMinField->getValue(duration);
-    m_durationOffsetField->getValue(durationOffset);
-    m_emitter->setDurationMin(duration);
-    m_emitter->setDurationOffset(durationOffset);
+    float durationMin;
+    bool isDurationMin{ m_durationMinField->getValue(durationMin) };
+    if (isDurationMin)
+        m_emitter->setDurationMin(durationMin);
+
+    // Convert max to offset.
+    float durationMax;
+    bool isDurationMax{ m_durationMaxField->getValue(durationMax) };
+    if (isDurationMin || isDurationMax)
+    {
+        float durationOffset{ durationMax - durationMin };
+        durationOffset = glm::clamp(durationOffset, 0.f, durationOffset);
+        m_emitter->setDurationOffset(durationOffset);
+    }
 }
 
 void Engine::render(float deltaTime)

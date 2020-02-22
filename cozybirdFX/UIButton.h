@@ -9,7 +9,7 @@ class UIButton : public IUserInterface
 {
 public:
 	UIButton(std::string label, std::function<void()> action,
-		glm::vec2 position, glm::vec2 size, 
+		glm::vec2 size, glm::vec2 position = { 0.f, 0.f },
 		glm::vec4 colour = { 0.3f, 0.3f, 0.3f, 1.f }, bool hasBorder = true);
 
 	virtual void handleInput(InputManager *inputManager);

@@ -9,8 +9,8 @@
 class UISlider : public IUserInterface
 {
 public:
-	UISlider(std::string label, glm::ivec2 range, glm::vec2 position, 
-		glm::vec2 size);
+	UISlider(std::string label, glm::ivec2 range,
+		glm::vec2 size, glm::vec2 position = { 0.f, 0.f });
 
 	virtual void handleInput(InputManager *inputManager);
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
@@ -21,11 +21,11 @@ public:
 	// Get the current value.
 	int getValue() const;
 
+private:
 	// Update the bar's value label and width.
 	void updateBar();
 
-private:
-	// The button's label.
+	// The slider's label.
 	std::string m_label;
 
 	// The range of values for this slider.

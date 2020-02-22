@@ -5,6 +5,8 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 namespace
 {
@@ -12,10 +14,12 @@ namespace
 
 	const glm::vec4 DEACTIVATED_COLOUR{ 0.1f, 0.1f, 0.1f, 1.f };
 	const glm::vec4 ACTIVATED_COLOUR{ 0.1f, 0.1f, 0.6f, 1.f };
-	const glm::vec4 ERROR_COLOUR{ 0.6f, 0.1f, 0.1f, 1.f };
+	const glm::vec4 ERROR_DEACTIVATED_COLOUR{ 0.6f, 0.1f, 0.1f, 1.f };
+	const glm::vec4 ERROR_ACTIVATED_COLOUR{ 0.9f, 0.1f, 0.1f, 1.f };
 }
 
-UITextField::UITextField(std::string label, glm::vec2 position, glm::vec2 size) :
+UITextField::UITextField(std::string label, glm::vec2 size, 
+	glm::vec2 position) :
 	IUserInterface(position, size, DEACTIVATED_COLOUR, true),
 	m_label(label)
 {
@@ -48,21 +52,24 @@ void UITextField::handleInput(InputManager *inputManager)
 		// Erase the last character from the field.
 		if (inputManager->isKeyDown(GLFW_KEY_BACKSPACE, true))
 		{
-			if (!m_value->empty())
-				m_value->erase(m_value->end() - 1);
+			if (!m_value.empty())
+				m_value.erase(m_value.end() - 1);
 		}
 		// Deactivate on enter.
 		else if (inputManager->isKeyDown(GLFW_KEY_ENTER))
 		{
 			setActivation(false, inputManager);
+			m_isNewValue = true;
 		}
 		// Read text input and append onto the field's value.
 		else
 		{
 			std::string str;
 			inputManager->flushText(str);
-			*m_value += str;
+			m_value += str;
 		}
+
+		updateUI();
 	}
 }
 
@@ -87,7 +94,7 @@ void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	val.isVerticalCenter = true;
 	val.align = TextRenderer::TextAlign::RIGHT;
 	auto valIt{ tRenderer->addText(val) };
-	m_value = &(valIt->text);
+	m_valueText = &(valIt->text);
 
 	// Add the field's bar to the renderer.
 	UIRenderer::Properties bar;
@@ -97,40 +104,86 @@ void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	bar.hasBorder = true;
 	auto barIt{ uRenderer->addElement(bar) };
 	m_uiColour = &(barIt->colour);
+
+	updateUI();
 }
 
-void UITextField::getValue(std::string &output) const
+void UITextField::setValue(const std::string &value)
 {
-	output = *m_value;
+	m_value = value;
 }
 
-void UITextField::getValue(int &output) const
+void UITextField::setValue(int value)
+{
+	m_value = std::to_string(value);
+}
+
+void UITextField::setValue(float value)
+{
+	std::stringstream ss;
+	ss << std::fixed << std::setprecision(1) << value;
+	std::string valueStr = ss.str();
+	m_value = valueStr;
+}
+
+bool UITextField::getValue(std::string &output)
+{
+	output = m_value;
+	bool isNew = m_isNewValue;
+	m_isNewValue = false;
+	return isNew;
+}
+
+bool UITextField::getValue(int &output)
 {
 	try
 	{
-		output = std::stoi(*m_value);
+		output = std::stoi(m_value);
+		m_isError = false;
+		bool isNew = m_isNewValue;
+		m_isNewValue = false;
+		return isNew;
 	}
-	catch (std::invalid_argument &)
+	catch (std::exception &)
 	{
-		//*m_uiColour = ERROR_COLOUR;
+		m_isError = true;
+		m_isNewValue = false;
+		return false;
 	}
 }
 
-void UITextField::getValue(float &output) const
+bool UITextField::getValue(float &output)
 {
 	try
 	{
-		output = std::stof(*m_value);
+		output = std::stof(m_value);
+		m_isError = false;
+		bool isNew = m_isNewValue;
+		m_isNewValue = false;
+		return isNew;
 	}
-	catch (std::invalid_argument &)
+	catch (std::exception &)
 	{
-		//*m_uiColour = ERROR_COLOUR;
+		m_isError = true;
+		m_isNewValue = false;
+		return false;
 	}
 }
 
 void UITextField::setActivation(bool isActivated, InputManager *inputManager)
 {
 	m_isActivated = isActivated;
-	*m_uiColour = isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
+
+	if (m_isError)
+		*m_uiColour = isActivated ? ERROR_ACTIVATED_COLOUR : ERROR_DEACTIVATED_COLOUR;
+	else
+		*m_uiColour = isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
+
 	inputManager->toggleTextInput(isActivated);
+}
+
+void UITextField::updateUI()
+{
+	if (m_valueText != nullptr)
+		*m_valueText = m_value;
 }

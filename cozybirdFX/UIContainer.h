@@ -23,12 +23,15 @@ public:
 
 	// Add a break so that the next element is added on a new line.
 	void addNewLine();
+	void addNewHalfLine();
 
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
 private:
 	// Adjust the size of this container based on the size of its contents.
 	void fitContents();
+
+	void addNewLine(float space);
 
 	// Hold other UI elements in this container.
 	std::vector<std::shared_ptr<IUserInterface>> m_elements;

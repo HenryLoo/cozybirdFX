@@ -34,15 +34,12 @@ void UIContainer::addElement(std::shared_ptr<IUserInterface> element)
 
 void UIContainer::addNewLine()
 {
-	if (m_elements.size() == 0 || m_hasLineBreak)
-		return;
+	addNewLine(SPACE);
+}
 
-	m_innerOffset.y += m_maxElementHeight + SPACE;
-	m_innerOffset.x = m_position.x + SPACE;
-	m_maxElementHeight = 0;
-	m_hasLineBreak = true;
-
-	fitContents();
+void UIContainer::addNewHalfLine()
+{
+	addNewLine(SPACE / 2.f);
 }
 
 void UIContainer::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
@@ -63,4 +60,17 @@ void UIContainer::fitContents()
 		m_size.x = m_maxElementWidth;
 	if (m_isFittingHeight)
 		m_size.y = m_innerOffset.y + m_maxElementHeight + SPACE;
+}
+
+void UIContainer::addNewLine(float space)
+{
+	if (m_elements.size() == 0 || m_hasLineBreak)
+		return;
+
+	m_innerOffset.y += m_maxElementHeight + space;
+	m_innerOffset.x = m_position.x + SPACE;
+	m_maxElementHeight = 0;
+	m_hasLineBreak = true;
+
+	fitContents();
 }

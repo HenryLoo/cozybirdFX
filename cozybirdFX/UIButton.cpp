@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 
 UIButton::UIButton(std::string label, std::function<void()> action,
-	glm::vec2 position, glm::vec2 size, glm::vec4 colour, bool hasBorder) :
+	glm::vec2 size, glm::vec2 position, glm::vec4 colour, bool hasBorder) :
 	IUserInterface(position, size, colour, hasBorder),
 	m_label(label), m_action(action)
 {

@@ -11,8 +11,8 @@ namespace
 	const float FILL_OFFSET{ 2.f };
 }
 
-UISlider::UISlider(std::string label, glm::ivec2 range, glm::vec2 position,
-	glm::vec2 size) : 
+UISlider::UISlider(std::string label, glm::ivec2 range, 
+	glm::vec2 size, glm::vec2 position) :
 	IUserInterface(position, size, { 0.5f, 0.5f, 0.5f, 1.f }, true),
 	m_label(label), m_range(range)
 {
