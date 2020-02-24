@@ -27,16 +27,17 @@ namespace
 Emitter::Emitter(AssetLoader *assetLoader)
 {
     // Create update shader program.
-	m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
-    glTransformFeedbackVaryings(m_updateShader->getProgramId(), 
-            NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
-	m_updateShader->link();
+    m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
+    glTransformFeedbackVaryings(m_updateShader->getProgramId(),
+        NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
+    m_updateShader->link();
 
     // Create render shader program.
     m_renderShader = assetLoader->load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
     m_renderShader->link();
 
-    glGenTransformFeedbacks(1, &m_transFeedbackBuffer);
+    //glGenTransformFeedbacks(1, &m_transFeedbackBuffer);
+    glGenBuffers(1, &m_transFeedbackBuffer);
     glGenQueries(1, &m_query);
 
     glGenBuffers(2, m_particleBuffers);
@@ -116,7 +117,8 @@ void Emitter::update(float deltaTime)
     glEnable(GL_RASTERIZER_DISCARD);
 
     // Set up transform feedback.
-    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transFeedbackBuffer);
+    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transFeedbackBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_transFeedbackBuffer);
     glBindVertexArray(m_vao[m_currentReadBuffer]);
 
     // Enable velocity attribute when updating.
@@ -142,14 +144,15 @@ void Emitter::update(float deltaTime)
     m_currentReadBuffer = 1 - m_currentReadBuffer;
 
     // Unbind the transform feedback object.
-    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Emitter::render()
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    
+
     // Disable writing to depth buffer.
     glDepthMask(0);
 

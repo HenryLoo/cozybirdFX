@@ -52,7 +52,7 @@ UIRenderer::UIRenderer(AssetLoader *assetLoader)
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat),
 		(GLvoid *)0);
-	glVertexAttribDivisor(1, 1);
+	glVertexAttribDivisorARB(1, 1);
 
 	// Configure colour buffer object.
 	glGenBuffers(2, &m_colourVBO);
@@ -60,7 +60,7 @@ UIRenderer::UIRenderer(AssetLoader *assetLoader)
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
 		(GLvoid *)0);
-	glVertexAttribDivisor(2, 1);
+	glVertexAttribDivisorARB(2, 1);
 
 	// Configure model buffer object.
 	glGenBuffers(1, &m_modelVBO);
@@ -77,10 +77,10 @@ UIRenderer::UIRenderer(AssetLoader *assetLoader)
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(glm::vec4),
 		(GLvoid *)(3 * sizeof(glm::vec4)));
-	glVertexAttribDivisor(3, 1);
-	glVertexAttribDivisor(4, 1);
-	glVertexAttribDivisor(5, 1);
-	glVertexAttribDivisor(6, 1);
+	glVertexAttribDivisorARB(3, 1);
+	glVertexAttribDivisorARB(4, 1);
+	glVertexAttribDivisorARB(5, 1);
+	glVertexAttribDivisorARB(6, 1);
 
 	// Unbind VBO and VAO.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

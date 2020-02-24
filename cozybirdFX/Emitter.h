@@ -54,11 +54,11 @@ private:
 
 	// Transform feedback buffer.
 	// This is used to hold output values from the geometry shader.
-	unsigned int m_transFeedbackBuffer;
+	unsigned int m_transFeedbackBuffer{ 0 };
 
 	// Query object.
 	// This is used to check how many particles have been emitted.
-	unsigned int m_query;
+	unsigned int m_query{ 0 };
 
 	// Use double buffers to hold particle data.
 	// Alternate between each, one used as a read buffer and the other as a write

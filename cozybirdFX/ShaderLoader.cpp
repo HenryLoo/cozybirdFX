@@ -60,7 +60,7 @@ std::shared_ptr<IAsset> ShaderLoader::interpretAsset(
     bool hasGeometryShader{ data.size() == 3 };
     if (hasGeometryShader)
     {
-        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER_ARB);
         std::string geometrySrc(data[2].buffer);
         geometrySrc = geometrySrc.substr(0, data[2].length);
         const char *geometryCSrc{ geometrySrc.c_str() };
