@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AssetLoader.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ECSComponent.h" />
     <ClInclude Include="ECSSystem.h" />
     <ClInclude Include="EditorState.h" />
@@ -156,7 +157,7 @@
     <ClInclude Include="IState.h" />
     <ClInclude Include="ITypeLoader.h" />
     <ClInclude Include="PhysicsSystem.h" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="IRenderer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="SpriteRenderer.h" />
@@ -175,6 +176,7 @@
     <ClInclude Include="UISlider.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ECSSystem.cpp" />
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Emitter.cpp" />
@@ -189,7 +191,6 @@
     <ClCompile Include="IUserInterface.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />

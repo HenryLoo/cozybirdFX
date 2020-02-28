@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AssetLoader.h"
+#include "Camera.h"
 #include "EntityManager.h"
 #include "Emitter.h"
 #include "InputManager.h"
@@ -10,7 +11,7 @@
 #include <stack>
 #include <vector>
 
-class Renderer;
+class IRenderer;
 class Font;
 class IUserInterface;
 class UISlider;
@@ -40,6 +41,9 @@ public:
 	// Get the current emitter.
 	Emitter *getEmitter() const;
 
+	// Get the window size.
+	glm::ivec2 getWindowSize() const;
+
 private:
 	// Consult the input manager to read inputs.
 	void handleInput();
@@ -54,7 +58,7 @@ private:
 	GLFWwindow *m_window{ nullptr };
 
 	// Hold all renderers.
-	std::vector<std::unique_ptr<Renderer>> m_renderers;
+	std::vector<std::unique_ptr<IRenderer>> m_renderers;
 
 	// Flag for if the window was resized.
 	bool m_hasNewWindowSize{ true };
@@ -63,9 +67,11 @@ private:
 	// This allows for easy unwinding of states.
 	std::stack<std::unique_ptr<IState>> m_states;
 
-	std::unique_ptr<AssetLoader> m_assetLoader;
-	std::unique_ptr<EntityManager> m_entityManager;
-	std::unique_ptr<InputManager> m_inputManager;
+	std::unique_ptr<Camera> m_camera{ nullptr };
 
-	std::unique_ptr<Emitter> m_emitter;
+	std::unique_ptr<AssetLoader> m_assetLoader{ nullptr };
+	std::unique_ptr<EntityManager> m_entityManager{ nullptr };
+	std::unique_ptr<InputManager> m_inputManager{ nullptr };
+
+	std::unique_ptr<Emitter> m_emitter{ nullptr };
 };

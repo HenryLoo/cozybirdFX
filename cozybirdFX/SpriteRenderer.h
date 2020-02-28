@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.h"
+#include "IRenderer.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -9,14 +9,14 @@
 
 class AssetLoader;
 
-class SpriteRenderer : public Renderer
+class SpriteRenderer : public IRenderer
 {
 public:
 	SpriteRenderer(AssetLoader *assetLoader);
 
 	virtual void update(float deltaTime);
 
-	virtual void render();
+	virtual void render(Camera *camera);
 
 	void addSprite(glm::mat4 model);
 

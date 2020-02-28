@@ -1,5 +1,6 @@
 #include "SpriteRenderer.h"
 #include "AssetLoader.h"
+#include "Camera.h"
 
 #include <glad/glad.h>
 
@@ -58,8 +59,11 @@ void SpriteRenderer::update(float deltaTime)
 
 }
 
-void SpriteRenderer::render()
+void SpriteRenderer::render(Camera *camera)
 {
+    if (camera == nullptr)
+        return;
+
     // Enable blending.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -69,10 +73,8 @@ void SpriteRenderer::render()
     m_shader->use();
     glBindVertexArray(m_VAO);
 
-    glm::mat4 view{ glm::mat4(1.0f) };
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-    glm::mat4 proj{ getPerspectiveMatrix() };
+    glm::mat4 view{ camera->getView() };
+    glm::mat4 proj{ camera->getSceneProjection() };
 
     for (auto it = m_models.begin(); it != m_models.end(); ++it)
     {

@@ -1,5 +1,6 @@
 #include "TextRenderer.h"
 #include "AssetLoader.h"
+#include "Camera.h"
 #include "Font.h"
 #include "Shader.h"
 
@@ -105,24 +106,23 @@ void TextRenderer::update(float deltaTime)
 {
 }
 
-void TextRenderer::render()
+void TextRenderer::render(Camera *camera)
 {
 	// Skip render if there is no text to draw.
 	if (m_texts.empty())
+		return;
+
+	if (camera == nullptr)
 		return;
 
 	// Set blend mode.
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Set viewport.
-	glViewport(0, 0, static_cast<GLsizei>(m_windowSize.x),
-		static_cast<GLsizei>(m_windowSize.y));
-
 	// Use orthographic projection, since we won't be needing perspective for text.
 	// This allows us to use vertex coordinates as screen coordinates.
 	m_shader->use();
-	m_shader->setMat4("projection", getOrthographicMatrix());
+	m_shader->setMat4("projection", camera->getUIProjection());
 
 	// Iterate through in-use fonts.
 	for (auto it = m_texts.begin(); it != m_texts.end(); ++it)

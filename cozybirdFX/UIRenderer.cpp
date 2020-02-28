@@ -1,5 +1,6 @@
 #include "UIRenderer.h"
 #include "AssetLoader.h"
+#include "Camera.h"
 #include "Shader.h"
 
 #include <glad/glad.h>
@@ -101,24 +102,23 @@ void UIRenderer::update(float deltaTime)
 {
 }
 
-void UIRenderer::render()
+void UIRenderer::render(Camera *camera)
 {
 	// Skip render if there are UI elements to draw.
 	if (m_elements.empty())
+		return;
+
+	if (camera == nullptr)
 		return;
 
 	// Set blend mode.
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	// Set viewport.
-	glViewport(0, 0, static_cast<GLsizei>(m_windowSize.x),
-		static_cast<GLsizei>(m_windowSize.y));
-
 	// Use orthographic projection, since we won't be needing perspective for UI.
 	// This allows us to use vertex coordinates as screen coordinates.
 	m_shader->use();
-	m_shader->setMat4("projection", getOrthographicMatrix());
+	m_shader->setMat4("projection", camera->getUIProjection());
 
 	// Instance vectors.
 	std::vector<glm::vec3> borders;

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Renderer.h"
+#include "IRenderer.h"
+
+#include <glm/glm.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -9,7 +11,7 @@ class AssetLoader;
 class Shader;
 class IUIInterface;
 
-class UIRenderer : public Renderer
+class UIRenderer : public IRenderer
 {
 public:
 	struct Properties
@@ -29,7 +31,7 @@ public:
 
 	virtual void update(float deltaTime);
 
-	virtual void render();
+	virtual void render(Camera *camera);
 
 	// Add a UI element to the list to be rendered.
 	std::list<Properties>::iterator addElement(const Properties &prop);

@@ -5,6 +5,7 @@
 #include <memory>
 
 class AssetLoader;
+class Camera;
 class Shader;
 class Texture;
 
@@ -14,7 +15,7 @@ public:
 	Emitter(AssetLoader *assetLoader);
 
 	void update(float deltaTime);
-	void render();
+	void render(Camera *camera);
 
 	void clear();
 

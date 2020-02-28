@@ -1,6 +1,8 @@
 #pragma once
 
-#include "Renderer.h"
+#include "IRenderer.h"
+
+#include <glm/glm.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -9,7 +11,7 @@ class AssetLoader;
 class Font;
 class Shader;
 
-class TextRenderer : public Renderer
+class TextRenderer : public IRenderer
 {
 public:
 	enum class TextAlign
@@ -40,7 +42,7 @@ public:
 
 	virtual void update(float deltaTime);
 
-	virtual void render();
+	virtual void render(Camera *camera);
 
 	// Add a text to the map to be rendered.
 	std::list<Properties>::iterator addText(const Properties &prop, Font *font = nullptr);

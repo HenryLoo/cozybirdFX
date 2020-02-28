@@ -34,13 +34,13 @@ Engine::Engine(GLFWwindow *window) :
     m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), 
         m_assetLoader.get());
 
+    // Instantiate the camera.
+    glm::ivec2 windowSize{ getWindowSize() };
+    m_camera = std::make_unique<Camera>(windowSize, 2.f);
+
     // TODO: Test emitter, remove this later.
     m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
     m_emitter->setTexture(m_assetLoader->load<Texture>("particle.png"));
-
-    // TODO: Test UI, remove this later.
-    glm::ivec2 windowSize;
-    glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
 
     // Default to editor state.
     EditorState *state{ new EditorState(textRenderer.get(), 
@@ -69,7 +69,8 @@ void Engine::start()
         if (m_hasNewWindowSize)
         {
             m_hasNewWindowSize = false;
-            Renderer::updateWindowSize(m_window);
+            glm::ivec2 windowSize{ getWindowSize() };
+            m_camera->setSize(windowSize);
         }
 
         double currentFrame{ glfwGetTime() };
@@ -140,11 +141,11 @@ void Engine::render(float deltaTime)
     for (const auto &renderer : m_renderers)
     {
         if (renderer != nullptr)
-            renderer->render();
+            renderer->render(m_camera.get());
     }
 
     m_emitter->update(deltaTime);
-    m_emitter->render();
+    m_emitter->render(m_camera.get());
 
     glfwSwapBuffers(m_window);
 }
@@ -157,4 +158,11 @@ void Engine::updateNewWindowSize()
 Emitter *Engine::getEmitter() const
 {
     return m_emitter.get();
+}
+
+glm::ivec2 Engine::getWindowSize() const
+{
+    glm::ivec2 windowSize;
+    glfwGetWindowSize(m_window, &windowSize.x, &windowSize.y);
+    return windowSize;
 }
