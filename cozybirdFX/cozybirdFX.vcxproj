@@ -144,6 +144,7 @@
     <ClInclude Include="AssetLoader.h" />
     <ClInclude Include="ECSComponent.h" />
     <ClInclude Include="ECSSystem.h" />
+    <ClInclude Include="EditorState.h" />
     <ClInclude Include="Emitter.h" />
     <ClInclude Include="EmitterSystem.h" />
     <ClInclude Include="Engine.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="FontLoader.h" />
     <ClInclude Include="IAsset.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="IState.h" />
     <ClInclude Include="ITypeLoader.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="Renderer.h" />
@@ -174,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ECSSystem.cpp" />
+    <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Emitter.cpp" />
     <ClCompile Include="EmitterSystem.cpp" />
     <ClCompile Include="Engine.cpp" />

@@ -43,6 +43,12 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{2e42a475-9bbd-4e0c-b3be-646804d5eb7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\States">
+      <UniqueIdentifier>{0589d33d-4604-4a0a-a32b-d3df9636814f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\States">
+      <UniqueIdentifier>{b2e09c86-7f36-47ed-8692-4dc2609f65f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -135,6 +141,12 @@
     <ClInclude Include="UIText.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="IState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -220,6 +232,9 @@
     </ClCompile>
     <ClCompile Include="UIText.cpp">
       <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorState.cpp">
+      <Filter>Source Files\States</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
