@@ -2,12 +2,15 @@
 
 #include "IState.h"
 
+#include <glm/glm.hpp>
+
 #include <memory>
 #include <vector>
 
 class TextRenderer;
 class UIRenderer;
 class IUserInterface;
+class UIContainer;
 class UISlider;
 class UITextField;
 
@@ -21,8 +24,15 @@ public:
 	virtual void update(Engine *engine, float deltaTime);
 
 private:
+	// Store the current window size.
+	// Use this to detect window size changes and then rescale UI.
+	glm::vec2 m_windowSize{ 0.f };
+
 	// UI Elements for editing emitters.
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
+	std::shared_ptr<UIContainer> m_topPanel;
+	std::shared_ptr<UIContainer> m_bottomPanel;
+	std::shared_ptr<UIContainer> m_sidePanel;
 	std::shared_ptr<UISlider> m_rSlider;
 	std::shared_ptr<UISlider> m_gSlider;
 	std::shared_ptr<UISlider> m_bSlider;

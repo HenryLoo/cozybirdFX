@@ -1,10 +1,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "UIRenderer.h"
 
 class InputManager;
 class TextRenderer;
-class UIRenderer;
 
 class IUserInterface
 {
@@ -15,7 +15,10 @@ public:
 	virtual void handleInput(InputManager *inputManager) = 0;
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
-	void setOffset(glm::vec2 offset);
+	// Setter functions.
+	virtual void setPosition(glm::vec2 position);
+	virtual void setSize(glm::vec2 size);
+	virtual void setOffset(glm::vec2 offset);
 
 	// Getter functions.
 	glm::vec2 getPosition() const;
@@ -41,4 +44,8 @@ protected:
 
 	// Flag for if any element is clicked.
 	static bool m_isClicked;
+
+	// Pointer to this element's UI properties.
+	// This is to allow for dynamically updating values.
+	UIRenderer::Properties *m_uiProperties{ nullptr };
 };

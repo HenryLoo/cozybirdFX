@@ -1,6 +1,5 @@
 #include "UIButton.h"
 #include "InputManager.h"
-#include "TextRenderer.h"
 
 #include <GLFW/glfw3.h>
 
@@ -36,5 +35,17 @@ void UIButton::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	prop.size = m_size;
 	prop.isVerticalCenter = true;
 	prop.align = TextRenderer::TextAlign::CENTER;
-	tRenderer->addText(prop);
+	auto it{ tRenderer->addText(prop) };
+	m_tProperties = &*it;
+}
+
+void UIButton::setPosition(glm::vec2 position)
+{
+	glm::vec2 oldPos{ m_position };
+	IUserInterface::setPosition(position);
+
+	// Reposition the button's label.
+	glm::vec2 diff{ m_position - oldPos };
+	if (m_tProperties != nullptr)
+		m_tProperties->pos += diff;
 }

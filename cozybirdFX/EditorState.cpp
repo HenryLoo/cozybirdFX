@@ -7,123 +7,155 @@
 #include "UITextField.h"
 #include "UIText.h"
 
+#include <GLFW/glfw3.h>
+
 EditorState::EditorState(TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
-    auto container{ std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(-1.f, -1.f)) };
-    //auto button{ std::make_shared<UIButton>("Button", 
-    //    []() { std::cout << "Clicked" << std::endl; },
-    //    glm::vec2(0.f, 0.f), glm::vec2(100.f, 32.f)) };
-    //container->addElement(button);
+    m_topPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
+        glm::vec2(0.f, -1.f));
+
+    glm::vec2 buttonSize{ glm::vec2(100.f, 32.f) };
+    auto fileButton{ std::make_shared<UIButton>("File", 
+        []() { std::cout << "File" << std::endl; },
+        buttonSize) };
+    m_topPanel->addElement(fileButton);
+
+    auto editButton{ std::make_shared<UIButton>("Edit",
+        []() { std::cout << "Edit" << std::endl; },
+        buttonSize) };
+    m_topPanel->addElement(editButton);
+
+    m_topPanel->addToRenderer(uRenderer, tRenderer);
+    m_uiElements.push_back(m_topPanel);
+
+    glm::vec2 topSize{ m_topPanel->getSize() };
+    m_bottomPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
+        glm::vec2(0.f, -1.f));
+
+    auto playButton{ std::make_shared<UIButton>("Play",
+        []() { std::cout << "Play" << std::endl; },
+        buttonSize) };
+    m_bottomPanel->addElement(playButton);
+
+    auto pauseButton{ std::make_shared<UIButton>("Pause",
+        []() { std::cout << "Pause" << std::endl; },
+        buttonSize) };
+    m_bottomPanel->addElement(pauseButton);
+
+    m_bottomPanel->addToRenderer(uRenderer, tRenderer);
+    m_uiElements.push_back(m_bottomPanel);
+
+    m_sidePanel = std::make_shared<UIContainer>(glm::vec2(0.f, topSize.y + 1.f),
+        glm::vec2(-1.f, 0.f));
 
     auto colourLabel{ std::make_shared<UIText>("Colour", glm::vec2(200, 16.f)) };
-    container->addElement(colourLabel);
+    m_sidePanel->addElement(colourLabel);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_rSlider = std::make_shared<UISlider>("R", glm::vec2(0, 255),
         glm::vec2(356.f, 24.f));
     m_rSlider->setValue(50);
-    container->addElement(m_rSlider);
+    m_sidePanel->addElement(m_rSlider);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_gSlider = std::make_shared<UISlider>("G", glm::vec2(0, 255),
         glm::vec2(356.f, 24.f));
     m_gSlider->setValue(50);
-    container->addElement(m_gSlider);
+    m_sidePanel->addElement(m_gSlider);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_bSlider = std::make_shared<UISlider>("B", glm::vec2(0, 255),
         glm::vec2(356.f, 24.f));
     m_bSlider->setValue(50);
-    container->addElement(m_bSlider);
+    m_sidePanel->addElement(m_bSlider);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     auto posLabel{ std::make_shared<UIText>("Position", glm::vec2(200, 16.f)) };
-    container->addElement(posLabel);
+    m_sidePanel->addElement(posLabel);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_xField = std::make_shared<UITextField>("x", glm::vec2(170.f, 24.f));
     m_xField->setValue(0.f);
-    container->addElement(m_xField);
+    m_sidePanel->addElement(m_xField);
 
     m_yField = std::make_shared<UITextField>("y", glm::vec2(170.f, 24.f));
     m_yField->setValue(0.f);
-    container->addElement(m_yField);
+    m_sidePanel->addElement(m_yField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     m_numGenField = std::make_shared<UITextField>("Particle Density",
         glm::vec2(356.f, 24.f));
     m_numGenField->setValue(30);
-    container->addElement(m_numGenField);
+    m_sidePanel->addElement(m_numGenField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     m_spawnTimeField = std::make_shared<UITextField>("Time to Spawn (s)",
         glm::vec2(356.f, 24.f));
     m_spawnTimeField->setValue(0.5f);
-    container->addElement(m_spawnTimeField);
+    m_sidePanel->addElement(m_spawnTimeField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     m_sizeField = std::make_shared<UITextField>("Particle Size",
         glm::vec2(356.f, 24.f));
     m_sizeField->setValue(32.f);
-    container->addElement(m_sizeField);
+    m_sidePanel->addElement(m_sizeField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     auto durationLabel{ std::make_shared<UIText>("Duration", glm::vec2(200, 16.f)) };
-    container->addElement(durationLabel);
+    m_sidePanel->addElement(durationLabel);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_durationMinField = std::make_shared<UITextField>("Min",
         glm::vec2(170.f, 24.f));
     m_durationMinField->setValue(2.f);
-    container->addElement(m_durationMinField);
+    m_sidePanel->addElement(m_durationMinField);
 
     m_durationMaxField = std::make_shared<UITextField>("Max",
         glm::vec2(170.f, 24.f));
     m_durationMaxField->setValue(2.3f);
-    container->addElement(m_durationMaxField);
+    m_sidePanel->addElement(m_durationMaxField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     auto velXLabel{ std::make_shared<UIText>("Velocity.x", glm::vec2(200, 16.f)) };
-    container->addElement(velXLabel);
+    m_sidePanel->addElement(velXLabel);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_velXMinField = std::make_shared<UITextField>("Min", glm::vec2(170.f, 24.f));
     m_velXMinField->setValue(-32.f);
-    container->addElement(m_velXMinField);
+    m_sidePanel->addElement(m_velXMinField);
 
     m_velXMaxField = std::make_shared<UITextField>("Max", glm::vec2(170.f, 24.f));
     m_velXMaxField->setValue(32.f);
-    container->addElement(m_velXMaxField);
+    m_sidePanel->addElement(m_velXMaxField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     auto velYLabel{ std::make_shared<UIText>("Velocity.y", glm::vec2(200, 16.f)) };
-    container->addElement(velYLabel);
+    m_sidePanel->addElement(velYLabel);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_velYMinField = std::make_shared<UITextField>("Min", glm::vec2(170.f, 24.f));
     m_velYMinField->setValue(-32.f);
-    container->addElement(m_velYMinField);
+    m_sidePanel->addElement(m_velYMinField);
 
     m_velYMaxField = std::make_shared<UITextField>("Max", glm::vec2(170.f, 24.f));
     m_velYMaxField->setValue(32.f);
-    container->addElement(m_velYMaxField);
+    m_sidePanel->addElement(m_velYMaxField);
 
-    container->addNewLine();
+    m_sidePanel->addNewLine();
     auto accelLabel{ std::make_shared<UIText>("Acceleration", glm::vec2(200, 16.f)) };
-    container->addElement(accelLabel);
+    m_sidePanel->addElement(accelLabel);
 
-    container->addNewHalfLine();
+    m_sidePanel->addNewHalfLine();
     m_accelXField = std::make_shared<UITextField>("x", glm::vec2(170.f, 24.f));
     m_accelXField->setValue(0.f);
-    container->addElement(m_accelXField);
+    m_sidePanel->addElement(m_accelXField);
 
     m_accelYField = std::make_shared<UITextField>("y", glm::vec2(170.f, 24.f));
     m_accelYField->setValue(0.f);
-    container->addElement(m_accelYField);
+    m_sidePanel->addElement(m_accelYField);
 
-    container->addToRenderer(uRenderer, tRenderer);
-    m_uiElements.push_back(container);
+    m_sidePanel->addToRenderer(uRenderer, tRenderer);
+    m_uiElements.push_back(m_sidePanel);
 }
 
 void EditorState::handleInput(InputManager *inputManager)
@@ -138,6 +170,21 @@ void EditorState::update(Engine *engine, float deltaTime)
 {
     if (engine == nullptr)
         return;
+
+    // If window size changed, rescale UI.
+    glm::vec2 windowSize{ engine->getWindowSize() };
+    if (m_windowSize != windowSize)
+    {
+        m_windowSize = windowSize;
+        m_topPanel->setSize(glm::vec2(windowSize.x, -1.f));
+
+        glm::vec2 topSize{ m_topPanel->getSize() };
+        m_bottomPanel->setSize(glm::vec2(windowSize.x, -1.f));
+        m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - topSize.y));
+
+        glm::vec2 bottomSize{ m_bottomPanel->getSize() };
+        m_sidePanel->setSize(glm::vec2(-1.f, windowSize.y - topSize.y - bottomSize.y - 2.f));
+    }
 
     // Update emitter with UI values.
     Emitter *emitter{ engine->getEmitter() };
@@ -212,4 +259,11 @@ void EditorState::update(Engine *engine, float deltaTime)
         durationOffset = glm::clamp(durationOffset, 0.f, durationOffset);
         emitter->setDurationOffset(durationOffset);
     }
+
+    // Set viewport for the scene.
+    glm::ivec2 topSize{ m_topPanel->getSize() };
+    glm::ivec2 bottomSize{ m_bottomPanel->getSize() };
+    glm::ivec2 sideSize{ m_sidePanel->getSize() };
+    glViewport(sideSize.x, topSize.y, (int) windowSize.x - sideSize.x, 
+        (int) windowSize.y - topSize.y - bottomSize.y);
 }

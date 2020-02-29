@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IUserInterface.h"
+#include "TextRenderer.h"
 
 #include <functional>
 #include <string>
@@ -15,10 +16,16 @@ public:
 	virtual void handleInput(InputManager *inputManager);
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
+	virtual void setPosition(glm::vec2 position);
+
 private:
 	// Call this function when the button is clicked.
 	std::function<void()> m_action;
 
 	// The button's label.
 	std::string m_label;
+
+	// Pointer to the label's text property.
+	// This allows for dynamic changes.
+	TextRenderer::Properties *m_tProperties;
 };

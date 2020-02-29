@@ -54,6 +54,25 @@ void UIContainer::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	}
 }
 
+void UIContainer::setPosition(glm::vec2 position)
+{
+	glm::vec2 oldPos{ m_position };
+	IUserInterface::setPosition(position);
+
+	// Reposition the container elements.
+	glm::vec2 diff{ m_position - oldPos };
+	for (const auto &element : m_elements)
+	{
+		glm::vec2 elementPos{ element->getPosition() };
+		element->setPosition(elementPos + diff);
+	}
+}
+
+void UIContainer::setSize(glm::vec2 size)
+{
+	IUserInterface::setSize(size);
+}
+
 void UIContainer::fitContents()
 {
 	if (m_isFittingWidth)

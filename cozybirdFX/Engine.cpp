@@ -137,15 +137,19 @@ void Engine::render(float deltaTime)
     glClearColor(0.f, 0.f, 0.f, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    m_emitter->update(deltaTime);
+    m_emitter->render(m_camera.get());
+
+    // Reset viewport.
+    glm::ivec2 windowSize{ getWindowSize() };
+    glViewport(0, 0, windowSize.x, windowSize.y);
+
     // Call render for all renderers.
     for (const auto &renderer : m_renderers)
     {
         if (renderer != nullptr)
             renderer->render(m_camera.get());
     }
-
-    m_emitter->update(deltaTime);
-    m_emitter->render(m_camera.get());
 
     glfwSwapBuffers(m_window);
 }

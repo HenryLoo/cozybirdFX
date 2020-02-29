@@ -1,5 +1,4 @@
 #include "IUserInterface.h"
-#include "UIRenderer.h"
 
 bool IUserInterface::m_isClicked{ false };
 
@@ -19,8 +18,33 @@ void IUserInterface::addToRenderer(UIRenderer *uRenderer,
 		prop.size = m_size;
 		prop.colour = m_colour;
 		prop.hasBorder = m_hasBorder;
-		uRenderer->addElement(prop);
+		auto it{ uRenderer->addElement(prop) };
+		m_uiProperties = &*it;
 	}
+}
+
+void IUserInterface::setPosition(glm::vec2 position)
+{
+	if (position.x != -1.f)
+		m_position.x = position.x;
+
+	if (position.y != -1.f)
+		m_position.y = position.y;
+
+	if (m_uiProperties != nullptr)
+		m_uiProperties->pos = m_position + m_offset;
+}
+
+void IUserInterface::setSize(glm::vec2 size)
+{
+	if (size.x != -1.f)
+		m_size.x = size.x;
+
+	if (size.y != -1.f)
+		m_size.y = size.y;
+
+	if (m_uiProperties != nullptr)
+		m_uiProperties->size = m_size;
 }
 
 void IUserInterface::setOffset(glm::vec2 offset)

@@ -27,6 +27,9 @@ public:
 
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
+	virtual void setPosition(glm::vec2 position);
+	virtual void setSize(glm::vec2 size);
+
 private:
 	// Adjust the size of this container based on the size of its contents.
 	void fitContents();
