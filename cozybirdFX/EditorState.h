@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+class Engine;
 class TextRenderer;
 class UIRenderer;
 class IUserInterface;
@@ -17,7 +18,7 @@ class UITextField;
 class EditorState : public IState
 {
 public:
-	EditorState(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer);
 
 	virtual void handleInput(InputManager *inputManager);
 

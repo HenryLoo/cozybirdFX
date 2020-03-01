@@ -1,5 +1,6 @@
 #include "EditorState.h"
 #include "Engine.h"
+#include "Texture.h"
 
 #include "UIContainer.h"
 #include "UIButton.h"
@@ -9,14 +10,19 @@
 
 #include <GLFW/glfw3.h>
 
-EditorState::EditorState(TextRenderer *tRenderer, UIRenderer *uRenderer)
+
+EditorState::EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
     m_topPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(0.f, -1.f));
 
     glm::vec2 buttonSize{ glm::vec2(100.f, 32.f) };
     auto fileButton{ std::make_shared<UIButton>("File", 
-        []() { std::cout << "File" << std::endl; },
+        [engine]()
+        { 
+            std::cout << "File" << std::endl;
+            engine->m_isOutput = true;
+        },
         buttonSize) };
     m_topPanel->addElement(fileButton);
 
@@ -264,6 +270,10 @@ void EditorState::update(Engine *engine, float deltaTime)
     glm::ivec2 topSize{ m_topPanel->getSize() };
     glm::ivec2 bottomSize{ m_bottomPanel->getSize() };
     glm::ivec2 sideSize{ m_sidePanel->getSize() };
-    glViewport(sideSize.x, topSize.y, (int) windowSize.x - sideSize.x, 
-        (int) windowSize.y - topSize.y - bottomSize.y);
+    glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x, 
+        (int)windowSize.y - topSize.y - bottomSize.y };
+    if (!engine->m_isOutput)
+        glViewport(sideSize.x, topSize.y, viewportSize.x, viewportSize.y);
+    else
+        glViewport(0, 0, 400, 400);
 }

@@ -13,6 +13,10 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 Engine::Engine(GLFWwindow *window) :
     m_window(window)
 {
@@ -43,7 +47,7 @@ Engine::Engine(GLFWwindow *window) :
     m_emitter->setTexture(m_assetLoader->load<Texture>("particle.png"));
 
     // Default to editor state.
-    EditorState *state{ new EditorState(textRenderer.get(), 
+    EditorState *state{ new EditorState(this, textRenderer.get(), 
         uiRenderer.get()) };
     pushState(state);
 
@@ -134,15 +138,40 @@ void Engine::update(float deltaTime)
 
 void Engine::render(float deltaTime)
 {
-    glClearColor(0.f, 0.f, 0.f, 1.0);
+    glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_emitter->update(deltaTime);
-    m_emitter->render(m_camera.get());
+    m_emitter->render(m_camera.get(), m_isOutput);
+
+    if (m_isOutput)
+    {
+        // Write the room's tiles texture.
+        Emitter *emitter{ getEmitter() };
+        Texture *texture{ emitter->getOutputTexture() };
+        if (texture != nullptr)
+        {
+            texture->bind();
+            glm::ivec2 size{ texture->getWidth(), texture->getHeight() };
+            int numChannels{ texture->getNumChannels() };
+
+            stbi_uc *data{ new stbi_uc[size.x * size.y * numChannels] };
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            stbi_flip_vertically_on_write(true);
+            std::string output{ "output.png" };
+            stbi_write_png(output.c_str(), size.x, size.y, numChannels, data, 0);
+
+            delete[] data;
+        }
+    }
 
     // Reset viewport.
-    glm::ivec2 windowSize{ getWindowSize() };
-    glViewport(0, 0, windowSize.x, windowSize.y);
+    if (!m_isOutput)
+    {
+        glm::ivec2 windowSize{ getWindowSize() };
+        glViewport(0, 0, windowSize.x, windowSize.y);
+    }
+    m_isOutput = false;
 
     // Call render for all renderers.
     for (const auto &renderer : m_renderers)

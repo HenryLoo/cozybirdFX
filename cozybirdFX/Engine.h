@@ -44,6 +44,7 @@ public:
 	// Get the window size.
 	glm::ivec2 getWindowSize() const;
 
+	bool m_isOutput{ false };
 private:
 	// Consult the input manager to read inputs.
 	void handleInput();

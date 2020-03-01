@@ -6,6 +6,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <random>
 
 namespace
@@ -78,6 +79,9 @@ Emitter::Emitter(AssetLoader *assetLoader)
         glEnableVertexAttribArray(5);
         glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(9 * sizeof(float)));
     }
+
+    // Set up buffers for rendering to texture.
+    createFramebuffer();
 }
 
 void Emitter::update(float deltaTime)
@@ -96,8 +100,12 @@ void Emitter::update(float deltaTime)
     m_updateShader->setFloat("emSize", m_size);
 
     // Set the seed.
-    std::random_device randdev;
-    std::mt19937 generator(randdev());
+    //std::random_device randdev;
+    //std::mt19937 generator(randdev());
+    std::mt19937 generator(static_cast<unsigned int>(m_currentTime));
+    m_currentTime += deltaTime;
+    if (m_currentTime >= m_emitterDuration)
+        m_currentTime = 0.f;
     std::uniform_real_distribution<> distrib(-1, 1);
     m_updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
@@ -149,7 +157,7 @@ void Emitter::update(float deltaTime)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Emitter::render(Camera *camera)
+void Emitter::render(Camera *camera, bool isOutput)
 {
     if (camera == nullptr)
         return;
@@ -167,6 +175,16 @@ void Emitter::render(Camera *camera)
     // Get camera matrices.
     glm::mat4 view{ camera->getView() };
     glm::mat4 proj{ camera->getSceneProjection() };
+
+    if (isOutput)
+    {
+        view = glm::mat4(1.f);
+        glm::vec2 halfClipSize{ m_clipSize.x / 2.f, m_clipSize.y / 2.f };
+        proj = glm::ortho(
+            -halfClipSize.x, halfClipSize.x,
+            -halfClipSize.y, halfClipSize.y,
+            -1000.f, 1000.f);
+    }
 
     glm::mat4 mvp = proj * view;
     m_renderShader->setMat4("mvp", mvp);
@@ -187,9 +205,16 @@ void Emitter::render(Camera *camera)
 
     // Render the particles.
     m_texture->bind();
+    if (isOutput)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
     glDrawArrays(GL_POINTS, 0, m_numParticles);
 
     // Reset configurations after rendering.
+    if (isOutput)
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDepthMask(1);
     glDisable(GL_BLEND);
 }
@@ -201,6 +226,11 @@ void Emitter::clear()
 int Emitter::getNumParticles() const
 {
     return m_numParticles;
+}
+
+Texture *Emitter::getOutputTexture() const
+{
+    return m_outputTexture.get();
 }
 
 void Emitter::setTexture(std::shared_ptr<Texture> texture)
@@ -256,4 +286,32 @@ void Emitter::setDurationMin(float duration)
 void Emitter::setDurationOffset(float duration)
 {
     m_durationOffset = duration;
+}
+
+void Emitter::createFramebuffer()
+{
+    // Delete any existing old buffers.
+    if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+
+    // Set up buffers for rendering to texture.
+    glGenFramebuffers(1, &m_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+    unsigned int outputTexture;
+    glGenTextures(1, &outputTexture);
+    glBindTexture(GL_TEXTURE_2D, outputTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_clipSize.x, m_clipSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outputTexture, 0);
+    m_outputTexture = std::make_shared<Texture>(outputTexture, m_clipSize.x, m_clipSize.y, 4);
+
+    // Check if the framebuffer is complete.
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << "Emitter::createFramebuffer: Framebuffer not complete." << std::endl;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

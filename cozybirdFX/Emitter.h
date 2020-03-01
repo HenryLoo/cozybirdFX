@@ -15,11 +15,13 @@ public:
 	Emitter(AssetLoader *assetLoader);
 
 	void update(float deltaTime);
-	void render(Camera *camera);
+	void render(Camera *camera, bool isOutput = false);
 
 	void clear();
 
 	int getNumParticles() const;
+
+	Texture *getOutputTexture() const;
 
 	// Property setters.
 	void setTexture(std::shared_ptr<Texture> texture);
@@ -33,6 +35,8 @@ public:
 	void setColour(glm::vec3 colour);
 	void setDurationMin(float duration);
 	void setDurationOffset(float duration);
+
+	void createFramebuffer();
 
 private:
 	enum ParticleType
@@ -105,6 +109,17 @@ private:
 	float m_durationMin{ 1.f };
 	float m_durationOffset{ 0.5f };
 
+	// The duration of the emitter's animation.
+	float m_currentTime{ 0.f };
+	float m_emitterDuration{ 3.f };
+
 	std::shared_ptr<Shader> m_updateShader{ nullptr };
 	std::shared_ptr<Shader> m_renderShader{ nullptr };
+
+	// Buffers for rendering to texture.
+	unsigned int m_fbo;
+	std::shared_ptr<Texture> m_outputTexture{ nullptr };
+	unsigned int m_rbo;
+
+	glm::ivec2 m_clipSize{ 400.f, 400.f };
 };

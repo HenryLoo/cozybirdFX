@@ -36,3 +36,8 @@ int Texture::getHeight() const
 {
     return m_height;
 }
+
+int Texture::getNumChannels() const
+{
+    return m_numChannels;
+}

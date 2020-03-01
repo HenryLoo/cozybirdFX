@@ -14,6 +14,7 @@ public:
 	// Getter functions.
 	int getWidth() const;
 	int getHeight() const;
+	int getNumChannels() const;
 
 private:
 	// This texture's id.
