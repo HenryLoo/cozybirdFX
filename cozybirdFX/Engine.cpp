@@ -142,36 +142,11 @@ void Engine::render(float deltaTime)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     m_emitter->update(deltaTime);
-    m_emitter->render(m_camera.get(), m_isOutput);
-
-    if (m_isOutput)
-    {
-        // Write the room's tiles texture.
-        Emitter *emitter{ getEmitter() };
-        Texture *texture{ emitter->getOutputTexture() };
-        if (texture != nullptr)
-        {
-            texture->bind();
-            glm::ivec2 size{ texture->getWidth(), texture->getHeight() };
-            int numChannels{ texture->getNumChannels() };
-
-            stbi_uc *data{ new stbi_uc[size.x * size.y * numChannels] };
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-            stbi_flip_vertically_on_write(true);
-            std::string output{ "output.png" };
-            stbi_write_png(output.c_str(), size.x, size.y, numChannels, data, 0);
-
-            delete[] data;
-        }
-    }
+    m_emitter->render(m_camera.get());
 
     // Reset viewport.
-    if (!m_isOutput)
-    {
-        glm::ivec2 windowSize{ getWindowSize() };
-        glViewport(0, 0, windowSize.x, windowSize.y);
-    }
-    m_isOutput = false;
+    glm::ivec2 windowSize{ getWindowSize() };
+    glViewport(0, 0, windowSize.x, windowSize.y);
 
     // Call render for all renderers.
     for (const auto &renderer : m_renderers)
@@ -198,4 +173,27 @@ glm::ivec2 Engine::getWindowSize() const
     glm::ivec2 windowSize;
     glfwGetWindowSize(m_window, &windowSize.x, &windowSize.y);
     return windowSize;
+}
+
+void Engine::exportSpriteSheet()
+{
+    // Draw to framebuffer's texture.
+    m_emitter->outputToTexture();
+
+    // Write image from the texture.
+    Texture *texture{ m_emitter->getOutputTexture() };
+    if (texture != nullptr)
+    {
+        texture->bind();
+        glm::ivec2 size{ texture->getWidth(), texture->getHeight() };
+        int numChannels{ texture->getNumChannels() };
+
+        stbi_uc *data{ new stbi_uc[size.x * size.y * numChannels] };
+        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        stbi_flip_vertically_on_write(true);
+        std::string output{ "output.png" };
+        stbi_write_png(output.c_str(), size.x, size.y, numChannels, data, 0);
+
+        delete[] data;
+    }
 }

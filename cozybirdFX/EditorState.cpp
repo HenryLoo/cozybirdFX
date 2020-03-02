@@ -21,7 +21,7 @@ EditorState::EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uR
         [engine]()
         { 
             std::cout << "File" << std::endl;
-            engine->m_isOutput = true;
+            engine->exportSpriteSheet();
         },
         buttonSize) };
     m_topPanel->addElement(fileButton);
@@ -272,8 +272,5 @@ void EditorState::update(Engine *engine, float deltaTime)
     glm::ivec2 sideSize{ m_sidePanel->getSize() };
     glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x, 
         (int)windowSize.y - topSize.y - bottomSize.y };
-    if (!engine->m_isOutput)
-        glViewport(sideSize.x, topSize.y, viewportSize.x, viewportSize.y);
-    else
-        glViewport(0, 0, 400, 400);
+    glViewport(sideSize.x, topSize.y, viewportSize.x, viewportSize.y);
 }

@@ -44,7 +44,9 @@ public:
 	// Get the window size.
 	glm::ivec2 getWindowSize() const;
 
-	bool m_isOutput{ false };
+	// Prepare to export the current emitter effects as a sprite sheet.
+	void exportSpriteSheet();
+
 private:
 	// Consult the input manager to read inputs.
 	void handleInput();

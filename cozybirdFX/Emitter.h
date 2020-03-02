@@ -15,7 +15,7 @@ public:
 	Emitter(AssetLoader *assetLoader);
 
 	void update(float deltaTime);
-	void render(Camera *camera, bool isOutput = false);
+	void render(Camera *camera);
 
 	void clear();
 
@@ -36,7 +36,7 @@ public:
 	void setDurationMin(float duration);
 	void setDurationOffset(float duration);
 
-	void createFramebuffer();
+	void outputToTexture();
 
 private:
 	enum ParticleType
@@ -56,6 +56,10 @@ private:
 		// This is the integer representation of ParticleType.
 		int type;
 	};
+
+	void render();
+
+	void createFramebuffer(glm::ivec2 textureSize);
 
 	// Transform feedback buffer.
 	// This is used to hold output values from the geometry shader.
