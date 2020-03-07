@@ -43,6 +43,7 @@ void UITextField::handleInput(InputManager *inputManager)
 	else if (m_isActivated && inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
 		setActivation(false, inputManager);
+		m_isNewValue = true;
 	}
 
 	// Handle text input if field is activated.

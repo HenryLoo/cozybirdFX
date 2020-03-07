@@ -35,6 +35,11 @@ glm::mat4 Camera::getView() const
 	return m_view;
 }
 
+float Camera::getZoom() const
+{
+	return m_zoom;
+}
+
 glm::mat4 Camera::getUIProjection() const
 {
 	return m_uiProj;
@@ -49,7 +54,7 @@ void Camera::updateView()
 {
 	glm::mat4 view{ glm::mat4(1.0f) };
 	view = glm::translate(view, 
-		glm::vec3(m_position.x, m_position.y, -3.0f));
+		glm::vec3(m_position.x, m_position.y,  0.f));
 
 	m_view = view;
 }

@@ -12,7 +12,9 @@ public:
 	void setSize(glm::vec2 size);
 	void setZoom(float zoom);
 
+	// Getter functions.
 	glm::mat4 getView() const;
+	float getZoom() const;
 
 	// Get projection matrices.
 	glm::mat4 getUIProjection() const;
@@ -30,7 +32,7 @@ private:
 	glm::vec2 m_size{ 0.f };
 
 	// The scale value for how zoomed in the camera is.
-	float m_zoom{ 2.f };
+	float m_zoom{ 1.f };
 
 	// Hold the view matrix to avoid recalculating.
 	glm::mat4 m_view{ 1.f };

@@ -33,17 +33,15 @@ private:
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
 	std::shared_ptr<UIContainer> m_topLeftPanel;
 	std::shared_ptr<UIContainer> m_topRightPanel;
-	std::shared_ptr<UIContainer> m_particlesPanel;
-	std::shared_ptr<UIContainer> m_visualsPanel;
-	std::shared_ptr<UIContainer> m_movementPanel;
 	std::shared_ptr<UIContainer> m_bottomPanel;
-	std::shared_ptr<UISlider> m_rSlider;
-	std::shared_ptr<UISlider> m_gSlider;
-	std::shared_ptr<UISlider> m_bSlider;
+
+	// Particles panel elements.
+	std::shared_ptr<UIContainer> m_particlesPanel;
 	std::shared_ptr<UITextField> m_xField;
 	std::shared_ptr<UITextField> m_yField;
 	std::shared_ptr<UITextField> m_numGenField;
 	std::shared_ptr<UITextField> m_spawnTimeField;
+	std::shared_ptr<UITextField> m_delayField;
 	std::shared_ptr<UITextField> m_velXMinField;
 	std::shared_ptr<UITextField> m_velXMaxField;
 	std::shared_ptr<UITextField> m_velYMinField;
@@ -53,4 +51,36 @@ private:
 	std::shared_ptr<UITextField> m_sizeField;
 	std::shared_ptr<UITextField> m_durationMinField;
 	std::shared_ptr<UITextField> m_durationMaxField;
+
+	// Visuals panel elements.
+	std::shared_ptr<UIContainer> m_visualsPanel;
+	std::shared_ptr<UISlider> m_rSlider;
+	std::shared_ptr<UISlider> m_gSlider;
+	std::shared_ptr<UISlider> m_bSlider;
+	std::shared_ptr<UISlider> m_birthRSlider;
+	std::shared_ptr<UISlider> m_birthGSlider;
+	std::shared_ptr<UISlider> m_birthBSlider;
+	std::shared_ptr<UISlider> m_deathRSlider;
+	std::shared_ptr<UISlider> m_deathGSlider;
+	std::shared_ptr<UISlider> m_deathBSlider;
+
+	// Movement panel elements.
+	std::shared_ptr<UIContainer> m_movementPanel;
+	std::shared_ptr<UITextField> m_particleSpeedField;
+	std::shared_ptr<UITextField> m_hSinAmountField;
+	std::shared_ptr<UITextField> m_hSinPeriodField;
+	std::shared_ptr<UITextField> m_vSinAmountField;
+	std::shared_ptr<UITextField> m_vSinPeriodField;
+	std::shared_ptr<UITextField> m_circleAmountField;
+	std::shared_ptr<UITextField> m_circlePeriodField;
+
+	// Emitters panel elements.
+	std::shared_ptr<UIContainer> m_emittersPanel;
+
+	// Render panel elements.
+	std::shared_ptr<UIContainer> m_renderPanel;
+	std::shared_ptr<UITextField> m_clipXField;
+	std::shared_ptr<UITextField> m_clipYField;
+	std::shared_ptr<UITextField> m_durationField;
+	std::shared_ptr<UITextField> m_fpsField;
 };

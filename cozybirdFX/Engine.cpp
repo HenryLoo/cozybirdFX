@@ -40,7 +40,7 @@ Engine::Engine(GLFWwindow *window) :
 
     // Instantiate the camera.
     glm::ivec2 windowSize{ getWindowSize() };
-    m_camera = std::make_unique<Camera>(windowSize, 2.f);
+    m_camera = std::make_unique<Camera>(windowSize, 1.f);
 
     // TODO: Test emitter, remove this later.
     m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
