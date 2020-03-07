@@ -107,6 +107,20 @@ void UISlider::setPosition(glm::vec2 position)
 		m_valProperties->pos += diff;
 }
 
+void UISlider::setEnabled(bool isEnabled)
+{
+	IUserInterface::setEnabled(isEnabled);
+
+	if (m_fillProperties != nullptr)
+		m_fillProperties->isEnabled = isEnabled;
+
+	if (m_labelProperties != nullptr)
+		m_labelProperties->isEnabled = isEnabled;
+
+	if (m_valProperties != nullptr)
+		m_valProperties->isEnabled = isEnabled;
+}
+
 void UISlider::setValue(int value)
 {
 	m_value = glm::clamp(value, m_range.x, m_range.y);

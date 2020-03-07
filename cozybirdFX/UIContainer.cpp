@@ -14,7 +14,7 @@ void UIContainer::handleInput(InputManager *inputManager)
 {
 	for (const auto &element : m_elements)
 	{
-		element->handleInput(inputManager);
+		element->process(inputManager);
 	}
 }
 
@@ -71,6 +71,18 @@ void UIContainer::setPosition(glm::vec2 position)
 void UIContainer::setSize(glm::vec2 size)
 {
 	IUserInterface::setSize(size);
+}
+
+void UIContainer::setEnabled(bool isEnabled)
+{
+	IUserInterface::setEnabled(isEnabled);
+
+	// Add each element to the renderer.
+	for (const auto &element : m_elements)
+	{
+		element->setEnabled(isEnabled);
+	}
+
 }
 
 void UIContainer::fitContents()

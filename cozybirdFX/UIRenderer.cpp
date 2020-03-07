@@ -128,6 +128,10 @@ void UIRenderer::render(Camera *camera)
 	// Iterate through all UI elements to prepare values for rendering.
 	for (const auto &thisElement : m_elements)
 	{
+		// Skip disabled elements.
+		if (!thisElement.isEnabled)
+			continue;
+
 		// Set the UI element's border.
 		// The x, y members correspond to the UI element's width and height.
 		// The z member is a flag to indicate whether the element has a border.

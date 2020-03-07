@@ -24,6 +24,9 @@ public:
 
 		glm::vec4 colour{ 1.f };
 		bool hasBorder{ false };
+
+		// Flag for if this element should be rendered.
+		bool isEnabled{ true };
 	};
 
 	UIRenderer(AssetLoader *assetLoader);

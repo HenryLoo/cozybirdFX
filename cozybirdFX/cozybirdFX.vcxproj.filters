@@ -129,9 +129,6 @@
     <ClInclude Include="UISlider.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UIList.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
     <ClInclude Include="UITextField.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
@@ -222,9 +219,6 @@
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UISlider.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="UIList.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="UITextField.cpp">

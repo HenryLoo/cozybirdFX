@@ -35,6 +35,9 @@ public:
 		TextAlign align{ TextAlign::LEFT };
 		bool isVerticalCenter{ false };
 		float scale{ 1.f };
+
+		// Flag for if this element should be rendered.
+		bool isEnabled{ true };
 	};
 
 	TextRenderer(AssetLoader *assetLoader);

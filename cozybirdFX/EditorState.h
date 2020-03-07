@@ -33,7 +33,9 @@ private:
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
 	std::shared_ptr<UIContainer> m_topLeftPanel;
 	std::shared_ptr<UIContainer> m_topRightPanel;
-	std::shared_ptr<UIContainer> m_sidePanel;
+	std::shared_ptr<UIContainer> m_particlesPanel;
+	std::shared_ptr<UIContainer> m_visualsPanel;
+	std::shared_ptr<UIContainer> m_movementPanel;
 	std::shared_ptr<UIContainer> m_bottomPanel;
 	std::shared_ptr<UISlider> m_rSlider;
 	std::shared_ptr<UISlider> m_gSlider;

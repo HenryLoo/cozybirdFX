@@ -117,6 +117,17 @@ void UITextField::setPosition(glm::vec2 position)
 		m_valProperties->pos += diff;
 }
 
+void UITextField::setEnabled(bool isEnabled)
+{
+	IUserInterface::setEnabled(isEnabled);
+
+	if (m_labelProperties != nullptr)
+		m_labelProperties->isEnabled = isEnabled;
+
+	if (m_valProperties != nullptr)
+		m_valProperties->isEnabled = isEnabled;
+}
+
 void UITextField::setValue(const std::string &value)
 {
 	m_value = value;

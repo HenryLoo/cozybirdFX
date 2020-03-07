@@ -17,6 +17,7 @@ public:
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
 	virtual void setPosition(glm::vec2 position);
+	virtual void setEnabled(bool isEnabled);
 
 private:
 	// Call this function when the button is clicked.

@@ -15,10 +15,10 @@ public:
 	UITextField(std::string label, glm::vec2 size,
 		glm::vec2 position = { 0.f, 0.f });
 
-	virtual void handleInput(InputManager *inputManager);
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
 	virtual void setPosition(glm::vec2 position);
+	virtual void setEnabled(bool isEnabled);
 
 	// Set the current value.
 	void setValue(const std::string &value);
@@ -30,6 +30,9 @@ public:
 	bool getValue(std::string &output);
 	bool getValue(int &output);
 	bool getValue(float &output);
+
+protected:
+	virtual void handleInput(InputManager *inputManager);
 
 private:
 	void setActivation(bool isActivated, InputManager *inputManager);

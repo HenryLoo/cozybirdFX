@@ -34,3 +34,11 @@ void UIText::setPosition(glm::vec2 position)
 	if (m_tProperties != nullptr)
 		m_tProperties->pos += diff;
 }
+
+void UIText::setEnabled(bool isEnabled)
+{
+	IUserInterface::setEnabled(isEnabled);
+
+	if (m_tProperties != nullptr)
+		m_tProperties->isEnabled = isEnabled;
+}

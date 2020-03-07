@@ -12,13 +12,14 @@ public:
 	IUserInterface(glm::vec2 position, glm::vec2 size, glm::vec4 colour, 
 		bool hasBorder);
 
-	virtual void handleInput(InputManager *inputManager) = 0;
+	void process(InputManager *inputManager);
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
 
 	// Setter functions.
 	virtual void setPosition(glm::vec2 position);
 	virtual void setSize(glm::vec2 size);
 	virtual void setOffset(glm::vec2 offset);
+	virtual void setEnabled(bool isEnabled);
 
 	// Getter functions.
 	glm::vec2 getPosition() const;
@@ -27,6 +28,8 @@ public:
 	bool hasBorder() const;
 
 protected:
+	virtual void handleInput(InputManager *inputManager) = 0;
+
 	// The x, y position of this element.
 	glm::vec2 m_position{ 0.f };
 
@@ -41,6 +44,10 @@ protected:
 
 	// Flag for if this element has a border.
 	bool m_hasBorder{ false };
+
+	// Flag for if this element is enabled.
+	// If diabled, then ignore rendering and input handling.
+	bool m_isEnabled{ true };
 
 	// Flag for if any element is clicked.
 	static bool m_isClicked;

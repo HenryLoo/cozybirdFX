@@ -143,6 +143,10 @@ void TextRenderer::render(Camera *camera)
 		// Iterate through all text strings using this font.
 		for (const Properties &thisText : thisTexts)
 		{
+			// Skip disabled elements.
+			if (!thisText.isEnabled)
+				continue;
+
 			// Iterate through each char in the text string to get its
 			// bounding width and height.
 			std::string::const_iterator c;

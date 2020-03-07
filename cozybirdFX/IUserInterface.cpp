@@ -8,7 +8,16 @@ IUserInterface::IUserInterface(glm::vec2 position, glm::vec2 size,
 {
 }
 
-void IUserInterface::addToRenderer(UIRenderer *uRenderer, 
+void IUserInterface::process(InputManager *inputManager)
+{
+	// Skip disabled elements.
+	if (!m_isEnabled)
+		return;
+
+	handleInput(inputManager);
+}
+
+void IUserInterface::addToRenderer(UIRenderer *uRenderer,
 	TextRenderer *tRenderer)
 {
 	if (uRenderer != nullptr)
@@ -50,6 +59,14 @@ void IUserInterface::setSize(glm::vec2 size)
 void IUserInterface::setOffset(glm::vec2 offset)
 {
 	m_offset = offset;
+}
+
+void IUserInterface::setEnabled(bool isEnabled)
+{
+	m_isEnabled = isEnabled;
+
+	if (m_uiProperties != nullptr)
+		m_uiProperties->isEnabled = isEnabled;
 }
 
 glm::vec2 IUserInterface::getPosition() const
