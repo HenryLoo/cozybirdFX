@@ -1,6 +1,5 @@
 #include "UITextField.h"
 #include "InputManager.h"
-#include "TextRenderer.h"
 #include "UIRenderer.h"
 
 #include <GLFW/glfw3.h>
@@ -75,6 +74,9 @@ void UITextField::handleInput(InputManager *inputManager)
 
 void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 {
+	// Add the text field's bar to the renderer.
+	IUserInterface::addToRenderer(uRenderer, tRenderer);
+
 	glm::vec2 textPos{ m_position + m_offset };
 	textPos.x += TEXT_OFFSET;
 	glm::vec2 textBox{ m_size.x - (2 * TEXT_OFFSET), m_size.y };
@@ -85,7 +87,8 @@ void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	label.pos = textPos;
 	label.size = textBox;
 	label.isVerticalCenter = true;
-	tRenderer->addText(label);
+	auto labelIt{ tRenderer->addText(label) };
+	m_labelProperties = &*labelIt;
 
 	// Add the field's value to the renderer.
 	TextRenderer::Properties val;
@@ -94,18 +97,24 @@ void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	val.isVerticalCenter = true;
 	val.align = TextRenderer::TextAlign::RIGHT;
 	auto valIt{ tRenderer->addText(val) };
-	m_valueText = &(valIt->text);
-
-	// Add the field's bar to the renderer.
-	UIRenderer::Properties bar;
-	bar.pos = m_position + m_offset;
-	bar.size = m_size;
-	bar.colour = m_colour;
-	bar.hasBorder = true;
-	auto barIt{ uRenderer->addElement(bar) };
-	m_uiColour = &(barIt->colour);
+	m_valProperties = &*valIt;
 
 	updateUI();
+}
+
+void UITextField::setPosition(glm::vec2 position)
+{
+	glm::vec2 oldPos{ m_position };
+	IUserInterface::setPosition(position);
+
+	// Reposition the label.
+	glm::vec2 diff{ m_position - oldPos };
+	if (m_labelProperties != nullptr)
+		m_labelProperties->pos += diff;
+
+	// Reposition the value text.
+	if (m_valProperties != nullptr)
+		m_valProperties->pos += diff;
 }
 
 void UITextField::setValue(const std::string &value)
@@ -175,15 +184,15 @@ void UITextField::setActivation(bool isActivated, InputManager *inputManager)
 	m_isActivated = isActivated;
 
 	if (m_isError)
-		*m_uiColour = isActivated ? ERROR_ACTIVATED_COLOUR : ERROR_DEACTIVATED_COLOUR;
+		m_uiProperties->colour = isActivated ? ERROR_ACTIVATED_COLOUR : ERROR_DEACTIVATED_COLOUR;
 	else
-		*m_uiColour = isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
+		m_uiProperties->colour = isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
 
 	inputManager->toggleTextInput(isActivated);
 }
 
 void UITextField::updateUI()
 {
-	if (m_valueText != nullptr)
-		*m_valueText = m_value;
+	if (m_valProperties != nullptr)
+		m_valProperties->text = m_value;
 }

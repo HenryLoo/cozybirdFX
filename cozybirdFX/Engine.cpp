@@ -75,6 +75,7 @@ void Engine::start()
             m_hasNewWindowSize = false;
             glm::ivec2 windowSize{ getWindowSize() };
             m_camera->setSize(windowSize);
+            glViewport(0, 0, windowSize.x, windowSize.y);
         }
 
         double currentFrame{ glfwGetTime() };
@@ -144,10 +145,6 @@ void Engine::render(float deltaTime)
     m_emitter->update(deltaTime);
     m_emitter->render(m_camera.get());
 
-    // Reset viewport.
-    glm::ivec2 windowSize{ getWindowSize() };
-    glViewport(0, 0, windowSize.x, windowSize.y);
-
     // Call render for all renderers.
     for (const auto &renderer : m_renderers)
     {
@@ -166,6 +163,11 @@ void Engine::updateNewWindowSize()
 Emitter *Engine::getEmitter() const
 {
     return m_emitter.get();
+}
+
+Camera *Engine::getCamera() const
+{
+    return m_camera.get();
 }
 
 glm::ivec2 Engine::getWindowSize() const

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IUserInterface.h"
+#include "TextRenderer.h"
 
 #include <glm/glm.hpp>
 
@@ -16,6 +17,8 @@ public:
 
 	virtual void handleInput(InputManager *inputManager);
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
+
+	virtual void setPosition(glm::vec2 position);
 
 	// Set the current value.
 	void setValue(const std::string &value);
@@ -43,14 +46,15 @@ private:
 	// This should point to the value in its UIRenderer property,
 	// so that it can be updated directly.
 	std::string m_value;
-	std::string *m_valueText{ nullptr };
-
-	// Pointer to the UIRenderer property's colour.
-	glm::vec4 *m_uiColour{ nullptr };
 
 	// Flag for if there is invalid input.
 	bool m_isError{ false };
 
 	// Flag for if there is a new value to get.
 	bool m_isNewValue{ true };
+
+	// Hold pointers to its rendering items, so that their values can be
+	// dynamically updated.
+	TextRenderer::Properties *m_labelProperties;
+	TextRenderer::Properties *m_valProperties;
 };

@@ -1,6 +1,5 @@
 #include "UISlider.h"
 #include "InputManager.h"
-#include "TextRenderer.h"
 #include "UIRenderer.h"
 
 #include <GLFW/glfw3.h>
@@ -9,11 +8,14 @@ namespace
 {
 	const float TEXT_OFFSET{ 4.f };
 	const float FILL_OFFSET{ 2.f };
+
+	const glm::vec4 BAR_COLOUR{ 0.1f, 0.1f, 0.1f, 1.f };
+	const glm::vec4 FILL_COLOUR{ 0.5f, 0.5f, 0.5f, 1.f };
 }
 
 UISlider::UISlider(std::string label, glm::ivec2 range, 
 	glm::vec2 size, glm::vec2 position) :
-	IUserInterface(position, size, { 0.5f, 0.5f, 0.5f, 1.f }, true),
+	IUserInterface(position, size, BAR_COLOUR, true),
 	m_label(label), m_range(range)
 {
 }
@@ -48,6 +50,19 @@ void UISlider::handleInput(InputManager *inputManager)
 
 void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 {
+	// Add the slider's bar to the renderer.
+	IUserInterface::addToRenderer(uRenderer, tRenderer);
+
+	// Add the slider's fill to the renderer.
+	UIRenderer::Properties fill;
+	fill.pos = m_position + m_offset;
+	fill.pos.x += FILL_OFFSET / 2;
+	fill.pos.y += FILL_OFFSET / 2;
+	fill.size.y = m_size.y - FILL_OFFSET;
+	fill.colour = FILL_COLOUR;
+	auto filIt{ uRenderer->addElement(fill) };
+	m_fillProperties = &*filIt;
+
 	glm::vec2 textPos{ m_position + m_offset };
 	textPos.x += TEXT_OFFSET;
 	glm::vec2 textBox{ m_size.x - (2 * TEXT_OFFSET), m_size.y };
@@ -58,7 +73,8 @@ void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	label.pos = textPos;
 	label.size = textBox;
 	label.isVerticalCenter = true;
-	tRenderer->addText(label);
+	auto labelIt{ tRenderer->addText(label) };
+	m_labelProperties = &*labelIt;
 
 	// Add the slider's value to the renderer.
 	TextRenderer::Properties val;
@@ -67,27 +83,28 @@ void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	val.isVerticalCenter = true;
 	val.align = TextRenderer::TextAlign::RIGHT;
 	auto valIt{ tRenderer->addText(val) };
-	m_valueText = &(valIt->text);
-
-	// Add the slider's bar to the renderer.
-	UIRenderer::Properties bar;
-	bar.pos = m_position + m_offset;
-	bar.size = m_size;
-	bar.colour = glm::vec4(0.1f, 0.1f, 0.1f, 1.f);
-	bar.hasBorder = true;
-	uRenderer->addElement(bar);
-
-	// Add the slider's fill to the renderer.
-	UIRenderer::Properties fill;
-	fill.pos = m_position + m_offset;
-	fill.pos.x += FILL_OFFSET / 2;
-	fill.pos.y += FILL_OFFSET / 2;
-	fill.size.y = m_size.y - FILL_OFFSET;
-	fill.colour = m_colour;
-	auto fillIt{ uRenderer->addElement(fill) };
-	m_barWidth = &(fillIt->size.x);
+	m_valProperties = &*valIt;
 
 	updateBar();
+}
+
+void UISlider::setPosition(glm::vec2 position)
+{
+	glm::vec2 oldPos{ m_position };
+	IUserInterface::setPosition(position);
+
+	// Reposition the fill.
+	glm::vec2 diff{ m_position - oldPos };
+	if (m_fillProperties != nullptr)
+		m_fillProperties->pos += diff;
+
+	// Reposition the label.
+	if (m_labelProperties != nullptr)
+		m_labelProperties->pos += diff;
+
+	// Reposition the value text.
+	if (m_valProperties != nullptr)
+		m_valProperties->pos += diff;
 }
 
 void UISlider::setValue(int value)
@@ -102,9 +119,9 @@ int UISlider::getValue() const
 
 void UISlider::updateBar()
 {
-	if (m_valueText != nullptr)
-		*m_valueText = std::to_string(m_value);
+	if (m_valProperties != nullptr)
+		m_valProperties->text = std::to_string(m_value);
 
-	if (m_barWidth != nullptr)
-		*m_barWidth = (float)m_value / m_range.y * (m_size.x - FILL_OFFSET);
+	if (m_fillProperties != nullptr)
+		m_fillProperties->size.x = (float)m_value / m_range.y * (m_size.x - FILL_OFFSET);
 }

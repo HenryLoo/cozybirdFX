@@ -41,6 +41,9 @@ public:
 	// Get the current emitter.
 	Emitter *getEmitter() const;
 
+	// Get the camera.
+	Camera *getCamera() const;
+
 	// Get the window size.
 	glm::ivec2 getWindowSize() const;
 

@@ -1,4 +1,5 @@
 #include "EditorState.h"
+#include "Camera.h"
 #include "Engine.h"
 #include "Texture.h"
 
@@ -13,43 +14,66 @@
 
 EditorState::EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
-    m_topPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
+    m_topLeftPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(0.f, -1.f));
 
     glm::vec2 buttonSize{ glm::vec2(100.f, 32.f) };
     auto fileButton{ std::make_shared<UIButton>("File", 
-        [engine]()
+        []()
         { 
             std::cout << "File" << std::endl;
+        },
+        buttonSize) };
+    m_topLeftPanel->addElement(fileButton);
+
+    auto exportButton{ std::make_shared<UIButton>("Export",
+        [engine]()
+        { 
+            std::cout << "Export" << std::endl;
             engine->exportSpriteSheet();
         },
         buttonSize) };
-    m_topPanel->addElement(fileButton);
-
-    auto editButton{ std::make_shared<UIButton>("Edit",
-        []() { std::cout << "Edit" << std::endl; },
-        buttonSize) };
-    m_topPanel->addElement(editButton);
-
-    m_topPanel->addToRenderer(uRenderer, tRenderer);
-    m_uiElements.push_back(m_topPanel);
-
-    glm::vec2 topSize{ m_topPanel->getSize() };
-    m_bottomPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, -1.f));
+    m_topLeftPanel->addElement(exportButton);
 
     auto playButton{ std::make_shared<UIButton>("Play",
         []() { std::cout << "Play" << std::endl; },
         buttonSize) };
-    m_bottomPanel->addElement(playButton);
+    m_topLeftPanel->addElement(playButton);
 
-    auto pauseButton{ std::make_shared<UIButton>("Pause",
-        []() { std::cout << "Pause" << std::endl; },
+    m_topLeftPanel->addToRenderer(uRenderer, tRenderer);
+    m_uiElements.push_back(m_topLeftPanel);
+
+    m_topRightPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
+        glm::vec2(0.f, -1.f));
+
+    auto particlesButton{ std::make_shared<UIButton>("Particles",
+        []()
+        {
+            std::cout << "Particles" << std::endl;
+        },
         buttonSize) };
-    m_bottomPanel->addElement(pauseButton);
+    m_topRightPanel->addElement(particlesButton);
 
-    m_bottomPanel->addToRenderer(uRenderer, tRenderer);
-    m_uiElements.push_back(m_bottomPanel);
+    auto visualsButton{ std::make_shared<UIButton>("Visuals",
+        []()
+        {
+            std::cout << "Visuals" << std::endl;
+        },
+        buttonSize) };
+    m_topRightPanel->addElement(visualsButton);
+
+    auto movementButton{ std::make_shared<UIButton>("Movement",
+        []()
+        {
+            std::cout << "Movement" << std::endl;
+        },
+        buttonSize) };
+    m_topRightPanel->addElement(movementButton);
+
+    glm::vec2 topSize{ m_topLeftPanel->getSize() };
+
+    m_topRightPanel->addToRenderer(uRenderer, tRenderer);
+    m_uiElements.push_back(m_topRightPanel);
 
     m_sidePanel = std::make_shared<UIContainer>(glm::vec2(0.f, topSize.y + 1.f),
         glm::vec2(-1.f, 0.f));
@@ -162,6 +186,11 @@ EditorState::EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uR
 
     m_sidePanel->addToRenderer(uRenderer, tRenderer);
     m_uiElements.push_back(m_sidePanel);
+
+    m_bottomPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f), 
+        glm::vec2(0.f, 0.f));
+    m_bottomPanel->addToRenderer(uRenderer, tRenderer);
+    m_uiElements.push_back(m_bottomPanel);
 }
 
 void EditorState::handleInput(InputManager *inputManager)
@@ -182,14 +211,27 @@ void EditorState::update(Engine *engine, float deltaTime)
     if (m_windowSize != windowSize)
     {
         m_windowSize = windowSize;
-        m_topPanel->setSize(glm::vec2(windowSize.x, -1.f));
 
-        glm::vec2 topSize{ m_topPanel->getSize() };
-        m_bottomPanel->setSize(glm::vec2(windowSize.x, -1.f));
-        m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - topSize.y));
+        glm::vec2 tlSize{ m_topLeftPanel->getSize() };
+        glm::vec2 trSize{ m_topRightPanel->getSize() };
+        m_sidePanel->setSize(glm::vec2(-1.f, windowSize.y - tlSize.y - trSize.y - 2.f));
+        glm::vec2 sideSize{ m_sidePanel->getSize() };
+        m_sidePanel->setPosition(glm::vec2(windowSize.x - sideSize.x, -1.f));
 
+        m_topLeftPanel->setSize(glm::vec2(windowSize.x - sideSize.x - 1.f, -1.f));
+        m_topRightPanel->setSize(glm::vec2(sideSize.x, -1.f));
+        glm::vec2 tlPos{ m_topLeftPanel->getPosition() };
+        glm::vec2 sidePos{ m_sidePanel->getPosition() };
+        m_topRightPanel->setPosition(glm::vec2(sidePos.x, tlPos.y));
+
+        m_bottomPanel->setSize(glm::vec2(windowSize.x, windowSize.y - tlSize.y - sideSize.y - 2.f));
         glm::vec2 bottomSize{ m_bottomPanel->getSize() };
-        m_sidePanel->setSize(glm::vec2(-1.f, windowSize.y - topSize.y - bottomSize.y - 2.f));
+        m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - bottomSize.y));
+
+        glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x,
+            (int)windowSize.y - tlSize.y - bottomSize.y };
+        Camera *camera{ engine->getCamera() };
+        camera->setPosition({ (viewportSize.x - windowSize.x )/ 4.f, -1.f });
     }
 
     // Update emitter with UI values.
@@ -265,12 +307,4 @@ void EditorState::update(Engine *engine, float deltaTime)
         durationOffset = glm::clamp(durationOffset, 0.f, durationOffset);
         emitter->setDurationOffset(durationOffset);
     }
-
-    // Set viewport for the scene.
-    glm::ivec2 topSize{ m_topPanel->getSize() };
-    glm::ivec2 bottomSize{ m_bottomPanel->getSize() };
-    glm::ivec2 sideSize{ m_sidePanel->getSize() };
-    glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x, 
-        (int)windowSize.y - topSize.y - bottomSize.y };
-    glViewport(sideSize.x, topSize.y, viewportSize.x, viewportSize.y);
 }

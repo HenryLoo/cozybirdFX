@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IUserInterface.h"
+#include "TextRenderer.h"
 
 #include <glm/glm.hpp>
 
@@ -14,6 +15,8 @@ public:
 
 	virtual void handleInput(InputManager *inputManager);
 	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
+
+	virtual void setPosition(glm::vec2 position);
 
 	// Set the current value.
 	void setValue(int value);
@@ -42,6 +45,7 @@ private:
 
 	// Hold pointers to its rendering items, so that their values can be
 	// dynamically updated.
-	float *m_barWidth{ nullptr };
-	std::string *m_valueText{ nullptr };
+	UIRenderer::Properties *m_fillProperties;
+	TextRenderer::Properties *m_labelProperties;
+	TextRenderer::Properties *m_valProperties;
 };

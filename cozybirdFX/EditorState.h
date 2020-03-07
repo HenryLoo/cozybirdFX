@@ -31,9 +31,10 @@ private:
 
 	// UI Elements for editing emitters.
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
-	std::shared_ptr<UIContainer> m_topPanel;
-	std::shared_ptr<UIContainer> m_bottomPanel;
+	std::shared_ptr<UIContainer> m_topLeftPanel;
+	std::shared_ptr<UIContainer> m_topRightPanel;
 	std::shared_ptr<UIContainer> m_sidePanel;
+	std::shared_ptr<UIContainer> m_bottomPanel;
 	std::shared_ptr<UISlider> m_rSlider;
 	std::shared_ptr<UISlider> m_gSlider;
 	std::shared_ptr<UISlider> m_bSlider;
