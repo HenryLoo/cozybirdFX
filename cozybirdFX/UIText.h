@@ -24,5 +24,5 @@ private:
 
 	// Pointer to the label's text property.
 	// This allows for dynamic changes.
-	TextRenderer::Properties *m_tProperties;
+	TextRenderer::Properties *m_tProperties{ nullptr };
 };

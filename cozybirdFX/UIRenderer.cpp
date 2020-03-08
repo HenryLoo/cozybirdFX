@@ -98,11 +98,7 @@ UIRenderer::~UIRenderer()
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
-void UIRenderer::update(float deltaTime)
-{
-}
-
-void UIRenderer::render(Camera *camera)
+void UIRenderer::render(float deltaTime, Camera *camera)
 {
 	// Skip render if there are UI elements to draw.
 	if (m_elements.empty())

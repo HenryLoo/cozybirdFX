@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "EmitterRenderer.h"
 #include "SpriteRenderer.h"
 #include "TextRenderer.h"
 #include "UIRenderer.h"
@@ -13,10 +14,6 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "stb_image.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 Engine::Engine(GLFWwindow *window) :
     m_window(window)
 {
@@ -30,9 +27,10 @@ Engine::Engine(GLFWwindow *window) :
     m_inputManager = std::make_unique<InputManager>(m_window);
 
     // Instantiate renderers.
-    auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
-    auto uiRenderer{ std::make_unique<UIRenderer>(m_assetLoader.get()) };
-    auto textRenderer{ std::make_unique<TextRenderer>(m_assetLoader.get()) };
+    m_emitterRenderer = std::make_shared<EmitterRenderer>(m_assetLoader.get());
+    auto spriteRenderer{ std::make_shared<SpriteRenderer>(m_assetLoader.get()) };
+    auto uiRenderer{ std::make_shared<UIRenderer>(m_assetLoader.get()) };
+    auto textRenderer{ std::make_shared<TextRenderer>(m_assetLoader.get()) };
 
     // Instantiate entity manager.
     m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), 
@@ -42,19 +40,16 @@ Engine::Engine(GLFWwindow *window) :
     glm::ivec2 windowSize{ getWindowSize() };
     m_camera = std::make_unique<Camera>(windowSize, 1.f);
 
-    // TODO: Test emitter, remove this later.
-    m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
-    m_emitter->setTexture(m_assetLoader->load<Texture>("particle.png"));
-
     // Default to editor state.
     EditorState *state{ new EditorState(this, textRenderer.get(), 
         uiRenderer.get()) };
     pushState(state);
 
     // Add renderers to the list.
-    m_renderers.push_back(std::move(uiRenderer));
-    m_renderers.push_back(std::move(textRenderer));
-    m_renderers.push_back(std::move(spriteRenderer));
+    m_renderers.push_back(m_emitterRenderer);
+    m_renderers.push_back(uiRenderer);
+    m_renderers.push_back(textRenderer);
+    m_renderers.push_back(spriteRenderer);
 }
 
 Engine::~Engine()
@@ -125,12 +120,6 @@ void Engine::update(float deltaTime)
     if (m_entityManager != nullptr)
         m_entityManager->update(deltaTime);
 
-    for (const auto &renderer : m_renderers)
-    {
-        if (renderer != nullptr)
-            renderer->update(deltaTime);
-    }
-
     // Update the current state.
     IState *state{ getState() };
     if (state != nullptr)
@@ -142,14 +131,11 @@ void Engine::render(float deltaTime)
     glClearColor(0.f, 0.f, 0.f, 0.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    m_emitter->update(deltaTime);
-    m_emitter->render(m_camera.get());
-
     // Call render for all renderers.
     for (const auto &renderer : m_renderers)
     {
         if (renderer != nullptr)
-            renderer->render(m_camera.get());
+            renderer->render(deltaTime, m_camera.get());
     }
 
     glfwSwapBuffers(m_window);
@@ -160,9 +146,14 @@ void Engine::updateNewWindowSize()
     m_hasNewWindowSize = true;
 }
 
-Emitter *Engine::getEmitter() const
+Emitter *Engine::getEmitter(int index) const
 {
-    return m_emitter.get();
+    return m_emitterRenderer->getEmitter(index);
+}
+
+void Engine::toggleEmitter(int index, bool isEnabled) const
+{
+    m_emitterRenderer->toggleEmitter(index, isEnabled);
 }
 
 Camera *Engine::getCamera() const
@@ -175,27 +166,4 @@ glm::ivec2 Engine::getWindowSize() const
     glm::ivec2 windowSize;
     glfwGetWindowSize(m_window, &windowSize.x, &windowSize.y);
     return windowSize;
-}
-
-void Engine::exportSpriteSheet()
-{
-    // Draw to framebuffer's texture.
-    m_emitter->outputToTexture();
-
-    // Write image from the texture.
-    Texture *texture{ m_emitter->getOutputTexture() };
-    if (texture != nullptr)
-    {
-        texture->bind();
-        glm::ivec2 size{ texture->getWidth(), texture->getHeight() };
-        int numChannels{ texture->getNumChannels() };
-
-        stbi_uc *data{ new stbi_uc[size.x * size.y * numChannels] };
-        glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        stbi_flip_vertically_on_write(true);
-        std::string output{ "output.png" };
-        stbi_write_png(output.c_str(), size.x, size.y, numChannels, data, 0);
-
-        delete[] data;
-    }
 }

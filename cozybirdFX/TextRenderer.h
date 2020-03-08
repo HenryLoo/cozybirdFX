@@ -43,9 +43,7 @@ public:
 	TextRenderer(AssetLoader *assetLoader);
 	~TextRenderer();
 
-	virtual void update(float deltaTime);
-
-	virtual void render(Camera *camera);
+	virtual void render(float deltaTime, Camera *camera);
 
 	// Add a text to the map to be rendered.
 	std::list<Properties>::iterator addText(const Properties &prop, Font *font = nullptr);

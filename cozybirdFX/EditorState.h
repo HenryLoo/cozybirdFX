@@ -24,10 +24,25 @@ public:
 
 	virtual void update(Engine *engine, float deltaTime);
 
+	void updateUIFromEmitter(Engine *emitter, int index);
+
 private:
+	// Initialize UI elements.
+	void initTopLeftPanel(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initTopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initBottomPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initVisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initMovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initEmittersPanel(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+
 	// Store the current window size.
 	// Use this to detect window size changes and then rescale UI.
 	glm::vec2 m_windowSize{ 0.f };
+
+	// The index of the currently selected emitter.
+	int m_emitter{ 0 };
 
 	// UI Elements for editing emitters.
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;

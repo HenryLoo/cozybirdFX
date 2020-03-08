@@ -147,6 +147,7 @@
     <ClInclude Include="ECSSystem.h" />
     <ClInclude Include="EditorState.h" />
     <ClInclude Include="Emitter.h" />
+    <ClInclude Include="EmitterRenderer.h" />
     <ClInclude Include="EmitterSystem.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EntityManager.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="ECSSystem.cpp" />
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Emitter.cpp" />
+    <ClCompile Include="EmitterRenderer.cpp" />
     <ClCompile Include="EmitterSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EntityManager.cpp" />

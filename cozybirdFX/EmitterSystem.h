@@ -9,6 +9,8 @@
 
 struct GLFWwindow;
 
+class AssetLoader;
+
 class EmitterSystem : public ECSSystem
 {
 public:

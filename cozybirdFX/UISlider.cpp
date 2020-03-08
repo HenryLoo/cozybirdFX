@@ -124,6 +124,7 @@ void UISlider::setEnabled(bool isEnabled)
 void UISlider::setValue(int value)
 {
 	m_value = glm::clamp(value, m_range.x, m_range.y);
+	updateBar();
 }
 
 int UISlider::getValue() const

@@ -3,10 +3,16 @@
 
 #include <GLFW/glfw3.h>
 
-UIButton::UIButton(std::string label, std::function<void()> action,
-	glm::vec2 size, glm::vec2 position, glm::vec4 colour, bool hasBorder) :
-	IUserInterface(position, size, colour, hasBorder),
-	m_label(label), m_action(action)
+namespace
+{
+	const glm::vec4 BUTTON_COLOUR{ 0.3f, 0.3f, 0.3f, 1.f };
+	const glm::vec4 TOGGLED_COLOUR{ 0.1f, 0.1f, 0.8f, 1.f };
+}
+
+UIButton::UIButton(std::string label, glm::vec2 size, bool isTogglable, 
+	std::function<void()> action, glm::vec2 position, bool hasBorder) :
+	IUserInterface(position, size, BUTTON_COLOUR, hasBorder),
+	m_label(label), m_action(action), m_isTogglable(isTogglable)
 {
 }
 
@@ -19,6 +25,11 @@ void UIButton::handleInput(InputManager *inputManager)
 		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y &&
 		inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1, true))
 	{
+		if (m_isTogglable)
+		{
+			setToggled(!m_isToggled);
+		}
+
 		m_action();
 	}
 }
@@ -56,4 +67,23 @@ void UIButton::setEnabled(bool isEnabled)
 
 	if (m_tProperties != nullptr)
 		m_tProperties->isEnabled = isEnabled;
+}
+
+void UIButton::setAction(std::function<void()> action)
+{
+	m_action = action;
+}
+
+void UIButton::setToggled(bool isToggled)
+{
+	if (m_isTogglable)
+	{
+		m_isToggled = isToggled;
+		m_uiProperties->colour = m_isToggled ? TOGGLED_COLOUR : BUTTON_COLOUR;
+	}
+}
+
+bool UIButton::isToggled() const
+{
+	return m_isToggled;
 }

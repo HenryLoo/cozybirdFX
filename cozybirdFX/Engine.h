@@ -3,7 +3,6 @@
 #include "AssetLoader.h"
 #include "Camera.h"
 #include "EntityManager.h"
-#include "Emitter.h"
 #include "InputManager.h"
 #include "IState.h"
 
@@ -12,10 +11,8 @@
 #include <vector>
 
 class IRenderer;
-class Font;
-class IUserInterface;
-class UISlider;
-class UITextField;
+class Emitter;
+class EmitterRenderer;
 
 struct GLFWwindow;
 
@@ -39,16 +36,16 @@ public:
 	void updateNewWindowSize();
 
 	// Get the current emitter.
-	Emitter *getEmitter() const;
+	Emitter *getEmitter(int index) const;
+
+	// Toggle an emitter.
+	void toggleEmitter(int index, bool isEnabled) const;
 
 	// Get the camera.
 	Camera *getCamera() const;
 
 	// Get the window size.
 	glm::ivec2 getWindowSize() const;
-
-	// Prepare to export the current emitter effects as a sprite sheet.
-	void exportSpriteSheet();
 
 private:
 	// Consult the input manager to read inputs.
@@ -64,7 +61,8 @@ private:
 	GLFWwindow *m_window{ nullptr };
 
 	// Hold all renderers.
-	std::vector<std::unique_ptr<IRenderer>> m_renderers;
+	std::vector<std::shared_ptr<IRenderer>> m_renderers;
+	std::shared_ptr<EmitterRenderer> m_emitterRenderer;
 
 	// Flag for if the window was resized.
 	bool m_hasNewWindowSize{ true };
@@ -78,6 +76,4 @@ private:
 	std::unique_ptr<AssetLoader> m_assetLoader{ nullptr };
 	std::unique_ptr<EntityManager> m_entityManager{ nullptr };
 	std::unique_ptr<InputManager> m_inputManager{ nullptr };
-
-	std::unique_ptr<Emitter> m_emitter{ nullptr };
 };

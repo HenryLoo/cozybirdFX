@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <random>
 
+#include <iostream>
+
 namespace
 {
     const int NUM_PARTICLE_ATTRIBUTES{ 6 };
@@ -26,29 +28,29 @@ namespace
     const int MAX_PARTICLES{ 1000 };
 }
 
-Emitter::Emitter(AssetLoader *assetLoader)
+Emitter::Emitter()
 {
-    // Create update shader program.
-    m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
-    glTransformFeedbackVaryings(m_updateShader->getProgramId(),
-        NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
-    m_updateShader->link();
+    //// Create update shader program.
+    //m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
+    //glTransformFeedbackVaryings(m_updateShader->getProgramId(),
+    //    NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
+    //m_updateShader->link();
 
-    // Create render shader program.
-    m_renderShader = assetLoader->load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
-    m_renderShader->link();
+    //// Create render shader program.
+    //m_renderShader = assetLoader->load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
+    //m_renderShader->link();
 
     // Calculate axes for billboarding.
     // View vector doesn't change, assuming that camera is fixed.
-    m_renderShader->use();
-    glm::vec3 viewVec{ 0.f, 0.f, -1.f };
-    glm::vec3 upVec{ 0.f, 1.f, 0.f };
-    glm::vec3 axis1{ glm::cross(viewVec, upVec) };
-    axis1 = glm::normalize(axis1);
-    glm::vec3 axis2{ glm::cross(viewVec, axis1) };
-    axis2 = glm::normalize(axis2);
-    m_renderShader->setVec3("axis1", axis1);
-    m_renderShader->setVec3("axis2", axis2);
+    //m_renderShader->use();
+    //glm::vec3 viewVec{ 0.f, 0.f, -1.f };
+    //glm::vec3 upVec{ 0.f, 1.f, 0.f };
+    //glm::vec3 axis1{ glm::cross(viewVec, upVec) };
+    //axis1 = glm::normalize(axis1);
+    //glm::vec3 axis2{ glm::cross(viewVec, axis1) };
+    //axis2 = glm::normalize(axis2);
+    //m_renderShader->setVec3("axis1", axis1);
+    //m_renderShader->setVec3("axis2", axis2);
 
     //glGenTransformFeedbacks(1, &m_transFeedbackBuffer);
     glGenBuffers(1, &m_transFeedbackBuffer);
@@ -93,20 +95,20 @@ Emitter::Emitter(AssetLoader *assetLoader)
     }
 }
 
-void Emitter::update(float deltaTime)
+void Emitter::update(float deltaTime, std::shared_ptr<Shader> updateShader)
 {
-    m_updateShader->use();
+    updateShader->use();
 
     // Set emitter uniforms for the update shader.
-    m_updateShader->setFloat("deltaTime", deltaTime);
-    m_updateShader->setVec2("emPos", m_position);
-    m_updateShader->setVec2("emVelocityMin", m_velocityMin);
-    m_updateShader->setVec2("emVelocityOffset", m_velocityOffset);
-    m_updateShader->setVec2("emAcceleration", m_acceleration);
-    m_updateShader->setVec3("emColour", m_colour);
-    m_updateShader->setFloat("emDurationMin", m_durationMin);
-    m_updateShader->setFloat("emDurationOffset", m_durationOffset);
-    m_updateShader->setFloat("emSize", m_size);
+    updateShader->setFloat("deltaTime", deltaTime);
+    updateShader->setVec2("emPos", m_position);
+    updateShader->setVec2("emVelocityMin", m_velocityMin);
+    updateShader->setVec2("emVelocityOffset", m_velocityOffset);
+    updateShader->setVec2("emAcceleration", m_acceleration);
+    updateShader->setVec3("emColour", m_colour);
+    updateShader->setFloat("emDurationMin", m_durationMin);
+    updateShader->setFloat("emDurationOffset", m_durationOffset);
+    updateShader->setFloat("emSize", m_size);
 
     // Set the seed.
     //std::random_device randdev;
@@ -116,18 +118,18 @@ void Emitter::update(float deltaTime)
     if (m_currentTime >= m_emitterDuration)
         m_currentTime = 0.f;
     std::uniform_real_distribution<> distrib(-1, 1);
-    m_updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
+    updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
     // Update spawn timer and flag the emitter to spawn particles if necessary.
     m_spawnTimer += deltaTime;
     if (m_spawnTimer >= m_timeToSpawn)
     {
         m_spawnTimer -= m_timeToSpawn;
-        m_updateShader->setInt("emNumToGenerate", m_numToGenerate);
+        updateShader->setInt("emNumToGenerate", m_numToGenerate);
     }
     else
     {
-        m_updateShader->setInt("emNumToGenerate", 0);
+        updateShader->setInt("emNumToGenerate", 0);
     }
 
     // Disable rasterization because there is no graphical output when 
@@ -166,7 +168,7 @@ void Emitter::update(float deltaTime)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Emitter::render(Camera *camera)
+void Emitter::render(Camera *camera, std::shared_ptr<Shader> renderShader)
 {
     if (camera == nullptr)
         return;
@@ -175,11 +177,11 @@ void Emitter::render(Camera *camera)
     glm::mat4 view{ camera->getView() };
     glm::mat4 proj{ camera->getSceneProjection() };
     glm::mat4 mvp = proj * view;
-    m_renderShader->use();
-    m_renderShader->setMat4("mvp", mvp);
+    renderShader->use();
+    renderShader->setMat4("mvp", mvp);
 
     // Render the particles.
-    render();
+    render(renderShader);
 }
 
 void Emitter::clear()
@@ -251,6 +253,56 @@ void Emitter::setDurationOffset(float duration)
     m_durationOffset = duration;
 }
 
+int Emitter::getNumToGenerate() const
+{
+	return m_numToGenerate;
+}
+
+glm::vec2 Emitter::getPosition() const
+{
+    return m_position;
+}
+
+float Emitter::getTimeToSpawn() const
+{
+    return m_timeToSpawn;
+}
+
+glm::vec2 Emitter::getVelocityMin() const
+{
+    return m_velocityMin;
+}
+
+glm::vec2 Emitter::getVelocityOffset() const
+{
+    return m_velocityOffset;
+}
+
+glm::vec2 Emitter::getAcceleration() const
+{
+    return m_acceleration;
+}
+
+float Emitter::getSize() const
+{
+    return m_size;
+}
+
+glm::vec3 Emitter::getColour() const
+{
+    return m_colour;
+}
+
+float Emitter::getDurationMin() const
+{
+    return m_durationMin;
+}
+
+float Emitter::getDurationOffset() const
+{
+    return m_durationOffset;
+}
+
 void Emitter::createFramebuffer(glm::ivec2 textureSize)
 {
     // Delete any existing old buffers.
@@ -279,7 +331,8 @@ void Emitter::createFramebuffer(glm::ivec2 textureSize)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Emitter::outputToTexture()
+void Emitter::outputToTexture(std::shared_ptr<Shader> updateShader, 
+    std::shared_ptr<Shader> renderShader)
 {
     // Get projection matrix.
     glm::mat4 view{ glm::mat4(1.f) };
@@ -290,8 +343,8 @@ void Emitter::outputToTexture()
         -1000.f, 1000.f) };
 
     // View matrix is identity.
-    m_renderShader->use();
-    m_renderShader->setMat4("mvp", proj);
+    renderShader->use();
+    renderShader->setMat4("mvp", proj);
 
     // Prepare the framebuffer's texture.
     float fixedDeltaTime{ 1 / 24.f };
@@ -308,7 +361,7 @@ void Emitter::outputToTexture()
     // TODO: Only do this if the animation should loop.
     m_currentTime = 0.f;
     while (m_currentTime + fixedDeltaTime < m_emitterDuration)
-        update(fixedDeltaTime);
+        update(fixedDeltaTime, updateShader);
 
     // Render the particles.
     m_currentTime = 0.f;
@@ -319,9 +372,9 @@ void Emitter::outputToTexture()
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
-            render();
+            render(renderShader);
 
-            update(fixedDeltaTime);
+            update(fixedDeltaTime, updateShader);
         }
     }
 
@@ -329,7 +382,7 @@ void Emitter::outputToTexture()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Emitter::render()
+void Emitter::render(std::shared_ptr<Shader> renderShader)
 {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -339,7 +392,7 @@ void Emitter::render()
 
     // Enable rasterizer for graphical output.
     glDisable(GL_RASTERIZER_DISCARD);
-    m_renderShader->use();
+    renderShader->use();
 
     // Bind to the read buffer's vertex array object.
     glBindVertexArray(m_vao[m_currentReadBuffer]);

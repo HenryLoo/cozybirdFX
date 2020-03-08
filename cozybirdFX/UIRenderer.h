@@ -32,9 +32,7 @@ public:
 	UIRenderer(AssetLoader *assetLoader);
 	~UIRenderer();
 
-	virtual void update(float deltaTime);
-
-	virtual void render(Camera *camera);
+	virtual void render(float deltaTime, Camera *camera);
 
 	// Add a UI element to the list to be rendered.
 	std::list<Properties>::iterator addElement(const Properties &prop);

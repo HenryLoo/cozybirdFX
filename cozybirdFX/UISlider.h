@@ -48,7 +48,7 @@ private:
 
 	// Hold pointers to its rendering items, so that their values can be
 	// dynamically updated.
-	UIRenderer::Properties *m_fillProperties;
-	TextRenderer::Properties *m_labelProperties;
-	TextRenderer::Properties *m_valProperties;
+	UIRenderer::Properties *m_fillProperties{ nullptr };
+	TextRenderer::Properties *m_labelProperties{ nullptr };
+	TextRenderer::Properties *m_valProperties{ nullptr };
 };

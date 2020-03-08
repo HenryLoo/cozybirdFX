@@ -102,11 +102,7 @@ TextRenderer::~TextRenderer()
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
-void TextRenderer::update(float deltaTime)
-{
-}
-
-void TextRenderer::render(Camera *camera)
+void TextRenderer::render(float deltaTime, Camera *camera)
 {
 	// Skip render if there is no text to draw.
 	if (m_texts.empty())

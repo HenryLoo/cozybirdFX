@@ -4,7 +4,6 @@
 
 #include <memory>
 
-class AssetLoader;
 class Camera;
 class Shader;
 class Texture;
@@ -12,10 +11,10 @@ class Texture;
 class Emitter
 {
 public:
-	Emitter(AssetLoader *assetLoader);
+	Emitter();
 
-	void update(float deltaTime);
-	void render(Camera *camera);
+	void update(float deltaTime, std::shared_ptr<Shader> updateShader);
+	void render(Camera *camera, std::shared_ptr<Shader> renderShader);
 
 	void clear();
 
@@ -23,7 +22,7 @@ public:
 
 	Texture *getOutputTexture() const;
 
-	// Property setters.
+	// Setter functions.
 	void setTexture(std::shared_ptr<Texture> texture);
 	void setNumToGenerate(int num);
 	void setPosition(glm::vec2 position);
@@ -36,7 +35,20 @@ public:
 	void setDurationMin(float duration);
 	void setDurationOffset(float duration);
 
-	void outputToTexture();
+	// Getter functions.
+	int getNumToGenerate() const;
+	glm::vec2 getPosition() const;
+	float getTimeToSpawn() const;
+	glm::vec2 getVelocityMin() const;
+	glm::vec2 getVelocityOffset() const;
+	glm::vec2 getAcceleration() const;
+	float getSize() const;
+	glm::vec3 getColour() const;
+	float getDurationMin() const;
+	float getDurationOffset() const;
+
+	void outputToTexture(std::shared_ptr<Shader> updateShader,
+		std::shared_ptr<Shader> renderShader);
 
 private:
 	enum ParticleType
@@ -57,7 +69,7 @@ private:
 		int type;
 	};
 
-	void render();
+	void render(std::shared_ptr<Shader> renderShader);
 
 	void createFramebuffer(glm::ivec2 textureSize);
 
@@ -84,7 +96,7 @@ private:
 	int m_numParticles{ 1 };
 
 	// The number of particles to generate.
-	int m_numToGenerate{ 0 };
+	int m_numToGenerate{ 30 };
 
 	// The origin of the emitter.
 	glm::vec2 m_position{ 0.f };
@@ -97,33 +109,29 @@ private:
 
 	// The velocity at which the particle moves at.
 	// Defines the minimum velocity and the offset from that minimum.
-	glm::vec2 m_velocityMin{ 0.f };
-	glm::vec2 m_velocityOffset{ 0.f };
+	glm::vec2 m_velocityMin{ -32.f };
+	glm::vec2 m_velocityOffset{ 64.f };
 
 	// Acceleration vector.
 	glm::vec2 m_acceleration{ 0.f };
 
 	// The size of the particle.
-	float m_size{ 1.f };
+	float m_size{ 32.f };
 
 	// The colour of the particle.
-	glm::vec3 m_colour{ 1.f };
+	glm::vec3 m_colour{ 0.2f };
 
 	// The time to live for the particle.
-	float m_durationMin{ 1.f };
-	float m_durationOffset{ 0.5f };
+	float m_durationMin{ 2.f };
+	float m_durationOffset{ 0.3f };
 
 	// The duration of the emitter's animation.
 	float m_currentTime{ 0.f };
 	float m_emitterDuration{ 3.f };
 
-	std::shared_ptr<Shader> m_updateShader{ nullptr };
-	std::shared_ptr<Shader> m_renderShader{ nullptr };
-
 	// Buffers for rendering to texture.
-	unsigned int m_fbo;
+	unsigned int m_fbo{ 0 };
 	std::shared_ptr<Texture> m_outputTexture{ nullptr };
-	unsigned int m_rbo;
 
 	glm::ivec2 m_clipSize{ 400.f, 400.f };
 };

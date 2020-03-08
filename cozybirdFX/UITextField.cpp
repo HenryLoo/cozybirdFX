@@ -132,11 +132,13 @@ void UITextField::setEnabled(bool isEnabled)
 void UITextField::setValue(const std::string &value)
 {
 	m_value = value;
+	updateUI();
 }
 
 void UITextField::setValue(int value)
 {
 	m_value = std::to_string(value);
+	updateUI();
 }
 
 void UITextField::setValue(float value)
@@ -145,6 +147,7 @@ void UITextField::setValue(float value)
 	ss << std::fixed << std::setprecision(1) << value;
 	std::string valueStr = ss.str();
 	m_value = valueStr;
+	updateUI();
 }
 
 bool UITextField::getValue(std::string &output)

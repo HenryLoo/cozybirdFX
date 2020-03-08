@@ -54,12 +54,7 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
     glEnableVertexAttribArray(1);
 }
 
-void SpriteRenderer::update(float deltaTime)
-{
-
-}
-
-void SpriteRenderer::render(Camera *camera)
+void SpriteRenderer::render(float deltaTime, Camera *camera)
 {
     if (camera == nullptr)
         return;

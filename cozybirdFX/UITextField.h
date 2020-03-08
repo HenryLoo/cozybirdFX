@@ -46,8 +46,6 @@ private:
 	bool m_isActivated{ false };
 
 	// The text field's current value.
-	// This should point to the value in its UIRenderer property,
-	// so that it can be updated directly.
 	std::string m_value;
 
 	// Flag for if there is invalid input.
@@ -58,6 +56,6 @@ private:
 
 	// Hold pointers to its rendering items, so that their values can be
 	// dynamically updated.
-	TextRenderer::Properties *m_labelProperties;
-	TextRenderer::Properties *m_valProperties;
+	TextRenderer::Properties *m_labelProperties{ nullptr };
+	TextRenderer::Properties *m_valProperties{ nullptr };
 };

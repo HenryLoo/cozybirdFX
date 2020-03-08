@@ -14,9 +14,7 @@ class SpriteRenderer : public IRenderer
 public:
 	SpriteRenderer(AssetLoader *assetLoader);
 
-	virtual void update(float deltaTime);
-
-	virtual void render(Camera *camera);
+	virtual void render(float deltaTime, Camera *camera);
 
 	void addSprite(glm::mat4 model);
 
