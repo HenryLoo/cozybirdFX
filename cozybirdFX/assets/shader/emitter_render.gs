@@ -31,7 +31,8 @@ void main()
 
     vec3 origin = gl_in[0].gl_Position.xyz;
 
-    //particleColour = vec4(vsColour[0], vsDuration[0]);
+    // Blend colour, birth colour, and death colour based on the particle's
+    // current life.
     float dur = (vsLife[0] - vsCurrentLife[0]) / vsLife[0];
     float birthThreshold = 0.33;
     float deathThreshold = 0.66;

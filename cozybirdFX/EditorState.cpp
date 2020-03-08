@@ -25,11 +25,21 @@ namespace
     const glm::vec2 TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
 }
 
-EditorState::EditorState(Engine *engine, EmitterRenderer *eRenderer, 
-    TextRenderer *tRenderer, UIRenderer *uRenderer)
+EditorState::EditorState(Engine *engine, 
+    std::shared_ptr<EmitterRenderer> eRenderer, 
+    TextRenderer *tRenderer, UIRenderer *uRenderer) :
+    m_eRenderer(eRenderer)
 {
+    Camera *camera{ engine->getCamera() };
+    UIRenderer::Properties clip;
+    clip.size = eRenderer->getClipSize();
+    clip.hasBorder = true;
+    clip.colour = glm::vec4(0.f);
+    auto it{ uRenderer->addElement(clip) };
+    m_clipSizeBox = &*it;
+
     // Initialize UI panels.
-    initTopLeftPanel(engine, eRenderer, tRenderer, uRenderer);
+    initTopLeftPanel(engine, tRenderer, uRenderer);
     initTopRightPanel(tRenderer, uRenderer);
     initBottomPanel(tRenderer, uRenderer);
     initParticlesPanel(tRenderer, uRenderer);
@@ -40,6 +50,11 @@ EditorState::EditorState(Engine *engine, EmitterRenderer *eRenderer,
 
     // Initialize the UI with the first emitter.
     updateUIFromEmitter(engine, 0);
+
+    // Initialize the UI with emitter renderer's settings.
+    glm::ivec2 clipSize{ eRenderer->getClipSize() };
+    m_clipXField->setValue(clipSize.x);
+    m_clipYField->setValue(clipSize.y);
 }
 
 void EditorState::handleInput(InputManager *inputManager)
@@ -61,6 +76,7 @@ void EditorState::update(Engine *engine, float deltaTime)
     {
         m_windowSize = windowSize;
 
+        // Rescale and reposition side panels.
         glm::vec2 tlSize{ m_topLeftPanel->getSize() };
         glm::vec2 trSize{ m_topRightPanel->getSize() };
         m_particlesPanel->setSize(glm::vec2(-1.f, windowSize.y - tlSize.y - trSize.y - 2.f));
@@ -77,19 +93,25 @@ void EditorState::update(Engine *engine, float deltaTime)
         m_renderPanel->setSize(sideSize);
         m_renderPanel->setPosition(sidePos);
 
+        // Rescale and reposition top panels.
         m_topLeftPanel->setSize(glm::vec2(windowSize.x - trSize.x - 1.f, -1.f));
         glm::vec2 tlPos{ m_topLeftPanel->getPosition() };
         m_topRightPanel->setPosition(glm::vec2(windowSize.x - trSize.x, tlPos.y));
 
+        // Rescale and reposition bottom panel.
         m_bottomPanel->setSize(glm::vec2(windowSize.x, windowSize.y - tlSize.y - sideSize.y - 2.f));
         glm::vec2 bottomSize{ m_bottomPanel->getSize() };
         m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - bottomSize.y));
 
-        glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x,
-            (int)windowSize.y - tlSize.y - bottomSize.y };
+        // Reposition the camera.
+        glm::ivec2 viewportSize{ getViewportSize(windowSize) };
         Camera *camera{ engine->getCamera() };
         float zoom{ camera->getZoom() };
-        camera->setPosition({ (viewportSize.x - windowSize.x) / (2.f * zoom), -1.f });
+        glm::vec2 cameraPos{ (viewportSize.x - windowSize.x) / (2.f * zoom), -1.f };
+        camera->setPosition(cameraPos);
+
+        // Reposition the clip size box.
+        updateClipBoxPos(viewportSize);
     }
 
     // Update emitter with UI values.
@@ -194,6 +216,19 @@ void EditorState::update(Engine *engine, float deltaTime)
     float deathBlue{ m_deathBSlider->getValue() / COLOUR_RANGE.y };
     float deathAlpha{ m_deathASlider->getValue() / COLOUR_RANGE.y };
     emitter->setDeathColour(glm::vec4(deathRed, deathGreen, deathBlue, deathAlpha));
+
+    // Set the clip size.
+    glm::ivec2 clipSize;
+    bool isClipX{ m_clipXField->getValue(clipSize.x) };
+    bool isClipY{ m_clipYField->getValue(clipSize.y) };
+    if (isClipX || isClipY)
+    {
+        m_clipSizeBox->size = clipSize;
+        glm::ivec2 viewportSize{ getViewportSize(windowSize) };
+        updateClipBoxPos(viewportSize);
+
+        m_eRenderer->setClipSize(clipSize);
+    }
 }
 
 void EditorState::updateUIFromEmitter(Engine *engine, int index)
@@ -243,7 +278,7 @@ void EditorState::updateUIFromEmitter(Engine *engine, int index)
     m_deathASlider->setValue(static_cast<int>(deathColour.a * COLOUR_RANGE.y));
 }
 
-void EditorState::initTopLeftPanel(Engine *engine, EmitterRenderer *eRenderer, 
+void EditorState::initTopLeftPanel(Engine *engine,
     TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
     m_topLeftPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
@@ -258,6 +293,7 @@ void EditorState::initTopLeftPanel(Engine *engine, EmitterRenderer *eRenderer,
     m_topLeftPanel->addElement(fileButton);
 
     glm::ivec2 windowSize{ engine->getWindowSize() };
+    EmitterRenderer *eRenderer{ m_eRenderer.get() };
     auto exportButton{ std::make_shared<UIButton>("Export",
         BUTTON_SIZE, false,
         [eRenderer, windowSize]()
@@ -272,7 +308,14 @@ void EditorState::initTopLeftPanel(Engine *engine, EmitterRenderer *eRenderer,
         []() { std::cout << "Play" << std::endl; }) };
     m_topLeftPanel->addElement(playButton);
 
+    UIRenderer::Properties *clipSize{ m_clipSizeBox };
+    auto clipButton{ std::make_shared<UIButton>("Show Clip",
+       BUTTON_SIZE, true,
+       [clipSize]() { clipSize->isEnabled = !clipSize->isEnabled; }) };
+    m_topLeftPanel->addElement(clipButton);
+
     m_topLeftPanel->addToRenderer(uRenderer, tRenderer);
+    clipButton->setToggled(true);
     m_uiElements.push_back(m_topLeftPanel);
 }
 
@@ -692,4 +735,24 @@ void EditorState::initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer
     m_renderPanel->addToRenderer(uRenderer, tRenderer);
     m_renderPanel->setEnabled(false);
     m_uiElements.push_back(m_renderPanel);
+}
+
+glm::ivec2 EditorState::getViewportSize(glm::ivec2 windowSize) const
+{
+    glm::vec2 sideSize{ m_particlesPanel->getSize() };
+    glm::vec2 tlSize{ m_topLeftPanel->getSize() };
+    glm::vec2 bottomSize{ m_bottomPanel->getSize() };
+
+    glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x,
+            (int)windowSize.y - tlSize.y - bottomSize.y };
+    return viewportSize;
+}
+
+void EditorState::updateClipBoxPos(glm::ivec2 viewportSize)
+{
+    glm::vec2 tlSize{ m_topLeftPanel->getSize() };
+
+    m_clipSizeBox->pos = glm::round(glm::vec2(
+        (viewportSize.x - m_clipSizeBox->size.x) / 2.f,
+        (viewportSize.y - m_clipSizeBox->size.y) / 2.f + tlSize.y));
 }

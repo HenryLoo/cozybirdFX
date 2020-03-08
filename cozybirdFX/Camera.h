@@ -13,6 +13,7 @@ public:
 	void setZoom(float zoom);
 
 	// Getter functions.
+	glm::vec2 getPosition() const;
 	glm::mat4 getView() const;
 	float getZoom() const;
 

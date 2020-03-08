@@ -30,6 +30,11 @@ void Camera::setZoom(float zoom)
 	m_zoom = zoom;
 }
 
+glm::vec2 Camera::getPosition() const
+{
+	return m_position;
+}
+
 glm::mat4 Camera::getView() const
 {
 	return m_view;

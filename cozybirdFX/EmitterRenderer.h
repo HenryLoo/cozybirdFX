@@ -19,6 +19,12 @@ public:
 	// Get emitter by index.
 	Emitter *getEmitter(int index) const;
 
+	// Get the clip size.
+	glm::ivec2 getClipSize() const;
+
+	// Set the clip size.
+	void setClipSize(glm::ivec2 size);
+
 	// Toggle an emitter.
 	void toggleEmitter(int index, bool isEnabled);
 

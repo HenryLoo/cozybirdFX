@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IState.h"
+#include "UIRenderer.h"
 
 #include <glm/glm.hpp>
 
@@ -10,7 +11,6 @@
 class Engine;
 class EmitterRenderer;
 class TextRenderer;
-class UIRenderer;
 class IUserInterface;
 class UIContainer;
 class UISlider;
@@ -19,7 +19,7 @@ class UITextField;
 class EditorState : public IState
 {
 public:
-	EditorState(Engine *engine, EmitterRenderer *eRenderer, 
+	EditorState(Engine *engine, std::shared_ptr<EmitterRenderer> eRenderer, 
 		TextRenderer *tRenderer, UIRenderer *uRenderer);
 
 	virtual void handleInput(InputManager *inputManager);
@@ -30,8 +30,8 @@ public:
 
 private:
 	// Initialize UI elements.
-	void initTopLeftPanel(Engine *engine, EmitterRenderer* eRenderer, 
-		TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initTopLeftPanel(Engine *engine, TextRenderer *tRenderer, 
+		UIRenderer *uRenderer);
 	void initTopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initBottomPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
@@ -41,6 +41,12 @@ private:
 		UIRenderer *uRenderer);
 	void initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 
+	// Calculate the size of the viewport.
+	glm::ivec2 getViewportSize(glm::ivec2 windowSize) const;
+
+	// Update the position of the clip box.
+	void updateClipBoxPos(glm::ivec2 viewportSize);
+
 	// Store the current window size.
 	// Use this to detect window size changes and then rescale UI.
 	glm::vec2 m_windowSize{ 0.f };
@@ -48,61 +54,67 @@ private:
 	// The index of the currently selected emitter.
 	int m_emitter{ 0 };
 
+	// Pointer to the emitter renderer.
+	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
+
+	// The clip size's visual representation.
+	UIRenderer::Properties *m_clipSizeBox{ nullptr };
+
 	// UI Elements for editing emitters.
 	std::vector<std::shared_ptr<IUserInterface>> m_uiElements;
-	std::shared_ptr<UIContainer> m_topLeftPanel;
-	std::shared_ptr<UIContainer> m_topRightPanel;
-	std::shared_ptr<UIContainer> m_bottomPanel;
+	std::shared_ptr<UIContainer> m_topLeftPanel{ nullptr };
+	std::shared_ptr<UIContainer> m_topRightPanel{ nullptr };
+	std::shared_ptr<UIContainer> m_bottomPanel{ nullptr };
 
 	// Particles panel elements.
-	std::shared_ptr<UIContainer> m_particlesPanel;
-	std::shared_ptr<UITextField> m_xField;
-	std::shared_ptr<UITextField> m_yField;
-	std::shared_ptr<UITextField> m_numGenField;
-	std::shared_ptr<UITextField> m_spawnTimeField;
-	std::shared_ptr<UITextField> m_delayField;
-	std::shared_ptr<UITextField> m_velXMinField;
-	std::shared_ptr<UITextField> m_velXMaxField;
-	std::shared_ptr<UITextField> m_velYMinField;
-	std::shared_ptr<UITextField> m_velYMaxField;
-	std::shared_ptr<UITextField> m_accelXField;
-	std::shared_ptr<UITextField> m_accelYField;
-	std::shared_ptr<UITextField> m_sizeField;
-	std::shared_ptr<UITextField> m_lifeMinField;
-	std::shared_ptr<UITextField> m_lifeMaxField;
+	std::shared_ptr<UIContainer> m_particlesPanel{ nullptr };
+	std::shared_ptr<UITextField> m_xField{ nullptr };
+	std::shared_ptr<UITextField> m_yField{ nullptr };
+	std::shared_ptr<UITextField> m_numGenField{ nullptr };
+	std::shared_ptr<UITextField> m_spawnTimeField{ nullptr };
+	std::shared_ptr<UITextField> m_delayField{ nullptr };
+	std::shared_ptr<UITextField> m_velXMinField{ nullptr };
+	std::shared_ptr<UITextField> m_velXMaxField{ nullptr };
+	std::shared_ptr<UITextField> m_velYMinField{ nullptr };
+	std::shared_ptr<UITextField> m_velYMaxField{ nullptr };
+	std::shared_ptr<UITextField> m_accelXField{ nullptr };
+	std::shared_ptr<UITextField> m_accelYField{ nullptr };
+	std::shared_ptr<UITextField> m_sizeField{ nullptr };
+	std::shared_ptr<UITextField> m_lifeMinField{ nullptr };
+	std::shared_ptr<UITextField> m_lifeMaxField{ nullptr };
 
 	// Visuals panel elements.
-	std::shared_ptr<UIContainer> m_visualsPanel;
-	std::shared_ptr<UISlider> m_rSlider;
-	std::shared_ptr<UISlider> m_gSlider;
-	std::shared_ptr<UISlider> m_bSlider;
-	std::shared_ptr<UISlider> m_aSlider;
-	std::shared_ptr<UISlider> m_birthRSlider;
-	std::shared_ptr<UISlider> m_birthGSlider;
-	std::shared_ptr<UISlider> m_birthBSlider;
-	std::shared_ptr<UISlider> m_birthASlider;
-	std::shared_ptr<UISlider> m_deathRSlider;
-	std::shared_ptr<UISlider> m_deathGSlider;
-	std::shared_ptr<UISlider> m_deathBSlider;
-	std::shared_ptr<UISlider> m_deathASlider;
+	std::shared_ptr<UIContainer> m_visualsPanel{ nullptr };
+	std::shared_ptr<UISlider> m_rSlider{ nullptr };
+	std::shared_ptr<UISlider> m_gSlider{ nullptr };
+	std::shared_ptr<UISlider> m_bSlider{ nullptr };
+	std::shared_ptr<UISlider> m_aSlider{ nullptr };
+	std::shared_ptr<UISlider> m_birthRSlider{ nullptr };
+	std::shared_ptr<UISlider> m_birthGSlider{ nullptr };
+	std::shared_ptr<UISlider> m_birthBSlider{ nullptr };
+	std::shared_ptr<UISlider> m_birthASlider{ nullptr };
+	std::shared_ptr<UISlider> m_deathRSlider{ nullptr };
+	std::shared_ptr<UISlider> m_deathGSlider{ nullptr };
+	std::shared_ptr<UISlider> m_deathBSlider{ nullptr };
+	std::shared_ptr<UISlider> m_deathASlider{ nullptr };
 
 	// Movement panel elements.
-	std::shared_ptr<UIContainer> m_movementPanel;
-	std::shared_ptr<UITextField> m_particleSpeedField;
-	std::shared_ptr<UITextField> m_hSinAmountField;
-	std::shared_ptr<UITextField> m_hSinPeriodField;
-	std::shared_ptr<UITextField> m_vSinAmountField;
-	std::shared_ptr<UITextField> m_vSinPeriodField;
-	std::shared_ptr<UITextField> m_circleAmountField;
-	std::shared_ptr<UITextField> m_circlePeriodField;
+	std::shared_ptr<UIContainer> m_movementPanel{ nullptr };
+	std::shared_ptr<UITextField> m_particleSpeedField{ nullptr };
+	std::shared_ptr<UITextField> m_hSinAmountField{ nullptr };
+	std::shared_ptr<UITextField> m_hSinPeriodField{ nullptr };
+	std::shared_ptr<UITextField> m_vSinAmountField{ nullptr };
+	std::shared_ptr<UITextField> m_vSinPeriodField{ nullptr };
+	std::shared_ptr<UITextField> m_circleAmountField{ nullptr };
+	std::shared_ptr<UITextField> m_circlePeriodField{ nullptr };
 
 	// Emitters panel elements.
-	std::shared_ptr<UIContainer> m_emittersPanel;
+	std::shared_ptr<UIContainer> m_emittersPanel{ nullptr };
 
 	// Render panel elements.
-	std::shared_ptr<UIContainer> m_renderPanel;
-	std::shared_ptr<UITextField> m_clipXField;
-	std::shared_ptr<UITextField> m_clipYField;
-	std::shared_ptr<UITextField> m_durationField;
-	std::shared_ptr<UITextField> m_fpsField;
+	std::shared_ptr<UIContainer> m_renderPanel{ nullptr };
+	std::shared_ptr<UITextField> m_clipXField{ nullptr };
+	std::shared_ptr<UITextField> m_clipYField{ nullptr };
+	std::shared_ptr<UITextField> m_durationField{ nullptr };
+	std::shared_ptr<UITextField> m_fpsField{ nullptr };
 };

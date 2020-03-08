@@ -89,6 +89,20 @@ Emitter *EmitterRenderer::getEmitter(int index) const
     return m_emitters[index].get();
 }
 
+glm::ivec2 EmitterRenderer::getClipSize() const
+{
+    return m_clipSize;
+}
+
+void EmitterRenderer::setClipSize(glm::ivec2 size)
+{
+    if (size.x > 0)
+        m_clipSize.x = size.x;
+
+    if (size.y > 0)
+        m_clipSize.y = size.y;
+}
+
 void EmitterRenderer::toggleEmitter(int index, bool isEnabled)
 {
     if (m_emitters.empty())
