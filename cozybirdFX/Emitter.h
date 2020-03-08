@@ -13,14 +13,17 @@ class Emitter
 public:
 	Emitter();
 
-	void update(float deltaTime, std::shared_ptr<Shader> updateShader);
+	void update(float deltaTime, float currentTime, std::shared_ptr<Shader> updateShader);
+
+	// Render to scene.
 	void render(Camera *camera, std::shared_ptr<Shader> renderShader);
+
+	// Render to frame buffer.
+	void render(std::shared_ptr<Shader> renderShader);
 
 	void clear();
 
 	int getNumParticles() const;
-
-	Texture *getOutputTexture() const;
 
 	// Setter functions.
 	void setTexture(std::shared_ptr<Texture> texture);
@@ -47,9 +50,6 @@ public:
 	float getDurationMin() const;
 	float getDurationOffset() const;
 
-	void outputToTexture(std::shared_ptr<Shader> updateShader,
-		std::shared_ptr<Shader> renderShader);
-
 private:
 	enum ParticleType
 	{
@@ -68,10 +68,6 @@ private:
 		// This is the integer representation of ParticleType.
 		int type;
 	};
-
-	void render(std::shared_ptr<Shader> renderShader);
-
-	void createFramebuffer(glm::ivec2 textureSize);
 
 	// Transform feedback buffer.
 	// This is used to hold output values from the geometry shader.
@@ -124,14 +120,4 @@ private:
 	// The time to live for the particle.
 	float m_durationMin{ 2.f };
 	float m_durationOffset{ 0.3f };
-
-	// The duration of the emitter's animation.
-	float m_currentTime{ 0.f };
-	float m_emitterDuration{ 3.f };
-
-	// Buffers for rendering to texture.
-	unsigned int m_fbo{ 0 };
-	std::shared_ptr<Texture> m_outputTexture{ nullptr };
-
-	glm::ivec2 m_clipSize{ 400.f, 400.f };
 };

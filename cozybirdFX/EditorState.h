@@ -8,6 +8,7 @@
 #include <vector>
 
 class Engine;
+class EmitterRenderer;
 class TextRenderer;
 class UIRenderer;
 class IUserInterface;
@@ -18,7 +19,8 @@ class UITextField;
 class EditorState : public IState
 {
 public:
-	EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer);
+	EditorState(Engine *engine, EmitterRenderer *eRenderer, 
+		TextRenderer *tRenderer, UIRenderer *uRenderer);
 
 	virtual void handleInput(InputManager *inputManager);
 
@@ -28,13 +30,15 @@ public:
 
 private:
 	// Initialize UI elements.
-	void initTopLeftPanel(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initTopLeftPanel(Engine *engine, EmitterRenderer* eRenderer, 
+		TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initTopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initBottomPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initVisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 	void initMovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
-	void initEmittersPanel(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer);
+	void initEmittersPanel(Engine *engine, TextRenderer *tRenderer, 
+		UIRenderer *uRenderer);
 	void initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
 
 	// Store the current window size.

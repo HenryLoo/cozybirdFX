@@ -25,10 +25,11 @@ namespace
     const glm::vec2 TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
 }
 
-EditorState::EditorState(Engine *engine, TextRenderer *tRenderer, UIRenderer *uRenderer)
+EditorState::EditorState(Engine *engine, EmitterRenderer *eRenderer, 
+    TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
     // Initialize UI panels.
-    initTopLeftPanel(engine, tRenderer, uRenderer);
+    initTopLeftPanel(engine, eRenderer, tRenderer, uRenderer);
     initTopRightPanel(tRenderer, uRenderer);
     initBottomPanel(tRenderer, uRenderer);
     initParticlesPanel(tRenderer, uRenderer);
@@ -214,8 +215,8 @@ void EditorState::updateUIFromEmitter(Engine *engine, int index)
     m_bSlider->setValue(static_cast<int>(colour.b * COLOUR_RANGE.y));
 }
 
-void EditorState::initTopLeftPanel(Engine *engine, TextRenderer *tRenderer, 
-    UIRenderer *uRenderer)
+void EditorState::initTopLeftPanel(Engine *engine, EmitterRenderer *eRenderer, 
+    TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
     m_topLeftPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(0.f, -1.f));
@@ -228,12 +229,13 @@ void EditorState::initTopLeftPanel(Engine *engine, TextRenderer *tRenderer,
         }) };
     m_topLeftPanel->addElement(fileButton);
 
+    glm::ivec2 windowSize{ engine->getWindowSize() };
     auto exportButton{ std::make_shared<UIButton>("Export",
         BUTTON_SIZE, false,
-        [engine]()
+        [eRenderer, windowSize]()
         {
             std::cout << "Export" << std::endl;
-            //engine->exportSpriteSheet();
+            eRenderer->exportSpriteSheet(windowSize);
         }) };
     m_topLeftPanel->addElement(exportButton);
 

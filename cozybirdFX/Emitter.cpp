@@ -95,7 +95,7 @@ Emitter::Emitter()
     }
 }
 
-void Emitter::update(float deltaTime, std::shared_ptr<Shader> updateShader)
+void Emitter::update(float deltaTime, float currentTime, std::shared_ptr<Shader> updateShader)
 {
     updateShader->use();
 
@@ -113,10 +113,7 @@ void Emitter::update(float deltaTime, std::shared_ptr<Shader> updateShader)
     // Set the seed.
     //std::random_device randdev;
     //std::mt19937 generator(randdev());
-    std::mt19937 generator(static_cast<unsigned int>(m_currentTime));
-    m_currentTime += deltaTime;
-    if (m_currentTime >= m_emitterDuration)
-        m_currentTime = 0.f;
+    std::mt19937 generator(static_cast<unsigned int>(currentTime));
     std::uniform_real_distribution<> distrib(-1, 1);
     updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
@@ -191,11 +188,6 @@ void Emitter::clear()
 int Emitter::getNumParticles() const
 {
     return m_numParticles;
-}
-
-Texture *Emitter::getOutputTexture() const
-{
-    return m_outputTexture.get();
 }
 
 void Emitter::setTexture(std::shared_ptr<Texture> texture)
@@ -301,85 +293,6 @@ float Emitter::getDurationMin() const
 float Emitter::getDurationOffset() const
 {
     return m_durationOffset;
-}
-
-void Emitter::createFramebuffer(glm::ivec2 textureSize)
-{
-    // Delete any existing old buffers.
-    if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
-
-    // Set up buffers for rendering to texture.
-    glGenFramebuffers(1, &m_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-
-    unsigned int outputTexture;
-    glGenTextures(1, &outputTexture);
-    glBindTexture(GL_TEXTURE_2D, outputTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureSize.x, textureSize.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outputTexture, 0);
-    m_outputTexture = std::make_shared<Texture>(outputTexture, textureSize.x, textureSize.y, 4);
-
-    // Check if the framebuffer is complete.
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Emitter::createFramebuffer: Framebuffer not complete." << std::endl;
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void Emitter::outputToTexture(std::shared_ptr<Shader> updateShader, 
-    std::shared_ptr<Shader> renderShader)
-{
-    // Get projection matrix.
-    glm::mat4 view{ glm::mat4(1.f) };
-    glm::vec2 halfClipSize{ m_clipSize.x / 2.f, m_clipSize.y / 2.f };
-    glm::mat4 proj{ glm::ortho(
-        -halfClipSize.x, halfClipSize.x,
-        -halfClipSize.y, halfClipSize.y,
-        -1000.f, 1000.f) };
-
-    // View matrix is identity.
-    renderShader->use();
-    renderShader->setMat4("mvp", proj);
-
-    // Prepare the framebuffer's texture.
-    float fixedDeltaTime{ 1 / 24.f };
-    int numFrames{ static_cast<int>(glm::ceil(m_emitterDuration / fixedDeltaTime)) };
-    int numCols{ static_cast<int>(glm::ceil(glm::sqrt(numFrames))) };
-    int numRows{ static_cast<int>(glm::ceil(numFrames / numCols)) };
-    glm::ivec2 textureSize{ numCols * m_clipSize.x, numRows * m_clipSize.y };
-    createFramebuffer(textureSize);
-
-    // Bind to the framebuffer to draw to it.
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-
-    // Update through the entire duration once to get better loop animation.
-    // TODO: Only do this if the animation should loop.
-    m_currentTime = 0.f;
-    while (m_currentTime + fixedDeltaTime < m_emitterDuration)
-        update(fixedDeltaTime, updateShader);
-
-    // Render the particles.
-    m_currentTime = 0.f;
-    for (int j = 0; j < numRows; ++j)
-    {
-        for (int i = 0; i < numCols; ++i)
-        {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
-                m_clipSize.x, m_clipSize.y);
-            render(renderShader);
-
-            update(fixedDeltaTime, updateShader);
-        }
-    }
-
-    // Reset configurations after rendering.
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Emitter::render(std::shared_ptr<Shader> renderShader)

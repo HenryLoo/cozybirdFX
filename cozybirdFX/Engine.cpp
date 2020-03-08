@@ -41,8 +41,8 @@ Engine::Engine(GLFWwindow *window) :
     m_camera = std::make_unique<Camera>(windowSize, 1.f);
 
     // Default to editor state.
-    EditorState *state{ new EditorState(this, textRenderer.get(), 
-        uiRenderer.get()) };
+    EditorState *state{ new EditorState(this, m_emitterRenderer.get(),
+        textRenderer.get(), uiRenderer.get()) };
     pushState(state);
 
     // Add renderers to the list.
