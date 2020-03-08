@@ -19,7 +19,7 @@ namespace
     const glm::vec2 TWO_VAL_SIZE{ 170.f, ONE_VAL_SIZE.y };
     const glm::vec2 LABEL_SIZE{ 200.f, 16.f };
     const glm::vec2 COLOUR_RANGE{ 0.f, 255.f };
-    const glm::vec2 COLOUR_SIZE{ 105.f, ONE_VAL_SIZE.y };
+    const glm::vec2 COLOUR_SIZE{ 75.f, ONE_VAL_SIZE.y };
     const glm::vec2 BUTTON_SIZE{ 100.f, 32.f };
     const glm::vec2 ONE_BUTTON_SIZE{ ONE_VAL_SIZE.x, BUTTON_SIZE.y };
     const glm::vec2 TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
@@ -97,12 +97,6 @@ void EditorState::update(Engine *engine, float deltaTime)
     if (emitter == nullptr)
         return;
 
-    // Set colour.
-    float red{ m_rSlider->getValue() / 255.f };
-    float green{ m_gSlider->getValue() / 255.f };
-    float blue{ m_bSlider->getValue() / 255.f };
-    emitter->setColour(glm::vec3(red, green, blue));
-
     // Set position.
     glm::vec2 pos;
     bool isPosX{ m_xField->getValue(pos.x) };
@@ -164,21 +158,42 @@ void EditorState::update(Engine *engine, float deltaTime)
 
     // Set duration.
     float durationMin;
-    bool isDurationMin{ m_durationMinField->getValue(durationMin) };
+    bool isDurationMin{ m_lifeMinField->getValue(durationMin) };
     if (isDurationMin)
     {
-        emitter->setDurationMin(durationMin);
+        emitter->setLifeMin(durationMin);
     }
 
     // Convert max to offset.
     float durationMax;
-    bool isDurationMax{ m_durationMaxField->getValue(durationMax) };
+    bool isDurationMax{ m_lifeMaxField->getValue(durationMax) };
     if (isDurationMin || isDurationMax)
     {
         float durationOffset{ durationMax - durationMin };
         durationOffset = glm::clamp(durationOffset, 0.f, durationOffset);
-        emitter->setDurationOffset(durationOffset);
+        emitter->setLifeOffset(durationOffset);
     }
+
+    // Set colour.
+    float red{ m_rSlider->getValue() / COLOUR_RANGE.y };
+    float green{ m_gSlider->getValue() / COLOUR_RANGE.y };
+    float blue{ m_bSlider->getValue() / COLOUR_RANGE.y };
+    float alpha{ m_aSlider->getValue() / COLOUR_RANGE.y };
+    emitter->setColour(glm::vec4(red, green, blue, alpha));
+
+    // Set birth colour.
+    float birthRed{ m_birthRSlider->getValue() / COLOUR_RANGE.y };
+    float birthGreen{ m_birthGSlider->getValue() / COLOUR_RANGE.y };
+    float birthBlue{ m_birthBSlider->getValue() / COLOUR_RANGE.y };
+    float birthAlpha{ m_birthASlider->getValue() / COLOUR_RANGE.y };
+    emitter->setBirthColour(glm::vec4(birthRed, birthGreen, birthBlue, birthAlpha));
+
+    // Set death colour.
+    float deathRed{ m_deathRSlider->getValue() / COLOUR_RANGE.y };
+    float deathGreen{ m_deathGSlider->getValue() / COLOUR_RANGE.y };
+    float deathBlue{ m_deathBSlider->getValue() / COLOUR_RANGE.y };
+    float deathAlpha{ m_deathASlider->getValue() / COLOUR_RANGE.y };
+    emitter->setDeathColour(glm::vec4(deathRed, deathGreen, deathBlue, deathAlpha));
 }
 
 void EditorState::updateUIFromEmitter(Engine *engine, int index)
@@ -205,14 +220,27 @@ void EditorState::updateUIFromEmitter(Engine *engine, int index)
 
     m_sizeField->setValue(emitter->getSize());
 
-    float durationMin{ emitter->getDurationMin() };
-    m_durationMinField->setValue(durationMin);
-    m_durationMaxField->setValue(durationMin + emitter->getDurationOffset());
+    float durationMin{ emitter->getLifeMin() };
+    m_lifeMinField->setValue(durationMin);
+    m_lifeMaxField->setValue(durationMin + emitter->getLifeOffset());
 
-    glm::vec3 colour{ emitter->getColour() };
+    glm::vec4 colour{ emitter->getColour() };
     m_rSlider->setValue(static_cast<int>(colour.r * COLOUR_RANGE.y));
     m_gSlider->setValue(static_cast<int>(colour.g * COLOUR_RANGE.y));
     m_bSlider->setValue(static_cast<int>(colour.b * COLOUR_RANGE.y));
+    m_aSlider->setValue(static_cast<int>(colour.a * COLOUR_RANGE.y));
+
+    glm::vec4 birthColour{ emitter->getBirthColour() };
+    m_birthRSlider->setValue(static_cast<int>(birthColour.r * COLOUR_RANGE.y));
+    m_birthGSlider->setValue(static_cast<int>(birthColour.g * COLOUR_RANGE.y));
+    m_birthBSlider->setValue(static_cast<int>(birthColour.b * COLOUR_RANGE.y));
+    m_birthASlider->setValue(static_cast<int>(birthColour.a * COLOUR_RANGE.y));
+
+    glm::vec4 deathColour{ emitter->getDeathColour() };
+    m_deathRSlider->setValue(static_cast<int>(deathColour.r * COLOUR_RANGE.y));
+    m_deathGSlider->setValue(static_cast<int>(deathColour.g * COLOUR_RANGE.y));
+    m_deathBSlider->setValue(static_cast<int>(deathColour.b * COLOUR_RANGE.y));
+    m_deathASlider->setValue(static_cast<int>(deathColour.a * COLOUR_RANGE.y));
 }
 
 void EditorState::initTopLeftPanel(Engine *engine, EmitterRenderer *eRenderer, 
@@ -409,15 +437,15 @@ void EditorState::initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRende
     m_particlesPanel->addElement(m_delayField);
 
     m_particlesPanel->addNewLine();
-    auto durationLabel{ std::make_shared<UIText>("Duration", LABEL_SIZE) };
-    m_particlesPanel->addElement(durationLabel);
+    auto lifeLabel{ std::make_shared<UIText>("Particle Life", LABEL_SIZE) };
+    m_particlesPanel->addElement(lifeLabel);
 
     m_particlesPanel->addNewHalfLine();
-    m_durationMinField = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_durationMinField);
+    m_lifeMinField = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
+    m_particlesPanel->addElement(m_lifeMinField);
 
-    m_durationMaxField = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_durationMaxField);
+    m_lifeMaxField = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
+    m_particlesPanel->addElement(m_lifeMaxField);
 
     m_particlesPanel->addNewLine();
     auto velXLabel{ std::make_shared<UIText>("Velocity.x", LABEL_SIZE) };
@@ -471,6 +499,9 @@ void EditorState::initVisualsPanel(TextRenderer *tRenderer, UIRenderer *uRendere
     m_bSlider = std::make_shared<UISlider>("B", COLOUR_RANGE, COLOUR_SIZE);
     m_visualsPanel->addElement(m_bSlider);
 
+    m_aSlider = std::make_shared<UISlider>("A", COLOUR_RANGE, COLOUR_SIZE);
+    m_visualsPanel->addElement(m_aSlider);
+
     m_visualsPanel->addNewLine();
     auto birthColourLabel{ std::make_shared<UIText>("Birth Colour", LABEL_SIZE) };
     m_visualsPanel->addElement(birthColourLabel);
@@ -485,6 +516,9 @@ void EditorState::initVisualsPanel(TextRenderer *tRenderer, UIRenderer *uRendere
     m_birthBSlider = std::make_shared<UISlider>("B", COLOUR_RANGE, COLOUR_SIZE);
     m_visualsPanel->addElement(m_birthBSlider);
 
+    m_birthASlider = std::make_shared<UISlider>("A", COLOUR_RANGE, COLOUR_SIZE);
+    m_visualsPanel->addElement(m_birthASlider);
+
     m_visualsPanel->addNewLine();
     auto deathColourLabel{ std::make_shared<UIText>("Death Colour", LABEL_SIZE) };
     m_visualsPanel->addElement(deathColourLabel);
@@ -498,6 +532,9 @@ void EditorState::initVisualsPanel(TextRenderer *tRenderer, UIRenderer *uRendere
 
     m_deathBSlider = std::make_shared<UISlider>("B", COLOUR_RANGE, COLOUR_SIZE);
     m_visualsPanel->addElement(m_deathBSlider);
+
+    m_deathASlider = std::make_shared<UISlider>("A", COLOUR_RANGE, COLOUR_SIZE);
+    m_visualsPanel->addElement(m_deathASlider);
 
     m_visualsPanel->addNewLine();
     auto textureLabel{ std::make_shared<UIText>("Particle Texture", LABEL_SIZE) };

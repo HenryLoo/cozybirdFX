@@ -16,8 +16,8 @@ namespace
     {
        "gsPosition",
        "gsVelocity",
-       "gsColour",
-       "gsDuration",
+       "gsCurrentLife",
+       "gsLife",
        "gsSize",
        "gsType",
     };

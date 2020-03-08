@@ -13,45 +13,11 @@
 
 namespace
 {
-    const int NUM_PARTICLE_ATTRIBUTES{ 6 };
-
-    const char *PARTICLE_ATTRIBUTES[NUM_PARTICLE_ATTRIBUTES]
-    {
-       "gsPosition",
-       "gsVelocity",
-       "gsColour",
-       "gsDuration",
-       "gsSize",
-       "gsType",
-    };
-
     const int MAX_PARTICLES{ 1000 };
 }
 
 Emitter::Emitter()
 {
-    //// Create update shader program.
-    //m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
-    //glTransformFeedbackVaryings(m_updateShader->getProgramId(),
-    //    NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
-    //m_updateShader->link();
-
-    //// Create render shader program.
-    //m_renderShader = assetLoader->load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
-    //m_renderShader->link();
-
-    // Calculate axes for billboarding.
-    // View vector doesn't change, assuming that camera is fixed.
-    //m_renderShader->use();
-    //glm::vec3 viewVec{ 0.f, 0.f, -1.f };
-    //glm::vec3 upVec{ 0.f, 1.f, 0.f };
-    //glm::vec3 axis1{ glm::cross(viewVec, upVec) };
-    //axis1 = glm::normalize(axis1);
-    //glm::vec3 axis2{ glm::cross(viewVec, axis1) };
-    //axis2 = glm::normalize(axis2);
-    //m_renderShader->setVec3("axis1", axis1);
-    //m_renderShader->setVec3("axis2", axis2);
-
     //glGenTransformFeedbacks(1, &m_transFeedbackBuffer);
     glGenBuffers(1, &m_transFeedbackBuffer);
     glGenQueries(1, &m_query);
@@ -77,25 +43,26 @@ Emitter::Emitter()
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(2 * sizeof(float)));
 
-        // Colour
+        // Current particle life
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(4 * sizeof(float)));
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(4 * sizeof(float)));
 
-        // Duration
+        // Total particle life
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(7 * sizeof(float)));
+        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(5 * sizeof(float)));
 
         // Size
         glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(8 * sizeof(float)));
+        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(6 * sizeof(float)));
 
         // Type
         glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(9 * sizeof(float)));
+        glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(7 * sizeof(float)));
     }
 }
 
-void Emitter::update(float deltaTime, float currentTime, std::shared_ptr<Shader> updateShader)
+void Emitter::update(float deltaTime, float currentTime, 
+    std::shared_ptr<Shader> updateShader)
 {
     updateShader->use();
 
@@ -105,9 +72,8 @@ void Emitter::update(float deltaTime, float currentTime, std::shared_ptr<Shader>
     updateShader->setVec2("emVelocityMin", m_velocityMin);
     updateShader->setVec2("emVelocityOffset", m_velocityOffset);
     updateShader->setVec2("emAcceleration", m_acceleration);
-    updateShader->setVec3("emColour", m_colour);
-    updateShader->setFloat("emDurationMin", m_durationMin);
-    updateShader->setFloat("emDurationOffset", m_durationOffset);
+    updateShader->setFloat("emLifeMin", m_lifeMin);
+    updateShader->setFloat("emLifeOffset", m_lifeOffset);
     updateShader->setFloat("emSize", m_size);
 
     // Set the seed.
@@ -176,6 +142,9 @@ void Emitter::render(Camera *camera, std::shared_ptr<Shader> renderShader)
     glm::mat4 mvp = proj * view;
     renderShader->use();
     renderShader->setMat4("mvp", mvp);
+    renderShader->setVec4("colour", m_colour);
+    renderShader->setVec4("birthColour", m_birthColour);
+    renderShader->setVec4("deathColour", m_deathColour);
 
     // Render the particles.
     render(renderShader);
@@ -230,19 +199,29 @@ void Emitter::setSize(float size)
     m_size = size;
 }
 
-void Emitter::setColour(glm::vec3 colour)
+void Emitter::setColour(glm::vec4 colour)
 {
     m_colour = colour;
 }
 
-void Emitter::setDurationMin(float duration)
+void Emitter::setLifeMin(float duration)
 {
-    m_durationMin = duration;
+    m_lifeMin = duration;
 }
 
-void Emitter::setDurationOffset(float duration)
+void Emitter::setLifeOffset(float duration)
 {
-    m_durationOffset = duration;
+    m_lifeOffset = duration;
+}
+
+void Emitter::setBirthColour(glm::vec4 colour)
+{
+    m_birthColour = colour;
+}
+
+void Emitter::setDeathColour(glm::vec4 colour)
+{
+    m_deathColour = colour;
 }
 
 int Emitter::getNumToGenerate() const
@@ -280,19 +259,29 @@ float Emitter::getSize() const
     return m_size;
 }
 
-glm::vec3 Emitter::getColour() const
+glm::vec4 Emitter::getColour() const
 {
     return m_colour;
 }
 
-float Emitter::getDurationMin() const
+float Emitter::getLifeMin() const
 {
-    return m_durationMin;
+    return m_lifeMin;
 }
 
-float Emitter::getDurationOffset() const
+float Emitter::getLifeOffset() const
 {
-    return m_durationOffset;
+    return m_lifeOffset;
+}
+
+glm::vec4 Emitter::getBirthColour() const
+{
+    return m_birthColour;
+}
+
+glm::vec4 Emitter::getDeathColour() const
+{
+    return m_deathColour;
 }
 
 void Emitter::render(std::shared_ptr<Shader> renderShader)

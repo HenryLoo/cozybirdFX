@@ -68,20 +68,23 @@ private:
 	std::shared_ptr<UITextField> m_accelXField;
 	std::shared_ptr<UITextField> m_accelYField;
 	std::shared_ptr<UITextField> m_sizeField;
-	std::shared_ptr<UITextField> m_durationMinField;
-	std::shared_ptr<UITextField> m_durationMaxField;
+	std::shared_ptr<UITextField> m_lifeMinField;
+	std::shared_ptr<UITextField> m_lifeMaxField;
 
 	// Visuals panel elements.
 	std::shared_ptr<UIContainer> m_visualsPanel;
 	std::shared_ptr<UISlider> m_rSlider;
 	std::shared_ptr<UISlider> m_gSlider;
 	std::shared_ptr<UISlider> m_bSlider;
+	std::shared_ptr<UISlider> m_aSlider;
 	std::shared_ptr<UISlider> m_birthRSlider;
 	std::shared_ptr<UISlider> m_birthGSlider;
 	std::shared_ptr<UISlider> m_birthBSlider;
+	std::shared_ptr<UISlider> m_birthASlider;
 	std::shared_ptr<UISlider> m_deathRSlider;
 	std::shared_ptr<UISlider> m_deathGSlider;
 	std::shared_ptr<UISlider> m_deathBSlider;
+	std::shared_ptr<UISlider> m_deathASlider;
 
 	// Movement panel elements.
 	std::shared_ptr<UIContainer> m_movementPanel;

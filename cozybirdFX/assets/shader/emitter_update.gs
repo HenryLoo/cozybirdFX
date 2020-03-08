@@ -9,16 +9,16 @@ layout(max_vertices = 50) out;
 // Particle attributes from the vertex shader.
 in vec2 vsPosition[];
 in vec2 vsVelocity[];
-in vec3 vsColour[];
-in float vsDuration[];
+in float vsCurrentLife[];
+in float vsLife[];
 in float vsSize[];
 in int vsType[];
 
 // Particle attributes to output for transform feedback.
 out vec2 gsPosition;
 out vec2 gsVelocity;
-out vec3 gsColour;
-out float gsDuration;
+out float gsCurrentLife;
+out float gsLife;
 out float gsSize;
 out int gsType;
 
@@ -27,9 +27,8 @@ uniform vec2 emPos;
 uniform vec2 emVelocityMin;
 uniform vec2 emVelocityOffset;
 uniform vec2 emAcceleration;
-uniform vec3 emColour;
-uniform float emDurationMin;
-uniform float emDurationOffset;
+uniform float emLifeMin;
+uniform float emLifeOffset;
 uniform float emSize;
 uniform int emNumToGenerate;
 
@@ -72,8 +71,8 @@ void main()
         gsVelocity += emAcceleration * deltaTime;
     }
 
-    gsColour = vsColour[0];
-    gsDuration = vsDuration[0] - deltaTime;
+    gsCurrentLife = vsCurrentLife[0] - deltaTime;
+    gsLife = vsLife[0];
     gsSize = vsSize[0];
     gsType = vsType[0];
 
@@ -94,8 +93,8 @@ void main()
                 emVelocityOffset.y * noise()
             );
             gsVelocity = emVelocityMin + velOffset;
-            gsColour = emColour;
-            gsDuration = emDurationMin + emDurationOffset * noise();
+            gsCurrentLife = emLifeMin + emLifeOffset * noise();
+            gsLife = gsCurrentLife;
             gsSize = emSize;
 
             // Emit the particle.
@@ -105,7 +104,7 @@ void main()
         }
     }
     // Otherwise, this is a particle. So just emit it.
-    else if (gsDuration > 0.0)
+    else if (gsCurrentLife > 0.0)
     {
         EmitVertex();
         EndPrimitive();

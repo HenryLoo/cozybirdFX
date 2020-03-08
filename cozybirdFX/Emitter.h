@@ -34,9 +34,11 @@ public:
 	void setVelocityOffset(glm::vec2 velocity);
 	void setAcceleration(glm::vec2 acceleration);
 	void setSize(float size);
-	void setColour(glm::vec3 colour);
-	void setDurationMin(float duration);
-	void setDurationOffset(float duration);
+	void setColour(glm::vec4 colour);
+	void setLifeMin(float duration);
+	void setLifeOffset(float duration);
+	void setBirthColour(glm::vec4 colour);
+	void setDeathColour(glm::vec4 colour);
 
 	// Getter functions.
 	int getNumToGenerate() const;
@@ -46,9 +48,11 @@ public:
 	glm::vec2 getVelocityOffset() const;
 	glm::vec2 getAcceleration() const;
 	float getSize() const;
-	glm::vec3 getColour() const;
-	float getDurationMin() const;
-	float getDurationOffset() const;
+	glm::vec4 getColour() const;
+	float getLifeMin() const;
+	float getLifeOffset() const;
+	glm::vec4 getBirthColour() const;
+	glm::vec4 getDeathColour() const;
 
 private:
 	enum ParticleType
@@ -61,8 +65,8 @@ private:
 	{
 		glm::vec2 position;
 		glm::vec2 velocity;
-		glm::vec3 colour;
-		float duration;
+		float currentLife;
+		float life;
 		float size;
 
 		// This is the integer representation of ParticleType.
@@ -115,9 +119,15 @@ private:
 	float m_size{ 32.f };
 
 	// The colour of the particle.
-	glm::vec3 m_colour{ 0.2f };
+	glm::vec4 m_colour{ 0.2f, 0.2f, 0.2f, 1.f };
 
 	// The time to live for the particle.
-	float m_durationMin{ 2.f };
-	float m_durationOffset{ 0.3f };
+	float m_lifeMin{ 2.f };
+	float m_lifeOffset{ 0.3f };
+
+	// The colour of the particle when it is created.
+	glm::vec4 m_birthColour{ 0.2f, 0.2f, 0.2f, 0.f };
+
+	// The colour of the particle when it is expiring.
+	glm::vec4 m_deathColour{ 0.2f, 0.2f, 0.2f, 0.f };
 };
