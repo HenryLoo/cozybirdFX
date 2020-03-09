@@ -94,6 +94,16 @@ glm::ivec2 EmitterRenderer::getClipSize() const
     return m_clipSize;
 }
 
+float EmitterRenderer::getDuration() const
+{
+	return m_duration;
+}
+
+int EmitterRenderer::getExportFPS() const
+{
+    return m_exportFPS;
+}
+
 void EmitterRenderer::setClipSize(glm::ivec2 size)
 {
     if (size.x > 0)
@@ -101,6 +111,16 @@ void EmitterRenderer::setClipSize(glm::ivec2 size)
 
     if (size.y > 0)
         m_clipSize.y = size.y;
+}
+
+void EmitterRenderer::setDuration(float duration)
+{
+    m_duration = duration;
+}
+
+void EmitterRenderer::setExportFPS(int fps)
+{
+    m_exportFPS = fps;
 }
 
 void EmitterRenderer::toggleEmitter(int index, bool isEnabled)
@@ -127,7 +147,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
     m_renderShader->setMat4("mvp", proj);
 
     // Prepare the framebuffer's texture.
-    float fixedDeltaTime{ 1 / 24.f };
+    float fixedDeltaTime{ 1.f / m_exportFPS };
     int numFrames{ static_cast<int>(glm::ceil(m_duration / fixedDeltaTime)) };
     int numCols{ static_cast<int>(glm::ceil(glm::sqrt(numFrames))) };
     int numRows{ static_cast<int>(glm::ceil(numFrames / numCols)) };

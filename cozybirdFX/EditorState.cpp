@@ -55,6 +55,8 @@ EditorState::EditorState(Engine *engine,
     glm::ivec2 clipSize{ eRenderer->getClipSize() };
     m_clipXField->setValue(clipSize.x);
     m_clipYField->setValue(clipSize.y);
+    m_durationField->setValue(eRenderer->getDuration());
+    m_fpsField->setValue(eRenderer->getExportFPS());
 }
 
 void EditorState::handleInput(InputManager *inputManager)
@@ -228,6 +230,22 @@ void EditorState::update(Engine *engine, float deltaTime)
         updateClipBoxPos(viewportSize);
 
         m_eRenderer->setClipSize(clipSize);
+    }
+
+    // Set the animation duration.
+    float duration;
+    bool isDuration{ m_durationField->getValue(duration) };
+    if (isDuration)
+    {
+        m_eRenderer->setDuration(duration);
+    }
+
+    // Set the export FPS.
+    int fps;
+    bool isFPS{ m_fpsField->getValue(fps) };
+    if (isFPS)
+    {
+        m_eRenderer->setExportFPS(fps);
     }
 }
 

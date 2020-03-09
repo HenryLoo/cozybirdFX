@@ -16,14 +16,16 @@ public:
 
 	virtual void render(float deltaTime, Camera *camera);
 
-	// Get emitter by index.
+	// Getter functions.
 	Emitter *getEmitter(int index) const;
-
-	// Get the clip size.
 	glm::ivec2 getClipSize() const;
+	float getDuration() const;
+	int getExportFPS() const;
 
-	// Set the clip size.
+	// Setter functions.
 	void setClipSize(glm::ivec2 size);
+	void setDuration(float duration);
+	void setExportFPS(int fps);
 
 	// Toggle an emitter.
 	void toggleEmitter(int index, bool isEnabled);
@@ -54,6 +56,9 @@ private:
 
 	// The size of each clip in the animation.
 	glm::ivec2 m_clipSize{ 400.f, 400.f };
+
+	// The frame rate to render the animation at when exporting.
+	int m_exportFPS{ 24 };
 
 	// Buffers for rendering to texture.
 	unsigned int m_fbo{ 0 };
