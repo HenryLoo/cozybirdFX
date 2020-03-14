@@ -21,7 +21,8 @@ public:
 	// Render to frame buffer.
 	void render(std::shared_ptr<Shader> renderShader);
 
-	void clear();
+	// Clear all particles for this emitter.
+	void clear(std::shared_ptr<Shader> updateShader);
 
 	int getNumParticles() const;
 
@@ -72,6 +73,9 @@ private:
 		// This is the integer representation of ParticleType.
 		int type;
 	};
+
+	// Common update code used by both regular updates and particle clears.
+	void update();
 
 	// Transform feedback buffer.
 	// This is used to hold output values from the geometry shader.

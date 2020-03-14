@@ -37,6 +37,8 @@ uniform float deltaTime;
 uniform float randomSeed;
 float localSeed;
 
+uniform bool isClearParticles;
+
 // Rand and noise functions from:
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
 float rand(float n)
@@ -104,7 +106,7 @@ void main()
         }
     }
     // Otherwise, this is a particle. So just emit it.
-    else if (gsCurrentLife > 0.0)
+    else if (!isClearParticles && gsCurrentLife > 0.0)
     {
         EmitVertex();
         EndPrimitive();

@@ -62,21 +62,30 @@ EmitterRenderer::EmitterRenderer(AssetLoader *assetLoader)
 
 void EmitterRenderer::render(float deltaTime, Camera *camera)
 {    
+    // Skip render if the animation is not playing.
+    if (!m_isPlaying)
+        return;
+
     // Render all emitters.
     for (int i = 0; i < m_emitters.size(); ++i)
     {
-        // Skip if disabled.
-        if (!m_isEnabled[i])
-            continue;
-
         auto &emitter{ m_emitters[i] };
-        emitter->update(deltaTime, m_currentTime, m_updateShader);
-        emitter->render(camera, m_renderShader);
+
+        if (m_isLooping ||
+            (!m_isLooping && m_currentTime < m_duration))
+            emitter->update(deltaTime, m_currentTime, m_updateShader);
+
+        // Hide the emitter if not enabled.
+        if (m_isEnabled[i])
+            emitter->render(camera, m_renderShader);
     }
 
     // Update the current time.
-    m_currentTime += deltaTime;
-    if (m_currentTime >= m_duration)
+    if (m_isLooping ||
+        (!m_isLooping && m_currentTime < m_duration))
+        m_currentTime += deltaTime;
+
+    if (m_isLooping && m_currentTime >= m_duration)
         m_currentTime = 0.f;
 }
 
@@ -104,6 +113,11 @@ int EmitterRenderer::getExportFPS() const
     return m_exportFPS;
 }
 
+bool EmitterRenderer::isLooping() const
+{
+	return m_isLooping;
+}
+
 void EmitterRenderer::setClipSize(glm::ivec2 size)
 {
     if (size.x > 0)
@@ -121,6 +135,18 @@ void EmitterRenderer::setDuration(float duration)
 void EmitterRenderer::setExportFPS(int fps)
 {
     m_exportFPS = fps;
+}
+
+void EmitterRenderer::setLooping(bool isLooping)
+{
+    m_isLooping = isLooping;
+    reset();
+}
+
+void EmitterRenderer::setPlaying(bool isPlaying)
+{
+    m_isPlaying = isPlaying;
+    reset();
 }
 
 void EmitterRenderer::toggleEmitter(int index, bool isEnabled)
@@ -157,21 +183,33 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
     // Bind to the framebuffer to draw to it.
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
-    // Update through the entire duration once to get better loop animation.
-    // TODO: Only do this if the animation should loop.
-    m_currentTime = 0.f;
-    while (m_currentTime + fixedDeltaTime < m_duration)
+    // Clear all particles before starting to render.
+    for (int i = 0; i < m_emitters.size(); ++i)
     {
-        for (int i = 0; i < m_emitters.size(); ++i)
+        // Skip if disabled.
+        if (!m_isEnabled[i])
+            continue;
+
+        m_emitters[i]->clear(m_updateShader);
+    }
+
+    // Update through the entire duration once to get better loop animation.
+    if (m_isLooping)
+    {
+        m_currentTime = 0.f;
+        while (m_currentTime + fixedDeltaTime < m_duration)
         {
-            // Skip if disabled.
-            if (!m_isEnabled[i])
-                continue;
+            for (int i = 0; i < m_emitters.size(); ++i)
+            {
+                // Skip if disabled.
+                if (!m_isEnabled[i])
+                    continue;
 
-            m_emitters[i]->update(fixedDeltaTime, m_currentTime, m_updateShader);
+                m_emitters[i]->update(fixedDeltaTime, m_currentTime, m_updateShader);
+            }
+
+            m_currentTime += fixedDeltaTime;
         }
-
-        m_currentTime += fixedDeltaTime;
     }
 
     // Render the emitters.
@@ -193,6 +231,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
                 auto &emitter{ m_emitters[k] };
                 emitter->render(m_renderShader);
                 emitter->update(fixedDeltaTime, m_currentTime, m_updateShader);
+                glEnable(GL_RASTERIZER_DISCARD);
             }
 
             m_currentTime += fixedDeltaTime;
@@ -246,4 +285,14 @@ void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void EmitterRenderer::reset()
+{
+    m_currentTime = 0.f;
+
+    for (auto &emitter : m_emitters)
+    {
+        emitter->clear(m_updateShader);
+    }
 }

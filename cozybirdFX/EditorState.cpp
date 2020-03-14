@@ -321,18 +321,21 @@ void EditorState::initTopLeftPanel(Engine *engine,
         }) };
     m_topLeftPanel->addElement(exportButton);
 
-    auto playButton{ std::make_shared<UIButton>("Play",
-        BUTTON_SIZE, false,
-        []() { std::cout << "Play" << std::endl; }) };
-    m_topLeftPanel->addElement(playButton);
-
     UIRenderer::Properties *clipSize{ m_clipSizeBox };
     auto clipButton{ std::make_shared<UIButton>("Show Clip",
        BUTTON_SIZE, true,
        [clipSize]() { clipSize->isEnabled = !clipSize->isEnabled; }) };
     m_topLeftPanel->addElement(clipButton);
 
+    auto playButton{ std::make_shared<UIButton>("Play", BUTTON_SIZE, true) };
+    playButton->setAction([eRenderer, playButton]()
+        {
+            eRenderer->setPlaying(playButton->isToggled());
+        });
+    m_topLeftPanel->addElement(playButton);
+
     m_topLeftPanel->addToRenderer(uRenderer, tRenderer);
+    playButton->setToggled(true);
     clipButton->setToggled(true);
     m_uiElements.push_back(m_topLeftPanel);
 }
@@ -741,9 +744,14 @@ void EditorState::initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer
     m_renderPanel->addNewLine();
     m_durationField = std::make_shared<UITextField>("Animation Duration", ONE_VAL_SIZE);
     m_renderPanel->addElement(m_durationField);
-
+    
     m_renderPanel->addNewLine();
-    auto loopButton{ std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE) };
+    auto loopButton{ std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true) };
+    EmitterRenderer *eRenderer{ m_eRenderer.get() };
+    loopButton->setAction([eRenderer, loopButton]()
+        {
+            eRenderer->setLooping(loopButton->isToggled());
+        });
     m_renderPanel->addElement(loopButton);
 
     m_renderPanel->addNewLine();
@@ -752,6 +760,7 @@ void EditorState::initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer
 
     m_renderPanel->addToRenderer(uRenderer, tRenderer);
     m_renderPanel->setEnabled(false);
+    loopButton->setToggled(true);
     m_uiElements.push_back(m_renderPanel);
 }
 

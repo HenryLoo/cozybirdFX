@@ -95,40 +95,7 @@ void Emitter::update(float deltaTime, float currentTime,
         updateShader->setInt("emNumToGenerate", 0);
     }
 
-    // Disable rasterization because there is no graphical output when 
-    // updating particles.
-    glEnable(GL_RASTERIZER_DISCARD);
-
-    // Set up transform feedback.
-    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transFeedbackBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, m_transFeedbackBuffer);
-    glBindVertexArray(m_vao[m_currentReadBuffer]);
-
-    // Enable velocity attribute when updating.
-    glEnableVertexAttribArray(1);
-
-    // Set the buffer to store the result of transform feedback.
-    int writeBuffer{ 1 - m_currentReadBuffer };
-    glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_particleBuffers[writeBuffer]);
-
-    // Set up the query.
-    glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, m_query);
-
-    // Perform transform feedback.
-    glBeginTransformFeedback(GL_POINTS);
-    glDrawArrays(GL_POINTS, 0, m_numParticles);
-    glEndTransformFeedback();
-
-    // Stop the query and get its results (the number of generated particles).
-    glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
-    glGetQueryObjectiv(m_query, GL_QUERY_RESULT, &m_numParticles);
-
-    // Alternate between buffers to use as the read buffer.
-    m_currentReadBuffer = 1 - m_currentReadBuffer;
-
-    // Unbind the transform feedback object.
-    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    update();
 }
 
 void Emitter::render(Camera *camera, std::shared_ptr<Shader> renderShader)
@@ -150,8 +117,14 @@ void Emitter::render(Camera *camera, std::shared_ptr<Shader> renderShader)
     render(renderShader);
 }
 
-void Emitter::clear()
+void Emitter::clear(std::shared_ptr<Shader> updateShader)
 {
+    updateShader->use();
+    updateShader->setBool("isClearParticles", true);
+
+    update();
+
+    updateShader->setBool("isClearParticles", false);
 }
 
 int Emitter::getNumParticles() const
@@ -282,6 +255,47 @@ glm::vec4 Emitter::getBirthColour() const
 glm::vec4 Emitter::getDeathColour() const
 {
     return m_deathColour;
+}
+
+void Emitter::update()
+{
+    // Disable rasterization because there is no graphical output when 
+    // updating particles.
+    glEnable(GL_RASTERIZER_DISCARD);
+
+    // Set up transform feedback.
+    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transFeedbackBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_transFeedbackBuffer);
+    glBindVertexArray(m_vao[m_currentReadBuffer]);
+
+    // Enable velocity attribute when updating.
+    glEnableVertexAttribArray(1);
+
+    // Set the buffer to store the result of transform feedback.
+    int writeBuffer{ 1 - m_currentReadBuffer };
+    glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, m_particleBuffers[writeBuffer]);
+
+    // Set up the query.
+    glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, m_query);
+
+    // Perform transform feedback.
+    glBeginTransformFeedback(GL_POINTS);
+    glDrawArrays(GL_POINTS, 0, m_numParticles);
+    glEndTransformFeedback();
+
+    // Stop the query and get its results (the number of generated particles).
+    glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
+    glGetQueryObjectiv(m_query, GL_QUERY_RESULT, &m_numParticles);
+
+    // Alternate between buffers to use as the read buffer.
+    m_currentReadBuffer = 1 - m_currentReadBuffer;
+
+    // Unbind the transform feedback object.
+    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Reset changes.
+    glDisable(GL_RASTERIZER_DISCARD);
 }
 
 void Emitter::render(std::shared_ptr<Shader> renderShader)

@@ -21,11 +21,16 @@ public:
 	glm::ivec2 getClipSize() const;
 	float getDuration() const;
 	int getExportFPS() const;
+	bool isLooping() const;
 
 	// Setter functions.
 	void setClipSize(glm::ivec2 size);
 	void setDuration(float duration);
 	void setExportFPS(int fps);
+	void setLooping(bool isLooping);
+
+	// Set whether the animation is playing or not.
+	void setPlaying(bool isPlaying);
 
 	// Toggle an emitter.
 	void toggleEmitter(int index, bool isEnabled);
@@ -39,6 +44,9 @@ public:
 private:
 	// Create a frame buffer object for rendering to texture.
 	void createFramebuffer(glm::ivec2 textureSize);
+
+	// Reset the animation.
+	void reset();
 
 	// The renderer's shader program.
 	std::shared_ptr<Shader> m_updateShader{ nullptr };
@@ -55,10 +63,16 @@ private:
 	float m_duration{ 3.f };
 
 	// The size of each clip in the animation.
-	glm::ivec2 m_clipSize{ 400.f, 400.f };
+	glm::ivec2 m_clipSize{ 200.f, 200.f };
 
 	// The frame rate to render the animation at when exporting.
 	int m_exportFPS{ 24 };
+
+	// Flag for if the animation is looping.
+	bool m_isLooping{ true };
+
+	// Flag for if the animation is playing.
+	bool m_isPlaying{ true };
 
 	// Buffers for rendering to texture.
 	unsigned int m_fbo{ 0 };
