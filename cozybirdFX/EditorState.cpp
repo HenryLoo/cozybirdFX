@@ -198,6 +198,22 @@ void EditorState::update(Engine *engine, float deltaTime)
         emitter->setLifeOffset(durationOffset);
     }
 
+    // Set circle movement radius.
+    float circleRadius;
+    bool isCircleRadius{ m_circleRadiusField->getValue(circleRadius) };
+    if (isCircleRadius)
+    {
+        emitter->setCircleRadius(circleRadius);
+    }
+
+    // Set circle movement period.
+    float circlePeriod;
+    bool isCirclePeriod{ m_circlePeriodField->getValue(circlePeriod) };
+    if (isCirclePeriod)
+    {
+        emitter->setCirclePeriod(circlePeriod);
+    }
+
     // Set colour.
     float red{ m_rSlider->getValue() / COLOUR_RANGE.y };
     float green{ m_gSlider->getValue() / COLOUR_RANGE.y };
@@ -276,6 +292,9 @@ void EditorState::updateUIFromEmitter(Engine *engine, int index)
     float durationMin{ emitter->getLifeMin() };
     m_lifeMinField->setValue(durationMin);
     m_lifeMaxField->setValue(durationMin + emitter->getLifeOffset());
+
+    m_circleRadiusField->setValue(emitter->getCircleRadius());
+    m_circlePeriodField->setValue(emitter->getCirclePeriod());
 
     glm::vec4 colour{ emitter->getColour() };
     m_rSlider->setValue(static_cast<int>(colour.r * COLOUR_RANGE.y));
@@ -474,6 +493,14 @@ void EditorState::initBottomPanel(TextRenderer *tRenderer, UIRenderer *uRenderer
 
 void EditorState::initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
 {
+    m_delayField = std::make_shared<UITextField>("Delay Before Start", ONE_VAL_SIZE);
+    m_particlesPanel->addElement(m_delayField);
+
+    m_particlesPanel->addNewLine();
+    m_emDurationField = std::make_shared<UITextField>("Emitter Duration", ONE_VAL_SIZE);
+    m_particlesPanel->addElement(m_emDurationField);
+
+    m_particlesPanel->addNewLine();
     auto posLabel{ std::make_shared<UIText>("Position", LABEL_SIZE) };
     m_particlesPanel->addElement(posLabel);
 
@@ -495,10 +522,6 @@ void EditorState::initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRende
     m_particlesPanel->addNewLine();
     m_sizeField = std::make_shared<UITextField>("Particle Size", ONE_VAL_SIZE);
     m_particlesPanel->addElement(m_sizeField);
-
-    m_particlesPanel->addNewLine();
-    m_delayField = std::make_shared<UITextField>("Delay Before Start", ONE_VAL_SIZE);
-    m_particlesPanel->addElement(m_delayField);
 
     m_particlesPanel->addNewLine();
     auto lifeLabel{ std::make_shared<UIText>("Particle Life", LABEL_SIZE) };
@@ -665,8 +688,8 @@ void EditorState::initMovementPanel(TextRenderer *tRenderer, UIRenderer *uRender
     m_movementPanel->addElement(circleLabel);
 
     m_movementPanel->addNewHalfLine();
-    m_circleAmountField = std::make_shared<UITextField>("Amount", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_circleAmountField);
+    m_circleRadiusField = std::make_shared<UITextField>("Radius", TWO_VAL_SIZE);
+    m_movementPanel->addElement(m_circleRadiusField);
 
     m_circlePeriodField = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
     m_movementPanel->addElement(m_circlePeriodField);

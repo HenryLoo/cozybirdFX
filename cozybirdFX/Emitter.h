@@ -40,6 +40,8 @@ public:
 	void setLifeOffset(float duration);
 	void setBirthColour(glm::vec4 colour);
 	void setDeathColour(glm::vec4 colour);
+	void setCircleRadius(float radius);
+	void setCirclePeriod(float period);
 
 	// Getter functions.
 	int getNumToGenerate() const;
@@ -54,6 +56,8 @@ public:
 	float getLifeOffset() const;
 	glm::vec4 getBirthColour() const;
 	glm::vec4 getDeathColour() const;
+	float getCircleRadius() const;
+	float getCirclePeriod() const;
 
 private:
 	enum ParticleType
@@ -76,6 +80,9 @@ private:
 
 	// Common update code used by both regular updates and particle clears.
 	void update();
+
+	// Move the emitter according to its circle motion parameters.
+	void updateCircleMotion(float currentTime);
 
 	// Transform feedback buffer.
 	// This is used to hold output values from the geometry shader.
@@ -102,7 +109,10 @@ private:
 	// The number of particles to generate.
 	int m_numToGenerate{ 30 };
 
-	// The origin of the emitter.
+	// The origin position of the emitter.
+	glm::vec2 m_origin{ 0.f };
+
+	// The final position of the emitter, after performing translations.
 	glm::vec2 m_position{ 0.f };
 
 	// The time before spawning a new particle.
@@ -134,4 +144,8 @@ private:
 
 	// The colour of the particle when it is expiring.
 	glm::vec4 m_deathColour{ 0.2f, 0.2f, 0.2f, 0.f };
+
+	// Defines the circle movement pattern for this emitter.
+	float m_circleRadius{ 0.f };
+	float m_circlePeriod{ 0.f };
 };

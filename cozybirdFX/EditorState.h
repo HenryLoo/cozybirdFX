@@ -67,12 +67,13 @@ private:
 	std::shared_ptr<UIContainer> m_bottomPanel{ nullptr };
 
 	// Particles panel elements.
+	std::shared_ptr<UITextField> m_delayField{ nullptr };
+	std::shared_ptr<UITextField> m_emDurationField{ nullptr };
 	std::shared_ptr<UIContainer> m_particlesPanel{ nullptr };
 	std::shared_ptr<UITextField> m_xField{ nullptr };
 	std::shared_ptr<UITextField> m_yField{ nullptr };
 	std::shared_ptr<UITextField> m_numGenField{ nullptr };
 	std::shared_ptr<UITextField> m_spawnTimeField{ nullptr };
-	std::shared_ptr<UITextField> m_delayField{ nullptr };
 	std::shared_ptr<UITextField> m_velXMinField{ nullptr };
 	std::shared_ptr<UITextField> m_velXMaxField{ nullptr };
 	std::shared_ptr<UITextField> m_velYMinField{ nullptr };
@@ -105,7 +106,7 @@ private:
 	std::shared_ptr<UITextField> m_hSinPeriodField{ nullptr };
 	std::shared_ptr<UITextField> m_vSinAmountField{ nullptr };
 	std::shared_ptr<UITextField> m_vSinPeriodField{ nullptr };
-	std::shared_ptr<UITextField> m_circleAmountField{ nullptr };
+	std::shared_ptr<UITextField> m_circleRadiusField{ nullptr };
 	std::shared_ptr<UITextField> m_circlePeriodField{ nullptr };
 
 	// Emitters panel elements.

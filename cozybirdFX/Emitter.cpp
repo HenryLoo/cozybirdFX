@@ -64,6 +64,9 @@ Emitter::Emitter()
 void Emitter::update(float deltaTime, float currentTime, 
     std::shared_ptr<Shader> updateShader)
 {
+    // Update emitter position based on movement patterns.
+    updateCircleMotion(currentTime);
+
     updateShader->use();
 
     // Set emitter uniforms for the update shader.
@@ -144,7 +147,7 @@ void Emitter::setNumToGenerate(int num)
 
 void Emitter::setPosition(glm::vec2 position)
 {
-    m_position = position;
+    m_origin = position;
 }
 
 void Emitter::setTimeToSpawn(float duration)
@@ -197,6 +200,16 @@ void Emitter::setDeathColour(glm::vec4 colour)
     m_deathColour = colour;
 }
 
+void Emitter::setCircleRadius(float radius)
+{
+    m_circleRadius = radius;
+}
+
+void Emitter::setCirclePeriod(float period)
+{
+    m_circlePeriod = period;
+}
+
 int Emitter::getNumToGenerate() const
 {
 	return m_numToGenerate;
@@ -204,7 +217,7 @@ int Emitter::getNumToGenerate() const
 
 glm::vec2 Emitter::getPosition() const
 {
-    return m_position;
+    return m_origin;
 }
 
 float Emitter::getTimeToSpawn() const
@@ -257,6 +270,16 @@ glm::vec4 Emitter::getDeathColour() const
     return m_deathColour;
 }
 
+float Emitter::getCircleRadius() const
+{
+    return m_circleRadius;
+}
+
+float Emitter::getCirclePeriod() const
+{
+    return m_circlePeriod;
+}
+
 void Emitter::update()
 {
     // Disable rasterization because there is no graphical output when 
@@ -296,6 +319,21 @@ void Emitter::update()
 
     // Reset changes.
     glDisable(GL_RASTERIZER_DISCARD);
+}
+
+void Emitter::updateCircleMotion(float currentTime)
+{
+    // Avoid divide by zero.
+    if (m_circlePeriod == 0)
+    {
+        m_position = m_origin;
+        return;
+    }
+
+    // Parametric equation of circle: x = r*cos(t), y = r*sin(t)
+    float time = currentTime / m_circlePeriod * glm::two_pi<float>();
+    m_position.x = m_origin.x + m_circleRadius * glm::cos(time);
+    m_position.y = m_origin.y + m_circleRadius * glm::sin(time);
 }
 
 void Emitter::render(std::shared_ptr<Shader> renderShader)
