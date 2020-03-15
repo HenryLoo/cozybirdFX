@@ -5,6 +5,15 @@
 #include "Engine.h"
 #include "Texture.h"
 
+#include "TopLeftPanel.h"
+#include "TopRightPanel.h"
+#include "BottomPanel.h"
+#include "ParticlesPanel.h"
+#include "VisualsPanel.h"
+#include "MovementPanel.h"
+#include "EmittersPanel.h"
+#include "RenderPanel.h"
+
 #include "UIContainer.h"
 #include "UIButton.h"
 #include "UISlider.h"
@@ -39,32 +48,37 @@ EditorState::EditorState(Engine *engine,
     m_clipSizeBox = &*it;
 
     // Initialize UI panels.
-    initTopLeftPanel(engine, tRenderer, uRenderer);
-    initTopRightPanel(tRenderer, uRenderer);
-    initBottomPanel(tRenderer, uRenderer);
-    initParticlesPanel(tRenderer, uRenderer);
-    initVisualsPanel(tRenderer, uRenderer);
-    initMovementPanel(tRenderer, uRenderer);
-    initEmittersPanel(engine, tRenderer, uRenderer);
-    initRenderPanel(tRenderer, uRenderer);
+    m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, eRenderer, 
+        tRenderer, uRenderer, m_clipSizeBox);
+    m_particlesPanel = std::make_shared<ParticlesPanel>(tRenderer, uRenderer);
+    m_visualsPanel = std::make_shared<VisualsPanel>(tRenderer, uRenderer);
+    m_movementPanel = std::make_shared<MovementPanel>(tRenderer, uRenderer);
+    m_emittersPanel = std::make_shared<EmittersPanel>(this, engine, tRenderer, 
+        uRenderer);
+    m_renderPanel = std::make_shared<RenderPanel>(this, eRenderer, tRenderer, 
+        uRenderer, m_clipSizeBox);
+    m_topRightPanel = std::make_shared<TopRightPanel>(tRenderer, uRenderer,
+        m_particlesPanel, m_visualsPanel, m_movementPanel, m_emittersPanel,
+        m_renderPanel);
+    m_bottomPanel = std::make_shared<BottomPanel>(tRenderer, uRenderer);
+
+    m_panels.push_back(m_topLeftPanel);
+    m_panels.push_back(m_topRightPanel);
+    m_panels.push_back(m_bottomPanel);
+    m_panels.push_back(m_particlesPanel);
+    m_panels.push_back(m_visualsPanel);
+    m_panels.push_back(m_movementPanel);
+    m_panels.push_back(m_emittersPanel);
+    m_panels.push_back(m_renderPanel);
 
     // Initialize the UI with the first emitter.
-    updateUIFromEmitter(engine, 0);
-
-    // Initialize the UI with emitter renderer's settings.
-    glm::ivec2 clipSize{ eRenderer->getClipSize() };
-    m_clipXField->setValue(clipSize.x);
-    m_clipYField->setValue(clipSize.y);
-    m_durationField->setValue(eRenderer->getDuration());
-    m_fpsField->setValue(eRenderer->getExportFPS());
+    selectEmitter(engine, m_emitter);
 }
 
 void EditorState::handleInput(InputManager *inputManager)
 {
-    for (const auto &element : m_uiElements)
-    {
-        element->process(inputManager);
-    }
+    for (auto &panel : m_panels)
+        panel->handleInput(inputManager);
 }
 
 void EditorState::update(Engine *engine, float deltaTime)
@@ -76,44 +90,8 @@ void EditorState::update(Engine *engine, float deltaTime)
     glm::vec2 windowSize{ engine->getWindowSize() };
     if (m_windowSize != windowSize)
     {
-        m_windowSize = windowSize;
-
-        // Rescale and reposition side panels.
-        glm::vec2 tlSize{ m_topLeftPanel->getSize() };
-        glm::vec2 trSize{ m_topRightPanel->getSize() };
-        m_particlesPanel->setSize(glm::vec2(-1.f, windowSize.y - tlSize.y - trSize.y - 2.f));
-        glm::vec2 sideSize{ m_particlesPanel->getSize() };
-        m_particlesPanel->setPosition(glm::vec2(windowSize.x - sideSize.x, trSize.y + 1.f));
-
-        glm::vec2 sidePos{ m_particlesPanel->getPosition() };
-        m_visualsPanel->setSize(sideSize);
-        m_visualsPanel->setPosition(sidePos);
-        m_movementPanel->setSize(sideSize);
-        m_movementPanel->setPosition(sidePos);
-        m_emittersPanel->setSize(sideSize);
-        m_emittersPanel->setPosition(sidePos);
-        m_renderPanel->setSize(sideSize);
-        m_renderPanel->setPosition(sidePos);
-
-        // Rescale and reposition top panels.
-        m_topLeftPanel->setSize(glm::vec2(windowSize.x - trSize.x - 1.f, -1.f));
-        glm::vec2 tlPos{ m_topLeftPanel->getPosition() };
-        m_topRightPanel->setPosition(glm::vec2(windowSize.x - trSize.x, tlPos.y));
-
-        // Rescale and reposition bottom panel.
-        m_bottomPanel->setSize(glm::vec2(windowSize.x, windowSize.y - tlSize.y - sideSize.y - 2.f));
-        glm::vec2 bottomSize{ m_bottomPanel->getSize() };
-        m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - bottomSize.y));
-
-        // Reposition the camera.
-        glm::ivec2 viewportSize{ getViewportSize(windowSize) };
         Camera *camera{ engine->getCamera() };
-        float zoom{ camera->getZoom() };
-        glm::vec2 cameraPos{ (viewportSize.x - windowSize.x) / (2.f * zoom), -1.f };
-        camera->setPosition(cameraPos);
-
-        // Reposition the clip size box.
-        updateClipBoxPos(viewportSize);
+        resize(windowSize, camera);
     }
 
     // Update emitter with UI values.
@@ -121,686 +99,77 @@ void EditorState::update(Engine *engine, float deltaTime)
     if (emitter == nullptr)
         return;
 
-    // Set position.
-    glm::vec2 pos;
-    bool isPosX{ m_xField->getValue(pos.x) };
-    bool isPosY{ m_yField->getValue(pos.y) };
-    if (isPosX || isPosY)
-    {
-        emitter->setPosition(pos);
-    }
-
-    // Set number of particles to generate.
-    int numToGen;
-    if (m_numGenField->getValue(numToGen))
-    {
-        emitter->setNumToGenerate(numToGen);
-    }
-
-    // Set spawn time.
-    float spawnTime;
-    if (m_spawnTimeField->getValue(spawnTime))
-    {
-        emitter->setTimeToSpawn(spawnTime);
-    }
-
-    // Set velocity.
-    glm::vec2 velMin;
-    bool isVelXMin{ m_velXMinField->getValue(velMin.x) };
-    bool isVelYMin{ m_velYMinField->getValue(velMin.y) };
-    if (isVelXMin || isVelYMin)
-    {
-        emitter->setVelocityMin(velMin);
-    }
-
-    // Convert max to offset.
-    glm::vec2 velMax;
-    bool isVelXMax{ m_velXMaxField->getValue(velMax.x) };
-    bool isVelYMax{ m_velYMaxField->getValue(velMax.y) };
-    if (isVelXMin || isVelYMin || isVelXMax || isVelYMax)
-    {
-        glm::vec2 velOffset{ velMax.x - velMin.x, velMax.y - velMin.y };
-        velOffset = glm::clamp(velOffset, { 0.f, 0.f }, velOffset);
-        emitter->setVelocityOffset(velOffset);
-    }
-
-    // Set acceleration.
-    glm::vec2 accel;
-    bool isAccelX{ m_accelXField->getValue(accel.x) };
-    bool isAccelY{ m_accelYField->getValue(accel.y) };
-    if (isAccelX || isAccelY)
-    {
-        emitter->setAcceleration(accel);
-    }
-
-    // Set particle size.
-    float size;
-    if (m_sizeField->getValue(size))
-    {
-        emitter->setSize(size);
-    }
-
-    // Set duration.
-    float durationMin;
-    bool isDurationMin{ m_lifeMinField->getValue(durationMin) };
-    if (isDurationMin)
-    {
-        emitter->setLifeMin(durationMin);
-    }
-
-    // Convert max to offset.
-    float durationMax;
-    bool isDurationMax{ m_lifeMaxField->getValue(durationMax) };
-    if (isDurationMin || isDurationMax)
-    {
-        float durationOffset{ durationMax - durationMin };
-        durationOffset = glm::clamp(durationOffset, 0.f, durationOffset);
-        emitter->setLifeOffset(durationOffset);
-    }
-
-    // Set circle movement radius.
-    float circleRadius;
-    bool isCircleRadius{ m_circleRadiusField->getValue(circleRadius) };
-    if (isCircleRadius)
-    {
-        emitter->setCircleRadius(circleRadius);
-    }
-
-    // Set circle movement period.
-    float circlePeriod;
-    bool isCirclePeriod{ m_circlePeriodField->getValue(circlePeriod) };
-    if (isCirclePeriod)
-    {
-        emitter->setCirclePeriod(circlePeriod);
-    }
-
-    // Set colour.
-    float red{ m_rSlider->getValue() / COLOUR_RANGE.y };
-    float green{ m_gSlider->getValue() / COLOUR_RANGE.y };
-    float blue{ m_bSlider->getValue() / COLOUR_RANGE.y };
-    float alpha{ m_aSlider->getValue() / COLOUR_RANGE.y };
-    emitter->setColour(glm::vec4(red, green, blue, alpha));
-
-    // Set birth colour.
-    float birthRed{ m_birthRSlider->getValue() / COLOUR_RANGE.y };
-    float birthGreen{ m_birthGSlider->getValue() / COLOUR_RANGE.y };
-    float birthBlue{ m_birthBSlider->getValue() / COLOUR_RANGE.y };
-    float birthAlpha{ m_birthASlider->getValue() / COLOUR_RANGE.y };
-    emitter->setBirthColour(glm::vec4(birthRed, birthGreen, birthBlue, birthAlpha));
-
-    // Set death colour.
-    float deathRed{ m_deathRSlider->getValue() / COLOUR_RANGE.y };
-    float deathGreen{ m_deathGSlider->getValue() / COLOUR_RANGE.y };
-    float deathBlue{ m_deathBSlider->getValue() / COLOUR_RANGE.y };
-    float deathAlpha{ m_deathASlider->getValue() / COLOUR_RANGE.y };
-    emitter->setDeathColour(glm::vec4(deathRed, deathGreen, deathBlue, deathAlpha));
-
-    // Set the clip size.
-    glm::ivec2 clipSize;
-    bool isClipX{ m_clipXField->getValue(clipSize.x) };
-    bool isClipY{ m_clipYField->getValue(clipSize.y) };
-    if (isClipX || isClipY)
-    {
-        m_clipSizeBox->size = clipSize;
-        glm::ivec2 viewportSize{ getViewportSize(windowSize) };
-        updateClipBoxPos(viewportSize);
-
-        m_eRenderer->setClipSize(clipSize);
-    }
-
-    // Set the animation duration.
-    float duration;
-    bool isDuration{ m_durationField->getValue(duration) };
-    if (isDuration)
-    {
-        m_eRenderer->setDuration(duration);
-    }
-
-    // Set the export FPS.
-    int fps;
-    bool isFPS{ m_fpsField->getValue(fps) };
-    if (isFPS)
-    {
-        m_eRenderer->setExportFPS(fps);
-    }
+    // Update panels.
+    for (auto &panel : m_panels)
+        panel->update(emitter, deltaTime);
 }
 
-void EditorState::updateUIFromEmitter(Engine *engine, int index)
+void EditorState::selectEmitter(Engine *engine, int index)
 {
-    Emitter *emitter{ engine->getEmitter(index) };
+    m_emitter = index;
+    Emitter *emitter{ engine->getEmitter(m_emitter) };
 
-    glm::vec2 pos{ emitter->getPosition() };
-    m_xField->setValue(pos.x);
-    m_yField->setValue(pos.y);
-
-    m_numGenField->setValue(emitter->getNumToGenerate());
-    m_spawnTimeField->setValue(emitter->getTimeToSpawn());
-
-    glm::vec2 velMin{ emitter->getVelocityMin() };
-    glm::vec2 velOffset{ emitter->getVelocityOffset() };
-    m_velXMinField->setValue(velMin.x);
-    m_velXMaxField->setValue(velMin.x + velOffset.x);
-    m_velYMinField->setValue(velMin.y);
-    m_velYMaxField->setValue(velMin.y + velOffset.y);
-
-    glm::vec2 accel{ emitter->getAcceleration() };
-    m_accelXField->setValue(accel.x);
-    m_accelYField->setValue(accel.y);
-
-    m_sizeField->setValue(emitter->getSize());
-
-    float durationMin{ emitter->getLifeMin() };
-    m_lifeMinField->setValue(durationMin);
-    m_lifeMaxField->setValue(durationMin + emitter->getLifeOffset());
-
-    m_circleRadiusField->setValue(emitter->getCircleRadius());
-    m_circlePeriodField->setValue(emitter->getCirclePeriod());
-
-    glm::vec4 colour{ emitter->getColour() };
-    m_rSlider->setValue(static_cast<int>(colour.r * COLOUR_RANGE.y));
-    m_gSlider->setValue(static_cast<int>(colour.g * COLOUR_RANGE.y));
-    m_bSlider->setValue(static_cast<int>(colour.b * COLOUR_RANGE.y));
-    m_aSlider->setValue(static_cast<int>(colour.a * COLOUR_RANGE.y));
-
-    glm::vec4 birthColour{ emitter->getBirthColour() };
-    m_birthRSlider->setValue(static_cast<int>(birthColour.r * COLOUR_RANGE.y));
-    m_birthGSlider->setValue(static_cast<int>(birthColour.g * COLOUR_RANGE.y));
-    m_birthBSlider->setValue(static_cast<int>(birthColour.b * COLOUR_RANGE.y));
-    m_birthASlider->setValue(static_cast<int>(birthColour.a * COLOUR_RANGE.y));
-
-    glm::vec4 deathColour{ emitter->getDeathColour() };
-    m_deathRSlider->setValue(static_cast<int>(deathColour.r * COLOUR_RANGE.y));
-    m_deathGSlider->setValue(static_cast<int>(deathColour.g * COLOUR_RANGE.y));
-    m_deathBSlider->setValue(static_cast<int>(deathColour.b * COLOUR_RANGE.y));
-    m_deathASlider->setValue(static_cast<int>(deathColour.a * COLOUR_RANGE.y));
+    // Update panels.
+    for (auto &panel : m_panels)
+        panel->updateUIFromEmitter(emitter);
 }
 
-void EditorState::initTopLeftPanel(Engine *engine,
-    TextRenderer *tRenderer, UIRenderer *uRenderer)
+void EditorState::resize(glm::vec2 windowSize, Camera *camera)
 {
-    m_topLeftPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, -1.f));
+    m_windowSize = windowSize;
 
-    auto fileButton{ std::make_shared<UIButton>("File",
-        BUTTON_SIZE, false,
-        []()
-        {
-            std::cout << "File" << std::endl;
-        }) };
-    m_topLeftPanel->addElement(fileButton);
+    // Rescale and reposition side panels.
+    glm::vec2 tlSize{ m_topLeftPanel->getSize() };
+    glm::vec2 trSize{ m_topRightPanel->getSize() };
+    m_particlesPanel->setSize(glm::vec2(-1.f, windowSize.y - tlSize.y - trSize.y - 2.f));
+    glm::vec2 sideSize{ m_particlesPanel->getSize() };
+    m_particlesPanel->setPosition(glm::vec2(windowSize.x - sideSize.x, trSize.y + 1.f));
 
-    glm::ivec2 windowSize{ engine->getWindowSize() };
-    EmitterRenderer *eRenderer{ m_eRenderer.get() };
-    auto exportButton{ std::make_shared<UIButton>("Export",
-        BUTTON_SIZE, false,
-        [eRenderer, windowSize]()
-        {
-            std::cout << "Export" << std::endl;
-            eRenderer->exportSpriteSheet(windowSize);
-        }) };
-    m_topLeftPanel->addElement(exportButton);
+    glm::vec2 sidePos{ m_particlesPanel->getPosition() };
+    m_visualsPanel->setSize(sideSize);
+    m_visualsPanel->setPosition(sidePos);
+    m_movementPanel->setSize(sideSize);
+    m_movementPanel->setPosition(sidePos);
+    m_emittersPanel->setSize(sideSize);
+    m_emittersPanel->setPosition(sidePos);
+    m_renderPanel->setSize(sideSize);
+    m_renderPanel->setPosition(sidePos);
 
-    UIRenderer::Properties *clipSize{ m_clipSizeBox };
-    auto clipButton{ std::make_shared<UIButton>("Show Clip",
-       BUTTON_SIZE, true,
-       [clipSize]() { clipSize->isEnabled = !clipSize->isEnabled; }) };
-    m_topLeftPanel->addElement(clipButton);
+    // Rescale and reposition top panels.
+    m_topLeftPanel->setSize(glm::vec2(windowSize.x - trSize.x - 1.f, -1.f));
+    glm::vec2 tlPos{ m_topLeftPanel->getPosition() };
+    m_topRightPanel->setPosition(glm::vec2(windowSize.x - trSize.x, tlPos.y));
 
-    auto playButton{ std::make_shared<UIButton>("Play", BUTTON_SIZE, true) };
-    playButton->setAction([eRenderer, playButton]()
-        {
-            eRenderer->setPlaying(playButton->isToggled());
-        });
-    m_topLeftPanel->addElement(playButton);
+    // Rescale and reposition bottom panel.
+    m_bottomPanel->setSize(glm::vec2(windowSize.x, windowSize.y - tlSize.y - sideSize.y - 2.f));
+    glm::vec2 bottomSize{ m_bottomPanel->getSize() };
+    m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - bottomSize.y));
 
-    m_topLeftPanel->addToRenderer(uRenderer, tRenderer);
-    playButton->setToggled(true);
-    clipButton->setToggled(true);
-    m_uiElements.push_back(m_topLeftPanel);
+    // Reposition the camera.
+    glm::ivec2 viewportSize{ getViewportSize() };
+    float zoom{ camera->getZoom() };
+    glm::vec2 cameraPos{ (viewportSize.x - windowSize.x) / (2.f * zoom), -1.f };
+    camera->setPosition(cameraPos);
+
+    // Reposition the clip size box.
+    updateClipBoxPos();
 }
 
-void EditorState::initTopRightPanel(TextRenderer *tRenderer, 
-    UIRenderer *uRenderer)
-{
-    m_topRightPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(-1.f, -1.f));
-
-    m_particlesPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(-1.f, 0.f));
-    m_visualsPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, 0.f));
-    m_movementPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, 0.f));
-    m_emittersPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, 0.f));
-    m_renderPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, 0.f));
-    auto particles{ m_particlesPanel };
-    auto visuals{ m_visualsPanel };
-    auto movement{ m_movementPanel };
-    auto emitters{ m_emittersPanel };
-    auto render{ m_renderPanel };
-
-    auto particlesButton{ std::make_shared<UIButton>("Particles",
-        BUTTON_SIZE, true) };
-    auto visualsButton{ std::make_shared<UIButton>("Visuals",
-        BUTTON_SIZE, true) };
-    auto movementButton{ std::make_shared<UIButton>("Movement",
-        BUTTON_SIZE, true) };
-    auto emittersButton{ std::make_shared<UIButton>("Emitters",
-        BUTTON_SIZE, true) };
-    auto renderButton{ std::make_shared<UIButton>("Render",
-        BUTTON_SIZE, true) };
-
-    particlesButton->setAction([particles, visuals, movement, emitters, render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
-        {
-            particles->setEnabled(true);
-            visuals->setEnabled(false);
-            movement->setEnabled(false);
-            emitters->setEnabled(false);
-            render->setEnabled(false);
-
-            particlesButton->setToggled(true);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(false);
-        });
-
-    visualsButton->setAction([particles, visuals, movement, emitters, render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
-        {
-            particles->setEnabled(false);
-            visuals->setEnabled(true);
-            movement->setEnabled(false);
-            emitters->setEnabled(false);
-            render->setEnabled(false);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(true);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(false);
-        });
-
-    movementButton->setAction([particles, visuals, movement, emitters, render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
-        {
-            particles->setEnabled(false);
-            visuals->setEnabled(false);
-            movement->setEnabled(true);
-            emitters->setEnabled(false);
-            render->setEnabled(false);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(true);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(false);
-        });
-
-    emittersButton->setAction([particles, visuals, movement, emitters, render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
-        {
-            particles->setEnabled(false);
-            visuals->setEnabled(false);
-            movement->setEnabled(false);
-            emitters->setEnabled(true);
-            render->setEnabled(false);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(true);
-            renderButton->setToggled(false);
-        });
-
-    renderButton->setAction([particles, visuals, movement, emitters, render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
-        {
-            particles->setEnabled(false);
-            visuals->setEnabled(false);
-            movement->setEnabled(false);
-            emitters->setEnabled(false);
-            render->setEnabled(true);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(true);
-        });
-
-    m_topRightPanel->addElement(particlesButton);
-    m_topRightPanel->addElement(visualsButton);
-    m_topRightPanel->addElement(movementButton);;
-    m_topRightPanel->addElement(emittersButton);
-    m_topRightPanel->addElement(renderButton);
-
-    m_topRightPanel->addToRenderer(uRenderer, tRenderer);
-    particlesButton->setToggled(true);
-    m_uiElements.push_back(m_topRightPanel);
-}
-
-void EditorState::initBottomPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
-{
-    m_bottomPanel = std::make_shared<UIContainer>(glm::vec2(0.f, 0.f),
-        glm::vec2(0.f, 0.f));
-    m_bottomPanel->addToRenderer(uRenderer, tRenderer);
-    m_uiElements.push_back(m_bottomPanel);
-}
-
-void EditorState::initParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
-{
-    m_delayField = std::make_shared<UITextField>("Delay Before Start", ONE_VAL_SIZE);
-    m_particlesPanel->addElement(m_delayField);
-
-    m_particlesPanel->addNewLine();
-    m_emDurationField = std::make_shared<UITextField>("Emitter Duration", ONE_VAL_SIZE);
-    m_particlesPanel->addElement(m_emDurationField);
-
-    m_particlesPanel->addNewLine();
-    auto posLabel{ std::make_shared<UIText>("Position", LABEL_SIZE) };
-    m_particlesPanel->addElement(posLabel);
-
-    m_particlesPanel->addNewHalfLine();
-    m_xField = std::make_shared<UITextField>("x", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_xField);
-
-    m_yField = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_yField);
-
-    m_particlesPanel->addNewLine();
-    m_numGenField = std::make_shared<UITextField>("Particle Density", ONE_VAL_SIZE);
-    m_particlesPanel->addElement(m_numGenField);
-
-    m_particlesPanel->addNewLine();
-    m_spawnTimeField = std::make_shared<UITextField>("Time to Spawn", ONE_VAL_SIZE);
-    m_particlesPanel->addElement(m_spawnTimeField);
-
-    m_particlesPanel->addNewLine();
-    m_sizeField = std::make_shared<UITextField>("Particle Size", ONE_VAL_SIZE);
-    m_particlesPanel->addElement(m_sizeField);
-
-    m_particlesPanel->addNewLine();
-    auto lifeLabel{ std::make_shared<UIText>("Particle Life", LABEL_SIZE) };
-    m_particlesPanel->addElement(lifeLabel);
-
-    m_particlesPanel->addNewHalfLine();
-    m_lifeMinField = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_lifeMinField);
-
-    m_lifeMaxField = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_lifeMaxField);
-
-    m_particlesPanel->addNewLine();
-    auto velXLabel{ std::make_shared<UIText>("Velocity.x", LABEL_SIZE) };
-    m_particlesPanel->addElement(velXLabel);
-
-    m_particlesPanel->addNewHalfLine();
-    m_velXMinField = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_velXMinField);
-
-    m_velXMaxField = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_velXMaxField);
-
-    m_particlesPanel->addNewLine();
-    auto velYLabel{ std::make_shared<UIText>("Velocity.y", LABEL_SIZE) };
-    m_particlesPanel->addElement(velYLabel);
-
-    m_particlesPanel->addNewHalfLine();
-    m_velYMinField = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_velYMinField);
-
-    m_velYMaxField = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_velYMaxField);
-
-    m_particlesPanel->addNewLine();
-    auto accelLabel{ std::make_shared<UIText>("Acceleration", LABEL_SIZE) };
-    m_particlesPanel->addElement(accelLabel);
-
-    m_particlesPanel->addNewHalfLine();
-    m_accelXField = std::make_shared<UITextField>("x", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_accelXField);
-
-    m_accelYField = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
-    m_particlesPanel->addElement(m_accelYField);
-
-    m_particlesPanel->addToRenderer(uRenderer, tRenderer);
-    m_uiElements.push_back(m_particlesPanel);
-}
-
-void EditorState::initVisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
-{
-    auto colourLabel{ std::make_shared<UIText>("Colour", LABEL_SIZE) };
-    m_visualsPanel->addElement(colourLabel);
-
-    m_visualsPanel->addNewHalfLine();
-    m_rSlider = std::make_shared<UISlider>("R", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_rSlider);
-
-    m_gSlider = std::make_shared<UISlider>("G", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_gSlider);
-
-    m_bSlider = std::make_shared<UISlider>("B", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_bSlider);
-
-    m_aSlider = std::make_shared<UISlider>("A", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_aSlider);
-
-    m_visualsPanel->addNewLine();
-    auto birthColourLabel{ std::make_shared<UIText>("Birth Colour", LABEL_SIZE) };
-    m_visualsPanel->addElement(birthColourLabel);
-
-    m_visualsPanel->addNewHalfLine();
-    m_birthRSlider = std::make_shared<UISlider>("R", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_birthRSlider);
-
-    m_birthGSlider = std::make_shared<UISlider>("G", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_birthGSlider);
-
-    m_birthBSlider = std::make_shared<UISlider>("B", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_birthBSlider);
-
-    m_birthASlider = std::make_shared<UISlider>("A", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_birthASlider);
-
-    m_visualsPanel->addNewLine();
-    auto deathColourLabel{ std::make_shared<UIText>("Death Colour", LABEL_SIZE) };
-    m_visualsPanel->addElement(deathColourLabel);
-
-    m_visualsPanel->addNewHalfLine();
-    m_deathRSlider = std::make_shared<UISlider>("R", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_deathRSlider);
-
-    m_deathGSlider = std::make_shared<UISlider>("G", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_deathGSlider);
-
-    m_deathBSlider = std::make_shared<UISlider>("B", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_deathBSlider);
-
-    m_deathASlider = std::make_shared<UISlider>("A", COLOUR_RANGE, COLOUR_SIZE);
-    m_visualsPanel->addElement(m_deathASlider);
-
-    m_visualsPanel->addNewLine();
-    auto textureLabel{ std::make_shared<UIText>("Particle Texture", LABEL_SIZE) };
-    m_visualsPanel->addElement(textureLabel);
-
-    m_visualsPanel->addNewHalfLine();
-    auto textureButton{ std::make_shared<UIButton>("Select...", ONE_BUTTON_SIZE) };
-    m_visualsPanel->addElement(textureButton);
-
-    m_visualsPanel->addToRenderer(uRenderer, tRenderer);
-    m_visualsPanel->setEnabled(false);
-    m_uiElements.push_back(m_visualsPanel);
-}
-
-void EditorState::initMovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
-{
-    auto pathLabel{ std::make_shared<UIText>("Particle Path", LABEL_SIZE) };
-    m_movementPanel->addElement(pathLabel);
-
-    m_movementPanel->addNewHalfLine();
-    auto leftPtLabel{ std::make_shared<UIText>("> Left click to move spline point.", LABEL_SIZE) };
-    m_movementPanel->addElement(leftPtLabel);
-
-    m_movementPanel->addNewHalfLine();
-    auto rightPtLabel{ std::make_shared<UIText>("> Right click to add spline point.", LABEL_SIZE) };
-    m_movementPanel->addElement(rightPtLabel);
-
-    m_movementPanel->addNewHalfLine();
-    m_particleSpeedField = std::make_shared<UITextField>("Particle Speed", ONE_VAL_SIZE);
-    m_movementPanel->addElement(m_particleSpeedField);
-
-    m_movementPanel->addNewLine();
-    auto deletePathButton{ std::make_shared<UIButton>("Delete Path", ONE_BUTTON_SIZE) };
-    m_movementPanel->addElement(deletePathButton);
-
-    m_movementPanel->addNewLine();
-    auto oscillateLabel{ std::make_shared<UIText>("Emitter Oscillation", LABEL_SIZE) };
-    m_movementPanel->addElement(oscillateLabel);
-
-    m_movementPanel->addNewLine();
-    auto hSinLabel{ std::make_shared<UIText>("Horizontal Sine", LABEL_SIZE) };
-    m_movementPanel->addElement(hSinLabel);
-
-    m_movementPanel->addNewHalfLine();
-    m_hSinAmountField = std::make_shared<UITextField>("Amount", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_hSinAmountField);
-
-    m_hSinPeriodField = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_hSinPeriodField);
-
-    m_movementPanel->addNewLine();
-    auto vSinLabel{ std::make_shared<UIText>("Vertical Sine", LABEL_SIZE) };
-    m_movementPanel->addElement(vSinLabel);
-
-    m_movementPanel->addNewHalfLine();
-    m_vSinAmountField = std::make_shared<UITextField>("Amount", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_vSinAmountField);
-
-    m_vSinPeriodField = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_vSinPeriodField);
-
-    m_movementPanel->addNewLine();
-    auto circleLabel{ std::make_shared<UIText>("Circle", LABEL_SIZE) };
-    m_movementPanel->addElement(circleLabel);
-
-    m_movementPanel->addNewHalfLine();
-    m_circleRadiusField = std::make_shared<UITextField>("Radius", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_circleRadiusField);
-
-    m_circlePeriodField = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
-    m_movementPanel->addElement(m_circlePeriodField);
-
-    m_movementPanel->addToRenderer(uRenderer, tRenderer);
-    m_movementPanel->setEnabled(false);
-    m_uiElements.push_back(m_movementPanel);
-}
-
-void EditorState::initEmittersPanel(Engine *engine, TextRenderer *tRenderer, 
-    UIRenderer *uRenderer)
-{
-    auto emittersLabel{ std::make_shared<UIText>("Select/Toggle Emitters", LABEL_SIZE) };
-    m_emittersPanel->addElement(emittersLabel);
-
-    m_emittersPanel->addNewLine();
-    std::vector<std::shared_ptr<UIButton>> buttons;
-    for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
-    {
-        auto emSelectButton{ std::make_shared<UIButton>("Emitter " + std::to_string(i + 1),
-            TWO_BUTTON_SIZE, true) };
-        buttons.push_back(emSelectButton);
-    }
-
-    std::shared_ptr<UIButton> firstToggle{ nullptr };
-    for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
-    {
-        auto &button{ buttons[i] };
-        button->setAction([this, engine, i, buttons]()
-            {
-                m_emitter = i;
-                updateUIFromEmitter(engine, i);
-
-                for (int j = 0; j < buttons.size(); ++j)
-                {
-                    bool val{ j == i };
-                    buttons[j]->setToggled(val);
-                }
-            });
-        m_emittersPanel->addElement(button);
-
-        auto emToggleButton{ std::make_shared<UIButton>("ON", TWO_BUTTON_SIZE, true) };
-        emToggleButton->setAction([engine, emToggleButton, i]()
-            {
-                engine->toggleEmitter(i, emToggleButton->isToggled());
-            });
-        m_emittersPanel->addElement(emToggleButton);
-
-        if (i == 0)
-            firstToggle = emToggleButton;
-
-        if (i < EmitterRenderer::NUM_EMITTERS - 1)
-            m_emittersPanel->addNewLine();
-    }
-
-    m_emittersPanel->addToRenderer(uRenderer, tRenderer);
-    buttons[0]->setToggled(true);
-    firstToggle->setToggled(true);
-    m_emittersPanel->setEnabled(false);
-    m_uiElements.push_back(m_emittersPanel);
-}
-
-void EditorState::initRenderPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
-{
-    auto clipLabel{ std::make_shared<UIText>("Clip Size", LABEL_SIZE) };
-    m_renderPanel->addElement(clipLabel);
-
-    m_renderPanel->addNewHalfLine();
-    m_clipXField = std::make_shared<UITextField>("x", TWO_VAL_SIZE);
-    m_renderPanel->addElement(m_clipXField);
-
-    m_clipYField = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
-    m_renderPanel->addElement(m_clipYField);
-
-    m_renderPanel->addNewLine();
-    m_durationField = std::make_shared<UITextField>("Animation Duration", ONE_VAL_SIZE);
-    m_renderPanel->addElement(m_durationField);
-    
-    m_renderPanel->addNewLine();
-    auto loopButton{ std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true) };
-    EmitterRenderer *eRenderer{ m_eRenderer.get() };
-    loopButton->setAction([eRenderer, loopButton]()
-        {
-            eRenderer->setLooping(loopButton->isToggled());
-        });
-    m_renderPanel->addElement(loopButton);
-
-    m_renderPanel->addNewLine();
-    m_fpsField = std::make_shared<UITextField>("Export FPS", ONE_VAL_SIZE);
-    m_renderPanel->addElement(m_fpsField);
-
-    m_renderPanel->addToRenderer(uRenderer, tRenderer);
-    m_renderPanel->setEnabled(false);
-    loopButton->setToggled(true);
-    m_uiElements.push_back(m_renderPanel);
-}
-
-glm::ivec2 EditorState::getViewportSize(glm::ivec2 windowSize) const
+glm::ivec2 EditorState::getViewportSize() const
 {
     glm::vec2 sideSize{ m_particlesPanel->getSize() };
     glm::vec2 tlSize{ m_topLeftPanel->getSize() };
     glm::vec2 bottomSize{ m_bottomPanel->getSize() };
 
-    glm::ivec2 viewportSize{ (int)windowSize.x - sideSize.x,
-            (int)windowSize.y - tlSize.y - bottomSize.y };
+    glm::ivec2 viewportSize{ (int)m_windowSize.x - sideSize.x,
+            (int)m_windowSize.y - tlSize.y - bottomSize.y };
     return viewportSize;
 }
 
-void EditorState::updateClipBoxPos(glm::ivec2 viewportSize)
+void EditorState::updateClipBoxPos()
 {
     glm::vec2 tlSize{ m_topLeftPanel->getSize() };
+    glm::ivec2 viewportSize{ getViewportSize() };
 
     m_clipSizeBox->pos = glm::round(glm::vec2(
         (viewportSize.x - m_clipSizeBox->size.x) / 2.f,
