@@ -4,9 +4,13 @@
 #include "UIButton.h"
 #include "UIRenderer.h"
 
+#include <iomanip>
+#include <sstream>
+
 TopLeftPanel::TopLeftPanel(Engine *engine, 
     std::shared_ptr<EmitterRenderer> eRenderer, TextRenderer *tRenderer,
-    UIRenderer *uRenderer, UIRenderer::Properties *clipSizeBox)
+    UIRenderer *uRenderer, UIRenderer::Properties *clipSizeBox) :
+    m_eRenderer(eRenderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(0.f, -1.f));
@@ -37,6 +41,9 @@ TopLeftPanel::TopLeftPanel(Engine *engine,
         });
     m_panel->addElement(playButton);
 
+    m_playbackTimer = std::make_shared<UIText>("", BUTTON_SIZE);
+    m_panel->addElement(m_playbackTimer);
+
     m_panel->addToRenderer(uRenderer, tRenderer);
     playButton->setToggled(true);
     clipButton->setToggled(true);
@@ -44,8 +51,17 @@ TopLeftPanel::TopLeftPanel(Engine *engine,
 
 void TopLeftPanel::update(Emitter *emitter, float deltaTime)
 {
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(3);
+
+    float currentTime{ m_eRenderer->getCurrentTime() };
+    float duration{ m_eRenderer->getDuration() };
+    ss << "[" << currentTime << " / " << duration << "]";
+
+    m_playbackTimer->setText(ss.str());
 }
 
 void TopLeftPanel::updateUIFromEmitter(Emitter *emitter)
 {
+
 }

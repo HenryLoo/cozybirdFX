@@ -19,6 +19,7 @@ public:
 	// Getter functions.
 	Emitter *getEmitter(int index) const;
 	glm::ivec2 getClipSize() const;
+	float getCurrentTime() const;
 	float getDuration() const;
 	int getExportFPS() const;
 	bool isLooping() const;

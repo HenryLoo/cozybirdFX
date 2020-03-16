@@ -103,6 +103,11 @@ glm::ivec2 EmitterRenderer::getClipSize() const
     return m_clipSize;
 }
 
+float EmitterRenderer::getCurrentTime() const
+{
+    return m_currentTime;
+}
+
 float EmitterRenderer::getDuration() const
 {
 	return m_duration;

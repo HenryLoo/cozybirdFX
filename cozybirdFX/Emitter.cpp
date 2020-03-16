@@ -87,14 +87,24 @@ void Emitter::update(float deltaTime, float currentTime,
     updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
     // Update spawn timer and flag the emitter to spawn particles if necessary.
-    m_spawnTimer += deltaTime;
-    if (m_spawnTimer >= m_timeToSpawn)
+    if (currentTime >= m_delayBeforeStart && 
+        (currentTime < m_delayBeforeStart + m_emitterDuration) || 
+        m_emitterDuration == 0.f)
     {
-        m_spawnTimer -= m_timeToSpawn;
-        updateShader->setInt("emNumToGenerate", m_numToGenerate);
+        m_spawnTimer += deltaTime;
+        if (m_spawnTimer >= m_timeToSpawn)
+        {
+            m_spawnTimer -= m_timeToSpawn;
+            updateShader->setInt("emNumToGenerate", m_numToGenerate);
+        }
+        else
+        {
+            updateShader->setInt("emNumToGenerate", 0);
+        }
     }
     else
     {
+        m_spawnTimer = 0.f;
         updateShader->setInt("emNumToGenerate", 0);
     }
 
@@ -200,6 +210,16 @@ void Emitter::setDeathColour(glm::vec4 colour)
     m_deathColour = colour;
 }
 
+void Emitter::setDelayBeforeStart(float duration)
+{
+    m_delayBeforeStart = duration;
+}
+
+void Emitter::setEmitterDuration(float duration)
+{
+    m_emitterDuration = duration;
+}
+
 void Emitter::setCircleRadius(float radius)
 {
     m_circleRadius = radius;
@@ -268,6 +288,16 @@ glm::vec4 Emitter::getBirthColour() const
 glm::vec4 Emitter::getDeathColour() const
 {
     return m_deathColour;
+}
+
+float Emitter::getDelayBeforeStart() const
+{
+    return m_delayBeforeStart;
+}
+
+float Emitter::getEmitterDuration() const
+{
+    return m_emitterDuration;
 }
 
 float Emitter::getCircleRadius() const

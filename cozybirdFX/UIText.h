@@ -18,6 +18,8 @@ public:
 	virtual void setPosition(glm::vec2 position);
 	virtual void setEnabled(bool isEnabled);
 
+	void setText(const std::string &text);
+
 private:
 	// The label's text.
 	std::string m_text;

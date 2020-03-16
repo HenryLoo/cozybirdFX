@@ -40,6 +40,8 @@ public:
 	void setLifeOffset(float duration);
 	void setBirthColour(glm::vec4 colour);
 	void setDeathColour(glm::vec4 colour);
+	void setDelayBeforeStart(float duration);
+	void setEmitterDuration(float duration);
 	void setCircleRadius(float radius);
 	void setCirclePeriod(float period);
 
@@ -56,6 +58,8 @@ public:
 	float getLifeOffset() const;
 	glm::vec4 getBirthColour() const;
 	glm::vec4 getDeathColour() const;
+	float getDelayBeforeStart() const;
+	float getEmitterDuration() const;
 	float getCircleRadius() const;
 	float getCirclePeriod() const;
 
@@ -144,6 +148,12 @@ private:
 
 	// The colour of the particle when it is expiring.
 	glm::vec4 m_deathColour{ 0.2f, 0.2f, 0.2f, 0.f };
+
+	// The time from animation start before starting to emit particles.
+	float m_delayBeforeStart{ 0.f };
+
+	// The time before stopping particle emission.
+	float m_emitterDuration{ 0.f };
 
 	// Defines the circle movement pattern for this emitter.
 	float m_circleRadius{ 0.f };

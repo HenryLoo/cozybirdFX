@@ -20,6 +20,7 @@ void UIText::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	prop.text = m_text;
 	prop.pos = textPos;
 	prop.size = m_size;
+	prop.isVerticalCenter = true;
 	auto it{ tRenderer->addText(prop) };
 	m_tProperties = &*it;
 }
@@ -41,4 +42,9 @@ void UIText::setEnabled(bool isEnabled)
 
 	if (m_tProperties != nullptr)
 		m_tProperties->isEnabled = isEnabled;
+}
+
+void UIText::setText(const std::string &text)
+{
+	m_tProperties->text = text;
 }

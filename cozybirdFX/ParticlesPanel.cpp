@@ -87,6 +87,20 @@ ParticlesPanel::ParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
 
 void ParticlesPanel::update(Emitter *emitter, float deltaTime)
 {
+    // Set delay time.
+    float delay;
+    if (m_delayField->getValue(delay))
+    {
+        emitter->setDelayBeforeStart(delay);
+    }
+
+    // Set emitter duration.
+    float duration;
+    if (m_emDurationField->getValue(duration))
+    {
+        emitter->setEmitterDuration(duration);
+    }
+
     // Set position.
     glm::vec2 pos;
     bool isPosX{ m_xField->getValue(pos.x) };
@@ -167,6 +181,9 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
 
 void ParticlesPanel::updateUIFromEmitter(Emitter *emitter)
 {
+    m_delayField->setValue(emitter->getDelayBeforeStart());
+    m_emDurationField->setValue(emitter->getEmitterDuration());
+
     glm::vec2 pos{ emitter->getPosition() };
     m_xField->setValue(pos.x);
     m_yField->setValue(pos.y);
