@@ -65,7 +65,7 @@ void Emitter::update(float deltaTime, float currentTime,
     std::shared_ptr<Shader> updateShader)
 {
     // Update emitter position based on movement patterns.
-    updateCircleMotion(currentTime);
+    updateMotion(currentTime);
 
     updateShader->use();
 
@@ -220,6 +220,26 @@ void Emitter::setEmitterDuration(float duration)
     m_emitterDuration = duration;
 }
 
+void Emitter::setHSineAmplitude(float amount)
+{
+    m_hSineAmplitude = amount;
+}
+
+void Emitter::setHSinePeriod(float period)
+{
+    m_hSinePeriod = period;
+}
+
+void Emitter::setVSineAmplitude(float amount)
+{
+    m_vSineAmplitude = amount;
+}
+
+void Emitter::setVSinePeriod(float period)
+{
+    m_vSinePeriod = period;
+}
+
 void Emitter::setCircleRadius(float radius)
 {
     m_circleRadius = radius;
@@ -300,6 +320,26 @@ float Emitter::getEmitterDuration() const
     return m_emitterDuration;
 }
 
+float Emitter::getHSineAmplitude() const
+{
+    return m_hSineAmplitude;
+}
+
+float Emitter::getHSinePeriod() const
+{
+    return m_hSinePeriod;
+}
+
+float Emitter::getVSineAmplitude() const
+{
+    return m_vSineAmplitude;
+}
+
+float Emitter::getVSinePeriod() const
+{
+    return m_vSinePeriod;
+}
+
 float Emitter::getCircleRadius() const
 {
     return m_circleRadius;
@@ -351,19 +391,31 @@ void Emitter::update()
     glDisable(GL_RASTERIZER_DISCARD);
 }
 
-void Emitter::updateCircleMotion(float currentTime)
+void Emitter::updateMotion(float currentTime)
 {
-    // Avoid divide by zero.
-    if (m_circlePeriod == 0)
+    m_position = m_origin;
+
+    // Oscillate horizontally. 
+    if (m_hSinePeriod != 0)
     {
-        m_position = m_origin;
-        return;
+        float hTime = currentTime / m_hSinePeriod * glm::two_pi<float>();
+        m_position.x += m_hSineAmplitude * glm::sin(hTime);
+    }
+
+    // Oscillate vertically.
+    if (m_vSinePeriod != 0)
+    {
+        float vTime = currentTime / m_vSinePeriod * glm::two_pi<float>();
+        m_position.y += m_vSineAmplitude * glm::sin(vTime);
     }
 
     // Parametric equation of circle: x = r*cos(t), y = r*sin(t)
-    float time = currentTime / m_circlePeriod * glm::two_pi<float>();
-    m_position.x = m_origin.x + m_circleRadius * glm::cos(time);
-    m_position.y = m_origin.y + m_circleRadius * glm::sin(time);
+    if (m_circlePeriod != 0)
+    {
+        float cTime = currentTime / m_circlePeriod * glm::two_pi<float>();
+        m_position.x += m_circleRadius * glm::cos(cTime);
+        m_position.y += m_circleRadius * glm::sin(cTime);
+    }
 }
 
 void Emitter::render(std::shared_ptr<Shader> renderShader)

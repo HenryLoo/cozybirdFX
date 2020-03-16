@@ -42,6 +42,10 @@ public:
 	void setDeathColour(glm::vec4 colour);
 	void setDelayBeforeStart(float duration);
 	void setEmitterDuration(float duration);
+	void setHSineAmplitude(float amount);
+	void setHSinePeriod(float period);
+	void setVSineAmplitude(float amount);
+	void setVSinePeriod(float period);
 	void setCircleRadius(float radius);
 	void setCirclePeriod(float period);
 
@@ -60,6 +64,10 @@ public:
 	glm::vec4 getDeathColour() const;
 	float getDelayBeforeStart() const;
 	float getEmitterDuration() const;
+	float getHSineAmplitude() const;
+	float getHSinePeriod() const;
+	float getVSineAmplitude() const;
+	float getVSinePeriod() const;
 	float getCircleRadius() const;
 	float getCirclePeriod() const;
 
@@ -85,8 +93,8 @@ private:
 	// Common update code used by both regular updates and particle clears.
 	void update();
 
-	// Move the emitter according to its circle motion parameters.
-	void updateCircleMotion(float currentTime);
+	// Move the emitter according to its sine and circle motion parameters.
+	void updateMotion(float currentTime);
 
 	// Transform feedback buffer.
 	// This is used to hold output values from the geometry shader.
@@ -154,6 +162,12 @@ private:
 
 	// The time before stopping particle emission.
 	float m_emitterDuration{ 0.f };
+
+	// Defines the sine movement pattern for this emitter.
+	float m_hSineAmplitude{ 0.f };
+	float m_hSinePeriod{ 0.f };
+	float m_vSineAmplitude{ 0.f };
+	float m_vSinePeriod{ 0.f };
 
 	// Defines the circle movement pattern for this emitter.
 	float m_circleRadius{ 0.f };

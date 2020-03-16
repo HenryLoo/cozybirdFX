@@ -37,8 +37,8 @@ MovementPanel::MovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
     m_panel->addElement(hSinLabel);
 
     m_panel->addNewHalfLine();
-    m_hSinAmountField = std::make_shared<UITextField>("Amount", TWO_VAL_SIZE);
-    m_panel->addElement(m_hSinAmountField);
+    m_hSinAmpField = std::make_shared<UITextField>("Amplitude", TWO_VAL_SIZE);
+    m_panel->addElement(m_hSinAmpField);
 
     m_hSinPeriodField = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
     m_panel->addElement(m_hSinPeriodField);
@@ -48,8 +48,8 @@ MovementPanel::MovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
     m_panel->addElement(vSinLabel);
 
     m_panel->addNewHalfLine();
-    m_vSinAmountField = std::make_shared<UITextField>("Amount", TWO_VAL_SIZE);
-    m_panel->addElement(m_vSinAmountField);
+    m_vSinAmpField = std::make_shared<UITextField>("Amplitude", TWO_VAL_SIZE);
+    m_panel->addElement(m_vSinAmpField);
 
     m_vSinPeriodField = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
     m_panel->addElement(m_vSinPeriodField);
@@ -71,6 +71,38 @@ MovementPanel::MovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
 
 void MovementPanel::update(Emitter *emitter, float deltaTime)
 {
+    // Set horizontal sine movement amplitude.
+    float hSinAmp;
+    bool isHSinAmp{ m_hSinAmpField->getValue(hSinAmp) };
+    if (isHSinAmp)
+    {
+        emitter->setHSineAmplitude(hSinAmp);
+    }
+
+    // Set horizontal sine movement period.
+    float hSinPeriod;
+    bool isHSinPeriod{ m_hSinPeriodField->getValue(hSinPeriod) };
+    if (isHSinPeriod)
+    {
+        emitter->setHSinePeriod(hSinPeriod);
+    }
+
+    // Set vertical sine movement amplitude.
+    float vSinAmp;
+    bool isVSinAmp{ m_vSinAmpField->getValue(vSinAmp) };
+    if (isVSinAmp)
+    {
+        emitter->setVSineAmplitude(vSinAmp);
+    }
+
+    // Set vertical sine movement period.
+    float vSinPeriod;
+    bool isVSinPeriod{ m_vSinPeriodField->getValue(vSinPeriod) };
+    if (isVSinPeriod)
+    {
+        emitter->setVSinePeriod(vSinPeriod);
+    }
+
     // Set circle movement radius.
     float circleRadius;
     bool isCircleRadius{ m_circleRadiusField->getValue(circleRadius) };
@@ -90,6 +122,12 @@ void MovementPanel::update(Emitter *emitter, float deltaTime)
 
 void MovementPanel::updateUIFromEmitter(Emitter *emitter)
 {
+    m_hSinAmpField->setValue(emitter->getHSineAmplitude());
+    m_hSinPeriodField->setValue(emitter->getHSinePeriod());
+
+    m_vSinAmpField->setValue(emitter->getVSineAmplitude());
+    m_vSinPeriodField->setValue(emitter->getVSinePeriod());
+
     m_circleRadiusField->setValue(emitter->getCircleRadius());
     m_circlePeriodField->setValue(emitter->getCirclePeriod());
 }
