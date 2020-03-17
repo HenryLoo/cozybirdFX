@@ -36,6 +36,9 @@ public:
 	void setAcceleration(glm::vec2 acceleration);
 	void setSize(float size);
 	void setColour(glm::vec4 colour);
+	void setAdditivity(float additivity);
+	void setBirthAdditivity(float additivity);
+	void setDeathAdditivity(float additivity);
 	void setLifeMin(float duration);
 	void setLifeOffset(float duration);
 	void setBirthColour(glm::vec4 colour);
@@ -58,6 +61,9 @@ public:
 	glm::vec2 getAcceleration() const;
 	float getSize() const;
 	glm::vec4 getColour() const;
+	float getAdditivity() const;
+	float getBirthAdditivity() const;
+	float getDeathAdditivity() const;
 	float getLifeMin() const;
 	float getLifeOffset() const;
 	glm::vec4 getBirthColour() const;
@@ -146,6 +152,7 @@ private:
 
 	// The colour of the particle.
 	glm::vec4 m_colour{ 0.2f, 0.2f, 0.2f, 1.f };
+	float m_additivity{ 0.f };
 
 	// The time to live for the particle.
 	float m_lifeMin{ 2.f };
@@ -153,9 +160,11 @@ private:
 
 	// The colour of the particle when it is created.
 	glm::vec4 m_birthColour{ 0.2f, 0.2f, 0.2f, 0.f };
+	float m_birthAdditivity{ 0.f };
 
 	// The colour of the particle when it is expiring.
 	glm::vec4 m_deathColour{ 0.2f, 0.2f, 0.2f, 0.f };
+	float m_deathAdditivity{ 0.f };
 
 	// The time from animation start before starting to emit particles.
 	float m_delayBeforeStart{ 0.f };

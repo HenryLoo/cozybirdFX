@@ -125,6 +125,8 @@ void Emitter::render(Camera *camera, std::shared_ptr<Shader> renderShader)
     renderShader->setVec4("colour", m_colour);
     renderShader->setVec4("birthColour", m_birthColour);
     renderShader->setVec4("deathColour", m_deathColour);
+    renderShader->setVec3("additivity", 
+        glm::vec3(m_birthAdditivity, m_additivity, m_deathAdditivity));
 
     // Render the particles.
     render(renderShader);
@@ -188,6 +190,21 @@ void Emitter::setSize(float size)
 void Emitter::setColour(glm::vec4 colour)
 {
     m_colour = colour;
+}
+
+void Emitter::setAdditivity(float additivity)
+{
+    m_additivity = additivity;
+}
+
+void Emitter::setBirthAdditivity(float additivity)
+{
+    m_birthAdditivity = additivity;
+}
+
+void Emitter::setDeathAdditivity(float additivity)
+{
+    m_deathAdditivity = additivity;
 }
 
 void Emitter::setLifeMin(float duration)
@@ -288,6 +305,21 @@ float Emitter::getSize() const
 glm::vec4 Emitter::getColour() const
 {
     return m_colour;
+}
+
+float Emitter::getAdditivity() const
+{
+    return m_additivity;
+}
+
+float Emitter::getBirthAdditivity() const
+{
+    return m_birthAdditivity;
+}
+
+float Emitter::getDeathAdditivity() const
+{
+    return m_deathAdditivity;
 }
 
 float Emitter::getLifeMin() const
@@ -421,10 +453,8 @@ void Emitter::updateMotion(float currentTime)
 void Emitter::render(std::shared_ptr<Shader> renderShader)
 {
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-    // Disable writing to depth buffer.
-    glDepthMask(0);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     // Enable rasterizer for graphical output.
     glDisable(GL_RASTERIZER_DISCARD);
@@ -441,7 +471,6 @@ void Emitter::render(std::shared_ptr<Shader> renderShader)
     glDrawArrays(GL_POINTS, 0, m_numParticles);
 
     // Reset configurations after rendering.
-    glDepthMask(1);
     glDisable(GL_BLEND);
     glBindVertexArray(0);
 }

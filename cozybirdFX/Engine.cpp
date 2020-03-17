@@ -28,13 +28,13 @@ Engine::Engine(GLFWwindow *window) :
 
     // Instantiate renderers.
     m_emitterRenderer = std::make_shared<EmitterRenderer>(m_assetLoader.get());
-    auto spriteRenderer{ std::make_shared<SpriteRenderer>(m_assetLoader.get()) };
+    //auto spriteRenderer{ std::make_shared<SpriteRenderer>(m_assetLoader.get()) };
     auto uiRenderer{ std::make_shared<UIRenderer>(m_assetLoader.get()) };
     auto textRenderer{ std::make_shared<TextRenderer>(m_assetLoader.get()) };
 
     // Instantiate entity manager.
-    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), 
-        m_assetLoader.get());
+    //m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), 
+    //    m_assetLoader.get());
 
     // Instantiate the camera.
     glm::ivec2 windowSize{ getWindowSize() };
@@ -49,7 +49,7 @@ Engine::Engine(GLFWwindow *window) :
     m_renderers.push_back(m_emitterRenderer);
     m_renderers.push_back(uiRenderer);
     m_renderers.push_back(textRenderer);
-    m_renderers.push_back(spriteRenderer);
+    //m_renderers.push_back(spriteRenderer);
 }
 
 Engine::~Engine()
@@ -117,8 +117,8 @@ void Engine::handleInput()
 void Engine::update(float deltaTime)
 {
     // TODO: Update values here.
-    if (m_entityManager != nullptr)
-        m_entityManager->update(deltaTime);
+    //if (m_entityManager != nullptr)
+    //    m_entityManager->update(deltaTime);
 
     // Update the current state.
     IState *state{ getState() };
@@ -128,8 +128,8 @@ void Engine::update(float deltaTime)
 
 void Engine::render(float deltaTime)
 {
-    glClearColor(0.f, 0.f, 0.f, 0.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     // Call render for all renderers.
     for (const auto &renderer : m_renderers)

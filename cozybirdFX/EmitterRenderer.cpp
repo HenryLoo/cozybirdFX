@@ -223,7 +223,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
     {
         for (int i = 0; i < numCols; ++i)
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT);
             glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
 
@@ -243,25 +243,28 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
         }
     }
 
-    // Reset configurations after rendering.
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, windowSize.x, windowSize.y);
-
     // Write image from the texture.
     if (m_fboTexture != nullptr)
     {
         m_fboTexture->bind();
+
         glm::ivec2 size{ m_fboTexture->getWidth(), m_fboTexture->getHeight() };
         int numChannels{ m_fboTexture->getNumChannels() };
 
-        stbi_uc *data{ new stbi_uc[size.x * size.y * numChannels] };
+        int dataSize{ size.x * size.y * numChannels };
+        stbi_uc *data{ new stbi_uc[dataSize] };
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+
         stbi_flip_vertically_on_write(true);
         std::string output{ "output.png" };
         stbi_write_png(output.c_str(), size.x, size.y, numChannels, data, 0);
 
         delete[] data;
     }
+
+    // Reset configurations after rendering.
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, windowSize.x, windowSize.y);
 }
 
 void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)

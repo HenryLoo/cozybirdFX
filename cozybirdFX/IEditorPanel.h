@@ -30,9 +30,8 @@ protected:
     // Fixed UI element sizes.
     static const glm::vec2 ONE_VAL_SIZE;
     static const glm::vec2 TWO_VAL_SIZE;
+    static const glm::vec2 THREE_VAL_SIZE;
     static const glm::vec2 LABEL_SIZE;
-    static const glm::vec2 COLOUR_RANGE;
-    static const glm::vec2 COLOUR_SIZE;
     static const glm::vec2 BUTTON_SIZE;
     static const glm::vec2 ONE_BUTTON_SIZE;
     static const glm::vec2 TWO_BUTTON_SIZE;

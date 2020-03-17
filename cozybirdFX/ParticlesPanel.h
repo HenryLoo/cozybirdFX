@@ -16,19 +16,19 @@ public:
 	virtual void updateUIFromEmitter(Emitter *emitter) override;
 
 private:
-	std::shared_ptr<UITextField> m_delayField{ nullptr };
-	std::shared_ptr<UITextField> m_emDurationField{ nullptr };
-	std::shared_ptr<UITextField> m_xField{ nullptr };
-	std::shared_ptr<UITextField> m_yField{ nullptr };
-	std::shared_ptr<UITextField> m_numGenField{ nullptr };
-	std::shared_ptr<UITextField> m_spawnTimeField{ nullptr };
-	std::shared_ptr<UITextField> m_velXMinField{ nullptr };
-	std::shared_ptr<UITextField> m_velXMaxField{ nullptr };
-	std::shared_ptr<UITextField> m_velYMinField{ nullptr };
-	std::shared_ptr<UITextField> m_velYMaxField{ nullptr };
-	std::shared_ptr<UITextField> m_accelXField{ nullptr };
-	std::shared_ptr<UITextField> m_accelYField{ nullptr };
-	std::shared_ptr<UITextField> m_sizeField{ nullptr };
-	std::shared_ptr<UITextField> m_lifeMinField{ nullptr };
-	std::shared_ptr<UITextField> m_lifeMaxField{ nullptr };
+	std::shared_ptr<UITextField> m_delay{ nullptr };
+	std::shared_ptr<UITextField> m_duration{ nullptr };
+	std::shared_ptr<UITextField> m_xPosition{ nullptr };
+	std::shared_ptr<UITextField> m_yPosition{ nullptr };
+	std::shared_ptr<UITextField> m_numToGenerate{ nullptr };
+	std::shared_ptr<UITextField> m_spawnTime{ nullptr };
+	std::shared_ptr<UITextField> m_velXMin{ nullptr };
+	std::shared_ptr<UITextField> m_velXMax{ nullptr };
+	std::shared_ptr<UITextField> m_velYMin{ nullptr };
+	std::shared_ptr<UITextField> m_velYMax{ nullptr };
+	std::shared_ptr<UITextField> m_accelX{ nullptr };
+	std::shared_ptr<UITextField> m_accelY{ nullptr };
+	std::shared_ptr<UITextField> m_size{ nullptr };
+	std::shared_ptr<UITextField> m_lifeMin{ nullptr };
+	std::shared_ptr<UITextField> m_lifeMax{ nullptr };
 };

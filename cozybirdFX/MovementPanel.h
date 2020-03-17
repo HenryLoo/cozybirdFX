@@ -16,11 +16,11 @@ public:
 	virtual void updateUIFromEmitter(Emitter *emitter) override;
 
 private:
-	std::shared_ptr<UITextField> m_particleSpeedField{ nullptr };
-	std::shared_ptr<UITextField> m_hSinAmpField{ nullptr };
-	std::shared_ptr<UITextField> m_hSinPeriodField{ nullptr };
-	std::shared_ptr<UITextField> m_vSinAmpField{ nullptr };
-	std::shared_ptr<UITextField> m_vSinPeriodField{ nullptr };
-	std::shared_ptr<UITextField> m_circleRadiusField{ nullptr };
-	std::shared_ptr<UITextField> m_circlePeriodField{ nullptr };
+	std::shared_ptr<UITextField> m_particleSpeed{ nullptr };
+	std::shared_ptr<UITextField> m_hSineAmplitude{ nullptr };
+	std::shared_ptr<UITextField> m_hSinePeriod{ nullptr };
+	std::shared_ptr<UITextField> m_vSineAmplitude{ nullptr };
+	std::shared_ptr<UITextField> m_vSinePeriod{ nullptr };
+	std::shared_ptr<UITextField> m_circleRadius{ nullptr };
+	std::shared_ptr<UITextField> m_circlePeriod{ nullptr };
 };

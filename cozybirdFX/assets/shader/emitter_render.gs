@@ -12,12 +12,14 @@ in int vsType[];
 
 smooth out vec2 texCoord;
 flat out vec4 particleColour;
+flat out float particleAdditivity;
 
 uniform mat4 mvp;
 uniform vec4 colour;
 uniform vec4 birthColour;
 uniform vec4 deathColour;
 uniform float duration;
+uniform vec3 additivity;
 
 // Two unit vectors, used as axes to span the quad.
 uniform vec3 axis1;
@@ -37,11 +39,22 @@ void main()
     float birthThreshold = 0.33;
     float deathThreshold = 0.66;
     if (dur <= birthThreshold)
-        particleColour = mix(birthColour, colour, dur / birthThreshold);
+    {
+        float amount = dur / birthThreshold;
+        particleColour = mix(birthColour, colour, amount);
+        particleAdditivity = mix(additivity.x, additivity.y, amount);
+    }
     else if (dur >= deathThreshold)
-        particleColour = mix(colour, deathColour, (dur - deathThreshold) / (1.0 - deathThreshold));
+    {
+        float amount = (dur - deathThreshold) / (1.0 - deathThreshold);
+        particleColour = mix(colour, deathColour, amount);
+        particleAdditivity = mix(additivity.y, additivity.z, amount);
+    }
     else
+    {
         particleColour = colour;
+        particleAdditivity = additivity.y;
+    }
 
     // Define quad vertices.
     vec3 position = origin + (-axis1 - axis2) * vsSize[0];

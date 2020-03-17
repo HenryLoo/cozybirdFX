@@ -16,16 +16,19 @@ public:
 	virtual void updateUIFromEmitter(Emitter *emitter) override;
 
 private:
-	std::shared_ptr<UISlider> m_rSlider{ nullptr };
-	std::shared_ptr<UISlider> m_gSlider{ nullptr };
-	std::shared_ptr<UISlider> m_bSlider{ nullptr };
-	std::shared_ptr<UISlider> m_aSlider{ nullptr };
-	std::shared_ptr<UISlider> m_birthRSlider{ nullptr };
-	std::shared_ptr<UISlider> m_birthGSlider{ nullptr };
-	std::shared_ptr<UISlider> m_birthBSlider{ nullptr };
-	std::shared_ptr<UISlider> m_birthASlider{ nullptr };
-	std::shared_ptr<UISlider> m_deathRSlider{ nullptr };
-	std::shared_ptr<UISlider> m_deathGSlider{ nullptr };
-	std::shared_ptr<UISlider> m_deathBSlider{ nullptr };
-	std::shared_ptr<UISlider> m_deathASlider{ nullptr };
+	std::shared_ptr<UISlider> m_red{ nullptr };
+	std::shared_ptr<UISlider> m_green{ nullptr };
+	std::shared_ptr<UISlider> m_blue{ nullptr };
+	std::shared_ptr<UISlider> m_opacity{ nullptr };
+	std::shared_ptr<UISlider> m_additivity{ nullptr };
+	std::shared_ptr<UISlider> m_birthRed{ nullptr };
+	std::shared_ptr<UISlider> m_birthGreen{ nullptr };
+	std::shared_ptr<UISlider> m_birthBlue{ nullptr };
+	std::shared_ptr<UISlider> m_birthOpacity{ nullptr };
+	std::shared_ptr<UISlider> m_birthAdditivity{ nullptr };
+	std::shared_ptr<UISlider> m_deathRed{ nullptr };
+	std::shared_ptr<UISlider> m_deathGreen{ nullptr };
+	std::shared_ptr<UISlider> m_deathBlue{ nullptr };
+	std::shared_ptr<UISlider> m_deathOpacity{ nullptr };
+	std::shared_ptr<UISlider> m_deathAdditivity{ nullptr };
 };

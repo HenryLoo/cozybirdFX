@@ -25,8 +25,8 @@ private:
 	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
 	UIRenderer::Properties *m_clipSizeBox{ nullptr };
 
-	std::shared_ptr<UITextField> m_clipXField{ nullptr };
-	std::shared_ptr<UITextField> m_clipYField{ nullptr };
-	std::shared_ptr<UITextField> m_durationField{ nullptr };
-	std::shared_ptr<UITextField> m_fpsField{ nullptr };
+	std::shared_ptr<UITextField> m_clipX{ nullptr };
+	std::shared_ptr<UITextField> m_clipY{ nullptr };
+	std::shared_ptr<UITextField> m_duration{ nullptr };
+	std::shared_ptr<UITextField> m_fps{ nullptr };
 };

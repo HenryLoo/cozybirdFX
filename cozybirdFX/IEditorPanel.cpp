@@ -2,9 +2,8 @@
 
 const glm::vec2 IEditorPanel::ONE_VAL_SIZE{ 356.f, 24.f };
 const glm::vec2 IEditorPanel::TWO_VAL_SIZE{ 170.f, ONE_VAL_SIZE.y };
+const glm::vec2 IEditorPanel::THREE_VAL_SIZE{ 108.f, ONE_VAL_SIZE.y };
 const glm::vec2 IEditorPanel::LABEL_SIZE{ 200.f, 16.f };
-const glm::vec2 IEditorPanel::COLOUR_RANGE{ 0.f, 255.f };
-const glm::vec2 IEditorPanel::COLOUR_SIZE{ 75.f, ONE_VAL_SIZE.y };
 const glm::vec2 IEditorPanel::BUTTON_SIZE{ 100.f, 32.f };
 const glm::vec2 IEditorPanel::ONE_BUTTON_SIZE{ ONE_VAL_SIZE.x, BUTTON_SIZE.y };
 const glm::vec2 IEditorPanel::TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };

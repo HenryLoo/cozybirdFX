@@ -67,7 +67,7 @@ private:
 	glm::ivec2 m_clipSize{ 200.f, 200.f };
 
 	// The frame rate to render the animation at when exporting.
-	int m_exportFPS{ 24 };
+	int m_exportFPS{ 60 };
 
 	// Flag for if the animation is looping.
 	bool m_isLooping{ true };
