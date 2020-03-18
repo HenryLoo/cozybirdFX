@@ -1,8 +1,13 @@
 #include "VisualsPanel.h"
+#include "AssetLoader.h"
 #include "Emitter.h"
+#include "Texture.h"
 #include "UIButton.h"
 #include "UISlider.h"
 #include "UIText.h"
+
+#include <nfd/nfd.h>
+#include <iostream>
 
 namespace
 {
@@ -10,7 +15,8 @@ namespace
     const glm::vec2 PERCENT_RANGE{ 0.f, 100.f };
 }
 
-VisualsPanel::VisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
+VisualsPanel::VisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer, 
+    AssetLoader *assetLoader)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
@@ -82,7 +88,23 @@ VisualsPanel::VisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
     m_panel->addElement(textureLabel);
 
     m_panel->addNewHalfLine();
-    auto textureButton{ std::make_shared<UIButton>("Select...", ONE_BUTTON_SIZE) };
+    auto textureButton{ std::make_shared<UIButton>("Select...", 
+        ONE_BUTTON_SIZE, false, [this, assetLoader]()
+        {
+            nfdchar_t *texturePath{ nullptr };
+            nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &texturePath);
+
+            if (result == NFD_OKAY)
+            {
+                setTexture(assetLoader->load<Texture>(texturePath, 0, true));
+                free(texturePath);
+            }
+            else if (result != NFD_CANCEL)
+            {
+                std::cout << "VisualsPanel, texture select error: " << 
+                    NFD_GetError() << std::endl;
+            }
+        }) };
     m_panel->addElement(textureButton);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
@@ -120,6 +142,13 @@ void VisualsPanel::update(Emitter *emitter, float deltaTime)
 
     float deathAdditivity{ m_deathAdditivity->getValue() / PERCENT_RANGE.y };
     emitter->setDeathAdditivity(deathAdditivity);
+
+    // Set emitter texture.
+    if (m_emitterTexture != nullptr)
+    {
+        emitter->setTexture(m_emitterTexture);
+        m_emitterTexture = nullptr;
+    }
 }
 
 void VisualsPanel::updateUIFromEmitter(Emitter *emitter)
@@ -144,4 +173,9 @@ void VisualsPanel::updateUIFromEmitter(Emitter *emitter)
     m_deathBlue->setValue(static_cast<int>(deathColour.b * COLOUR_RANGE.y));
     m_deathOpacity->setValue(static_cast<int>(deathColour.a * PERCENT_RANGE.y));
     m_deathAdditivity->setValue(static_cast<int>(emitter->getDeathAdditivity() * PERCENT_RANGE.y));
+}
+
+void VisualsPanel::setTexture(std::shared_ptr<Texture> texture)
+{
+    m_emitterTexture = texture;
 }

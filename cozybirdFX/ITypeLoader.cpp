@@ -15,7 +15,7 @@ ITypeLoader::ITypeLoader(const std::string &typePath) :
 }
 
 std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::string> &fileNames, 
-	int flag)
+	int flag, bool isAbsPath)
 {
 	// Get the asset's name.
 	std::string flagStr{ "" };
@@ -39,7 +39,9 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 		}
 
 		// Get the file path.
-		const std::string filePath{ ASSET_PATH + m_typePath + fileName };
+		std::string filePath{ fileName };
+		if (!isAbsPath)
+			filePath = ASSET_PATH + m_typePath + filePath;
 
 		// If asset was not found in cache, then load it.
 		std::ifstream stream(filePath, std::ifstream::binary);
@@ -47,6 +49,7 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 		{
 			std::cout << "ITypeLoader::load: Failed to open file in stream '"
 				<< filePath << "'" << std::endl;
+			return nullptr;
 		}
 
 		// Get the file size.

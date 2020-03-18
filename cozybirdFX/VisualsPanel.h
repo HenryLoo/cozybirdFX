@@ -2,6 +2,8 @@
 
 #include "IEditorPanel.h"
 
+class AssetLoader;
+class Texture;
 class TextRenderer;
 class UIRenderer;
 class UISlider;
@@ -9,13 +11,18 @@ class UISlider;
 class VisualsPanel : public IEditorPanel
 {
 public:
-	VisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	VisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer, 
+		AssetLoader *assetLoader);
 
 	virtual void update(Emitter *emitter, float deltaTime) override;
 
 	virtual void updateUIFromEmitter(Emitter *emitter) override;
 
+	void setTexture(std::shared_ptr<Texture> texture);
+
 private:
+	std::shared_ptr<Texture> m_emitterTexture{ nullptr };
+
 	std::shared_ptr<UISlider> m_red{ nullptr };
 	std::shared_ptr<UISlider> m_green{ nullptr };
 	std::shared_ptr<UISlider> m_blue{ nullptr };

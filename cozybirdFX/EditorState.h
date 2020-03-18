@@ -26,7 +26,8 @@ class RenderPanel;
 class EditorState : public IState
 {
 public:
-	EditorState(Engine *engine, std::shared_ptr<EmitterRenderer> eRenderer, 
+	EditorState(Engine *engine, AssetLoader *assetLoader,
+		std::shared_ptr<EmitterRenderer> eRenderer, 
 		TextRenderer *tRenderer, UIRenderer *uRenderer);
 
 	virtual void handleInput(InputManager *inputManager);

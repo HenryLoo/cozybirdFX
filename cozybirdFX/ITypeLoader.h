@@ -17,7 +17,8 @@ public:
 	// specific loader's interpretAsset implementation.
 	// The flag is an optional parameter that may be used by specific loaders.
 	std::shared_ptr<IAsset> load(
-		const std::initializer_list<std::string> &fileNames, int flag);
+		const std::initializer_list<std::string> &fileNames, int flag, 
+		bool isAbsPath);
 
 protected:
 	struct AssetBuffer

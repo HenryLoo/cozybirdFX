@@ -34,7 +34,7 @@ namespace
     const glm::vec2 TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
 }
 
-EditorState::EditorState(Engine *engine, 
+EditorState::EditorState(Engine *engine, AssetLoader *assetLoader,
     std::shared_ptr<EmitterRenderer> eRenderer, 
     TextRenderer *tRenderer, UIRenderer *uRenderer) :
     m_eRenderer(eRenderer)
@@ -51,7 +51,7 @@ EditorState::EditorState(Engine *engine,
     m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, eRenderer, 
         tRenderer, uRenderer, m_clipSizeBox);
     m_particlesPanel = std::make_shared<ParticlesPanel>(tRenderer, uRenderer);
-    m_visualsPanel = std::make_shared<VisualsPanel>(tRenderer, uRenderer);
+    m_visualsPanel = std::make_shared<VisualsPanel>(tRenderer, uRenderer, assetLoader);
     m_movementPanel = std::make_shared<MovementPanel>(tRenderer, uRenderer);
     m_emittersPanel = std::make_shared<EmittersPanel>(this, engine, tRenderer, 
         uRenderer);
