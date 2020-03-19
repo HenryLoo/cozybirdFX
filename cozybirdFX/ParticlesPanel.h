@@ -9,11 +9,11 @@ class UITextField;
 class ParticlesPanel : public IEditorPanel
 {
 public:
-	ParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 private:
 	std::shared_ptr<UITextField> m_delay{ nullptr };

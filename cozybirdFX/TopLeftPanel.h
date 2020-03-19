@@ -11,13 +11,13 @@ class UIRenderer;
 class TopLeftPanel : public IEditorPanel
 {
 public:
-	TopLeftPanel(Engine *engine, std::shared_ptr<EmitterRenderer> eRenderer,
-		TextRenderer *tRenderer, UIRenderer *uRenderer,
-		UIRenderer::Properties *clipSizeBox);
+	TopLeftPanel(Engine &engine, std::shared_ptr<EmitterRenderer> eRenderer,
+		TextRenderer &tRenderer, UIRenderer &uRenderer,
+		UIRenderer::Properties &clipSizeBox);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 private:
 	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };

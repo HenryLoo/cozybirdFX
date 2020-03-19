@@ -8,7 +8,7 @@ IUserInterface::IUserInterface(glm::vec2 position, glm::vec2 size,
 {
 }
 
-void IUserInterface::process(InputManager *inputManager)
+void IUserInterface::process(InputManager &inputManager)
 {
 	// Skip disabled elements.
 	if (!m_isEnabled)
@@ -17,19 +17,16 @@ void IUserInterface::process(InputManager *inputManager)
 	handleInput(inputManager);
 }
 
-void IUserInterface::addToRenderer(UIRenderer *uRenderer,
-	TextRenderer *tRenderer)
+void IUserInterface::addToRenderer(UIRenderer &uRenderer,
+	TextRenderer &tRenderer)
 {
-	if (uRenderer != nullptr)
-	{
-		UIRenderer::Properties prop;
-		prop.pos = m_position + m_offset;
-		prop.size = m_size;
-		prop.colour = m_colour;
-		prop.hasBorder = m_hasBorder;
-		auto it{ uRenderer->addElement(prop) };
-		m_uiProperties = &*it;
-	}
+	UIRenderer::Properties prop;
+	prop.pos = m_position + m_offset;
+	prop.size = m_size;
+	prop.colour = m_colour;
+	prop.hasBorder = m_hasBorder;
+	auto it{ uRenderer.addElement(prop) };
+	m_uiProperties = &*it;
 }
 
 void IUserInterface::setPosition(glm::vec2 position)

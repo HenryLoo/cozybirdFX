@@ -40,10 +40,10 @@ public:
 		bool isEnabled{ true };
 	};
 
-	TextRenderer(AssetLoader *assetLoader);
+	TextRenderer(AssetLoader &assetLoader);
 	~TextRenderer();
 
-	virtual void render(float deltaTime, Camera *camera);
+	virtual void render(float deltaTime, const Camera &camera) override;
 
 	// Add a text to the map to be rendered.
 	std::list<Properties>::iterator addText(const Properties &prop, Font *font = nullptr);

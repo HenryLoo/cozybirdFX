@@ -11,19 +11,19 @@ class UITextField;
 class RenderPanel : public IEditorPanel
 {
 public:
-	RenderPanel(EditorState *editor,
+	RenderPanel(EditorState &editor,
 		std::shared_ptr<EmitterRenderer> eRenderer,
-		TextRenderer *tRenderer, UIRenderer *uRenderer,
-		UIRenderer::Properties *clipSizeBox);
+		TextRenderer &tRenderer, UIRenderer &uRenderer,
+		UIRenderer::Properties &clipSizeBox);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 private:
-	EditorState *m_editor{ nullptr };
+	EditorState &m_editor;
 	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
-	UIRenderer::Properties *m_clipSizeBox{ nullptr };
+	UIRenderer::Properties &m_clipSizeBox;
 
 	std::shared_ptr<UITextField> m_clipX{ nullptr };
 	std::shared_ptr<UITextField> m_clipY{ nullptr };

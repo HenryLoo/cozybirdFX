@@ -20,15 +20,15 @@ UISlider::UISlider(std::string label, glm::ivec2 range,
 {
 }
 
-void UISlider::handleInput(InputManager *inputManager)
+void UISlider::handleInput(InputManager &inputManager)
 {
 	// Activate slider if the mouse is inside the bar's bounds.
-	glm::vec2 mousePos{ inputManager->getMousePos() };
+	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 	if ((!IUserInterface::m_isClicked || m_isClicked) &&
 		((mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
 		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y) || 
-		m_isClicked) && inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
+		m_isClicked) && inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
 		IUserInterface::m_isClicked = m_isClicked = true;
 
@@ -42,13 +42,13 @@ void UISlider::handleInput(InputManager *inputManager)
 	}
 
 	// Disable clicked flag on left click release.
-	if (m_isClicked && !inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
+	if (m_isClicked && !inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
 		IUserInterface::m_isClicked = m_isClicked = false;
 	}
 }
 
-void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
+void UISlider::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add the slider's bar to the renderer.
 	IUserInterface::addToRenderer(uRenderer, tRenderer);
@@ -60,8 +60,8 @@ void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	fill.pos.y += FILL_OFFSET / 2;
 	fill.size.y = m_size.y - FILL_OFFSET;
 	fill.colour = FILL_COLOUR;
-	auto filIt{ uRenderer->addElement(fill) };
-	m_fillProperties = &*filIt;
+	auto fillIt{ uRenderer.addElement(fill) };
+	m_fillProperties = &*fillIt;
 
 	glm::vec2 textPos{ m_position + m_offset };
 	textPos.x += TEXT_OFFSET;
@@ -73,7 +73,7 @@ void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	label.pos = textPos;
 	label.size = textBox;
 	label.isVerticalCenter = true;
-	auto labelIt{ tRenderer->addText(label) };
+	auto labelIt{ tRenderer.addText(label) };
 	m_labelProperties = &*labelIt;
 
 	// Add the slider's value to the renderer.
@@ -82,7 +82,7 @@ void UISlider::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	val.size = textBox;
 	val.isVerticalCenter = true;
 	val.align = TextRenderer::TextAlign::RIGHT;
-	auto valIt{ tRenderer->addText(val) };
+	auto valIt{ tRenderer.addText(val) };
 	m_valProperties = &*valIt;
 
 	updateBar();

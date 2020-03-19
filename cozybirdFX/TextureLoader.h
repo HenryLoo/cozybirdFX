@@ -9,5 +9,5 @@ public:
 
 protected:
 	virtual std::shared_ptr<IAsset> interpretAsset(
-		const std::vector<AssetBuffer> &data, int flag) const;
+		const std::vector<AssetBuffer> &data, int flag) const override;
 };

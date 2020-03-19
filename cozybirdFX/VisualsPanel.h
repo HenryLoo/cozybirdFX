@@ -11,12 +11,12 @@ class UISlider;
 class VisualsPanel : public IEditorPanel
 {
 public:
-	VisualsPanel(TextRenderer *tRenderer, UIRenderer *uRenderer, 
-		AssetLoader *assetLoader);
+	VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer, 
+		AssetLoader &assetLoader);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 	void setTexture(std::shared_ptr<Texture> texture);
 

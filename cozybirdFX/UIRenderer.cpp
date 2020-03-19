@@ -5,9 +5,9 @@
 
 #include <glad/glad.h>
 
-UIRenderer::UIRenderer(AssetLoader *assetLoader)
+UIRenderer::UIRenderer(AssetLoader &assetLoader)
 {
-	m_shader = assetLoader->load<Shader>({ "ui.vs", "ui.fs" });
+	m_shader = assetLoader.load<Shader>({ "ui.vs", "ui.fs" });
 	if (m_shader != nullptr)
 		m_shader->link();
 
@@ -98,13 +98,10 @@ UIRenderer::~UIRenderer()
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
-void UIRenderer::render(float deltaTime, Camera *camera)
+void UIRenderer::render(float deltaTime, const Camera &camera)
 {
 	// Skip render if there are UI elements to draw.
 	if (m_elements.empty())
-		return;
-
-	if (camera == nullptr)
 		return;
 
 	// Set blend mode.
@@ -114,7 +111,7 @@ void UIRenderer::render(float deltaTime, Camera *camera)
 	// Use orthographic projection, since we won't be needing perspective for UI.
 	// This allows us to use vertex coordinates as screen coordinates.
 	m_shader->use();
-	m_shader->setMat4("projection", camera->getUIProjection());
+	m_shader->setMat4("projection", camera.getUIProjection());
 
 	// Instance vectors.
 	std::vector<glm::vec3> borders;

@@ -6,12 +6,12 @@ UIText::UIText(std::string text, glm::vec2 size, glm::vec2 position) :
 
 }
 
-void UIText::handleInput(InputManager *inputManager)
+void UIText::handleInput(InputManager &inputManager)
 {
 	// Do nothing.
 }
 
-void UIText::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
+void UIText::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	glm::vec2 textPos{ m_position + m_offset };
 
@@ -21,7 +21,7 @@ void UIText::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	prop.pos = textPos;
 	prop.size = m_size;
 	prop.isVerticalCenter = true;
-	auto it{ tRenderer->addText(prop) };
+	auto it{ tRenderer.addText(prop) };
 	m_tProperties = &*it;
 }
 

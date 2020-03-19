@@ -12,9 +12,9 @@ class AssetLoader;
 class EmitterRenderer : public IRenderer
 {
 public:
-	EmitterRenderer(AssetLoader *assetLoader);
+	EmitterRenderer(AssetLoader &assetLoader);
 
-	virtual void render(float deltaTime, Camera *camera);
+	virtual void render(float deltaTime, const Camera &camera) override;
 
 	// Getter functions.
 	Emitter *getEmitter(int index) const;

@@ -16,7 +16,7 @@ public:
 	void update(float deltaTime, float currentTime, std::shared_ptr<Shader> updateShader);
 
 	// Render to scene.
-	void render(Camera *camera, std::shared_ptr<Shader> renderShader);
+	void render(const Camera &camera, std::shared_ptr<Shader> renderShader);
 
 	// Render to frame buffer.
 	void render(std::shared_ptr<Shader> renderShader);

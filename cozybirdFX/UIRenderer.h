@@ -29,10 +29,10 @@ public:
 		bool isEnabled{ true };
 	};
 
-	UIRenderer(AssetLoader *assetLoader);
+	UIRenderer(AssetLoader &assetLoader);
 	~UIRenderer();
 
-	virtual void render(float deltaTime, Camera *camera);
+	virtual void render(float deltaTime, const Camera &camera) override;
 
 	// Add a UI element to the list to be rendered.
 	std::list<Properties>::iterator addElement(const Properties &prop);

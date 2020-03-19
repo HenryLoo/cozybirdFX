@@ -10,7 +10,7 @@ UIContainer::UIContainer(glm::vec2 position, glm::vec2 size, glm::vec4 colour,
 	m_isFittingHeight = (size.y == -1.f);
 }
 
-void UIContainer::handleInput(InputManager *inputManager)
+void UIContainer::handleInput(InputManager &inputManager)
 {
 	for (const auto &element : m_elements)
 	{
@@ -42,7 +42,7 @@ void UIContainer::addNewHalfLine()
 	addNewLine(SPACE / 2.f);
 }
 
-void UIContainer::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
+void UIContainer::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add this container to the renderer.
 	IUserInterface::addToRenderer(uRenderer, tRenderer);

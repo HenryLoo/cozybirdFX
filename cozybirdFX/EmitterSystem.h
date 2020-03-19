@@ -23,8 +23,8 @@ public:
 		std::vector<ECSComponent::Decay> &decays);
 
 protected:
-	virtual void updateSystem(float deltaTime);
-	virtual void updateEntity(int entityId, float deltaTime);
+	virtual void updateSystem(float deltaTime) override;
+	virtual void updateEntity(int entityId, float deltaTime) override;
 
 private:
 	// Hold all emitters in the system.

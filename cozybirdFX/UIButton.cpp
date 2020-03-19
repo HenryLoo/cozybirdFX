@@ -16,14 +16,14 @@ UIButton::UIButton(std::string label, glm::vec2 size, bool isTogglable,
 {
 }
 
-void UIButton::handleInput(InputManager *inputManager)
+void UIButton::handleInput(InputManager &inputManager)
 {
 	// Call the action if left clicked inside the button's bounds.
-	glm::vec2 mousePos{ inputManager->getMousePos() };
+	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 	if (mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
 		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y &&
-		inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1, true))
+		inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1, true))
 	{
 		if (m_isTogglable)
 		{
@@ -34,7 +34,7 @@ void UIButton::handleInput(InputManager *inputManager)
 	}
 }
 
-void UIButton::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
+void UIButton::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add this button to the renderer.
 	IUserInterface::addToRenderer(uRenderer, tRenderer);
@@ -46,7 +46,7 @@ void UIButton::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	prop.size = m_size;
 	prop.isVerticalCenter = true;
 	prop.align = TextRenderer::TextAlign::CENTER;
-	auto it{ tRenderer->addText(prop) };
+	auto it{ tRenderer.addText(prop) };
 	m_tProperties = &*it;
 }
 

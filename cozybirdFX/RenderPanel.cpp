@@ -5,10 +5,10 @@
 #include "UIText.h"
 #include "UITextField.h"
 
-RenderPanel::RenderPanel(EditorState *editor, 
+RenderPanel::RenderPanel(EditorState &editor, 
     std::shared_ptr<EmitterRenderer> eRenderer,
-    TextRenderer *tRenderer, UIRenderer *uRenderer,
-    UIRenderer::Properties *clipSizeBox) :
+    TextRenderer &tRenderer, UIRenderer &uRenderer,
+    UIRenderer::Properties &clipSizeBox) :
     m_editor(editor), m_eRenderer(eRenderer), m_clipSizeBox(clipSizeBox)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
@@ -45,7 +45,7 @@ RenderPanel::RenderPanel(EditorState *editor,
     loopButton->setToggled(true);
 }
 
-void RenderPanel::update(Emitter *emitter, float deltaTime)
+void RenderPanel::update(float deltaTime, Emitter &emitter)
 {
     // Set the clip size.
     glm::ivec2 clipSize;
@@ -53,8 +53,8 @@ void RenderPanel::update(Emitter *emitter, float deltaTime)
     bool isClipY{ m_clipY->getValue(clipSize.y) };
     if (isClipX || isClipY)
     {
-        m_clipSizeBox->size = clipSize;
-        m_editor->updateClipBoxPos();
+        m_clipSizeBox.size = clipSize;
+        m_editor.updateClipBoxPos();
         m_eRenderer->setClipSize(clipSize);
     }
 
@@ -75,7 +75,7 @@ void RenderPanel::update(Emitter *emitter, float deltaTime)
     }
 }
 
-void RenderPanel::updateUIFromEmitter(Emitter *emitter)
+void RenderPanel::updateUIFromEmitter(const Emitter &emitter)
 {
     glm::ivec2 clipSize{ m_eRenderer->getClipSize() };
     m_clipX->setValue(clipSize.x);

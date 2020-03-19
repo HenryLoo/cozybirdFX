@@ -12,9 +12,9 @@ class AssetLoader;
 class SpriteRenderer : public IRenderer
 {
 public:
-	SpriteRenderer(AssetLoader *assetLoader);
+	SpriteRenderer(AssetLoader &assetLoader);
 
-	virtual void render(float deltaTime, Camera *camera);
+	virtual void render(float deltaTime, const Camera &camera) override;
 
 	void addSprite(glm::mat4 model);
 

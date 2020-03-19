@@ -7,12 +7,10 @@
 #include "EmittersPanel.h"
 #include "RenderPanel.h"
 
-TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
-    std::shared_ptr<ParticlesPanel> particles,
-    std::shared_ptr<VisualsPanel> visuals,
-    std::shared_ptr<MovementPanel> movement,
-    std::shared_ptr<EmittersPanel> emitters,
-    std::shared_ptr<RenderPanel> render)
+TopRightPanel::TopRightPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
+    ParticlesPanel &particles, VisualsPanel &visuals,
+    MovementPanel &movement, EmittersPanel &emitters,
+    RenderPanel &render)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, -1.f));
@@ -28,14 +26,14 @@ TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
     auto renderButton{ std::make_shared<UIButton>("Render",
         BUTTON_SIZE, true) };
 
-    particlesButton->setAction([particles, visuals, movement, emitters, render,
+    particlesButton->setAction([&particles, &visuals, &movement, &emitters, &render,
         particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
         {
-            particles->setEnabled(true);
-            visuals->setEnabled(false);
-            movement->setEnabled(false);
-            emitters->setEnabled(false);
-            render->setEnabled(false);
+            particles.setEnabled(true);
+            visuals.setEnabled(false);
+            movement.setEnabled(false);
+            emitters.setEnabled(false);
+            render.setEnabled(false);
 
             particlesButton->setToggled(true);
             visualsButton->setToggled(false);
@@ -44,14 +42,14 @@ TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
             renderButton->setToggled(false);
         });
 
-    visualsButton->setAction([particles, visuals, movement, emitters, render,
+    visualsButton->setAction([&particles, &visuals, &movement, &emitters, &render,
         particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
         {
-            particles->setEnabled(false);
-            visuals->setEnabled(true);
-            movement->setEnabled(false);
-            emitters->setEnabled(false);
-            render->setEnabled(false);
+            particles.setEnabled(false);
+            visuals.setEnabled(true);
+            movement.setEnabled(false);
+            emitters.setEnabled(false);
+            render.setEnabled(false);
 
             particlesButton->setToggled(false);
             visualsButton->setToggled(true);
@@ -60,14 +58,14 @@ TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
             renderButton->setToggled(false);
         });
 
-    movementButton->setAction([particles, visuals, movement, emitters, render,
+    movementButton->setAction([&particles, &visuals, &movement, &emitters, &render,
         particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
         {
-            particles->setEnabled(false);
-            visuals->setEnabled(false);
-            movement->setEnabled(true);
-            emitters->setEnabled(false);
-            render->setEnabled(false);
+            particles.setEnabled(false);
+            visuals.setEnabled(false);
+            movement.setEnabled(true);
+            emitters.setEnabled(false);
+            render.setEnabled(false);
 
             particlesButton->setToggled(false);
             visualsButton->setToggled(false);
@@ -76,14 +74,14 @@ TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
             renderButton->setToggled(false);
         });
 
-    emittersButton->setAction([particles, visuals, movement, emitters, render,
+    emittersButton->setAction([&particles, &visuals, &movement, &emitters, &render,
         particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
         {
-            particles->setEnabled(false);
-            visuals->setEnabled(false);
-            movement->setEnabled(false);
-            emitters->setEnabled(true);
-            render->setEnabled(false);
+            particles.setEnabled(false);
+            visuals.setEnabled(false);
+            movement.setEnabled(false);
+            emitters.setEnabled(true);
+            render.setEnabled(false);
 
             particlesButton->setToggled(false);
             visualsButton->setToggled(false);
@@ -92,14 +90,14 @@ TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
             renderButton->setToggled(false);
         });
 
-    renderButton->setAction([particles, visuals, movement, emitters, render,
+    renderButton->setAction([&particles, &visuals, &movement, &emitters, &render,
         particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
         {
-            particles->setEnabled(false);
-            visuals->setEnabled(false);
-            movement->setEnabled(false);
-            emitters->setEnabled(false);
-            render->setEnabled(true);
+            particles.setEnabled(false);
+            visuals.setEnabled(false);
+            movement.setEnabled(false);
+            emitters.setEnabled(false);
+            render.setEnabled(true);
 
             particlesButton->setToggled(false);
             visualsButton->setToggled(false);
@@ -118,10 +116,10 @@ TopRightPanel::TopRightPanel(TextRenderer *tRenderer, UIRenderer *uRenderer,
     particlesButton->setToggled(true);
 }
 
-void TopRightPanel::update(Emitter *emitter, float deltaTime)
+void TopRightPanel::update(float deltaTime, Emitter &emitter)
 {
 }
 
-void TopRightPanel::updateUIFromEmitter(Emitter *emitter)
+void TopRightPanel::updateUIFromEmitter(const Emitter &emitter)
 {
 }

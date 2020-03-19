@@ -111,14 +111,12 @@ void Emitter::update(float deltaTime, float currentTime,
     update();
 }
 
-void Emitter::render(Camera *camera, std::shared_ptr<Shader> renderShader)
+void Emitter::render(const Camera &camera, 
+    std::shared_ptr<Shader> renderShader)
 {
-    if (camera == nullptr)
-        return;
-
     // Get camera matrices.
-    glm::mat4 view{ camera->getView() };
-    glm::mat4 proj{ camera->getSceneProjection() };
+    glm::mat4 view{ camera.getView() };
+    glm::mat4 proj{ camera.getSceneProjection() };
     glm::mat4 mvp = proj * view;
     renderShader->use();
     renderShader->setMat4("mvp", mvp);

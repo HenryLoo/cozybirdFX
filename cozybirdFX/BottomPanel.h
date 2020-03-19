@@ -8,9 +8,9 @@ class UIRenderer;
 class BottomPanel : public IEditorPanel
 {
 public:
-	BottomPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	BottomPanel(TextRenderer &tRenderer, UIRenderer &uRenderer);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 };

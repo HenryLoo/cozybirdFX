@@ -16,20 +16,22 @@ public:
 	UIContainer(glm::vec2 position, glm::vec2 size, 
 		glm::vec4 colour = { 0.3f, 0.3f, 0.5f, 0.8f }, bool hasBorder = true);
 
-	virtual void handleInput(InputManager *inputManager);
-
 	// Add a UI element to this container.
-	virtual void addElement(std::shared_ptr<IUserInterface> element);
+	void addElement(std::shared_ptr<IUserInterface> element);
 
 	// Add a break so that the next element is added on a new line.
 	void addNewLine();
 	void addNewHalfLine();
 
-	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
+	virtual void addToRenderer(UIRenderer &uRenderer, 
+		TextRenderer &tRenderer) override;
 
-	virtual void setPosition(glm::vec2 position);
-	virtual void setSize(glm::vec2 size);
-	virtual void setEnabled(bool isEnabled);
+	virtual void setPosition(glm::vec2 position) override;
+	virtual void setSize(glm::vec2 size) override;
+	virtual void setEnabled(bool isEnabled) override;
+
+protected:
+	virtual void handleInput(InputManager &inputManager) override;
 
 private:
 	// Adjust the size of this container based on the size of its contents.

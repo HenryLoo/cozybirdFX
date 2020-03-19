@@ -6,13 +6,13 @@
 
 #include <glad/glad.h>
 
-TextRenderer::TextRenderer(AssetLoader *assetLoader)
+TextRenderer::TextRenderer(AssetLoader &assetLoader)
 {
-    m_shader = assetLoader->load<Shader>({ "text.vs", "text.fs" });
+    m_shader = assetLoader.load<Shader>({ "text.vs", "text.fs" });
     if (m_shader != nullptr)
         m_shader->link();
 
-	m_font = assetLoader->load<Font>("default.ttf", 16);
+	m_font = assetLoader.load<Font>("default.ttf", 16);
 
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.
@@ -102,13 +102,10 @@ TextRenderer::~TextRenderer()
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
-void TextRenderer::render(float deltaTime, Camera *camera)
+void TextRenderer::render(float deltaTime, const Camera &camera)
 {
 	// Skip render if there is no text to draw.
 	if (m_texts.empty())
-		return;
-
-	if (camera == nullptr)
 		return;
 
 	// Set blend mode.
@@ -118,7 +115,7 @@ void TextRenderer::render(float deltaTime, Camera *camera)
 	// Use orthographic projection, since we won't be needing perspective for text.
 	// This allows us to use vertex coordinates as screen coordinates.
 	m_shader->use();
-	m_shader->setMat4("projection", camera->getUIProjection());
+	m_shader->setMat4("projection", camera.getUIProjection());
 
 	// Iterate through in-use fonts.
 	for (auto it = m_texts.begin(); it != m_texts.end(); ++it)

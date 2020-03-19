@@ -24,9 +24,9 @@ UITextField::UITextField(std::string label, glm::vec2 size,
 {
 }
 
-void UITextField::handleInput(InputManager *inputManager)
+void UITextField::handleInput(InputManager &inputManager)
 {
-	glm::vec2 mousePos{ inputManager->getMousePos() };
+	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 
 	// Activate text field on left click, inside the field's bounds.
@@ -34,13 +34,13 @@ void UITextField::handleInput(InputManager *inputManager)
 		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y)
 	{
 		if (!IUserInterface::m_isClicked &&
-			inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
+			inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 		{
 			setActivation(true, inputManager);
 		}
 	}
 	// Deactivate text field when clicking outside the field's bounds.
-	else if (m_isActivated && inputManager->isMouseDown(GLFW_MOUSE_BUTTON_1))
+	else if (m_isActivated && inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
 		setActivation(false, inputManager);
 		m_isNewValue = true;
@@ -50,13 +50,13 @@ void UITextField::handleInput(InputManager *inputManager)
 	if (m_isActivated)
 	{
 		// Erase the last character from the field.
-		if (inputManager->isKeyDown(GLFW_KEY_BACKSPACE, true))
+		if (inputManager.isKeyDown(GLFW_KEY_BACKSPACE, true))
 		{
 			if (!m_value.empty())
 				m_value.erase(m_value.end() - 1);
 		}
 		// Deactivate on enter.
-		else if (inputManager->isKeyDown(GLFW_KEY_ENTER))
+		else if (inputManager.isKeyDown(GLFW_KEY_ENTER))
 		{
 			setActivation(false, inputManager);
 			m_isNewValue = true;
@@ -65,7 +65,7 @@ void UITextField::handleInput(InputManager *inputManager)
 		else
 		{
 			std::string str;
-			inputManager->flushText(str);
+			inputManager.flushText(str);
 			m_value += str;
 		}
 
@@ -73,7 +73,7 @@ void UITextField::handleInput(InputManager *inputManager)
 	}
 }
 
-void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
+void UITextField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add the text field's bar to the renderer.
 	IUserInterface::addToRenderer(uRenderer, tRenderer);
@@ -88,7 +88,7 @@ void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	label.pos = textPos;
 	label.size = textBox;
 	label.isVerticalCenter = true;
-	auto labelIt{ tRenderer->addText(label) };
+	auto labelIt{ tRenderer.addText(label) };
 	m_labelProperties = &*labelIt;
 
 	// Add the field's value to the renderer.
@@ -97,7 +97,7 @@ void UITextField::addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer)
 	val.size = textBox;
 	val.isVerticalCenter = true;
 	val.align = TextRenderer::TextAlign::RIGHT;
-	auto valIt{ tRenderer->addText(val) };
+	auto valIt{ tRenderer.addText(val) };
 	m_valProperties = &*valIt;
 
 	updateUI();
@@ -194,7 +194,7 @@ bool UITextField::getValue(float &output)
 	}
 }
 
-void UITextField::setActivation(bool isActivated, InputManager *inputManager)
+void UITextField::setActivation(bool isActivated, InputManager &inputManager)
 {
 	m_isActivated = isActivated;
 
@@ -203,7 +203,7 @@ void UITextField::setActivation(bool isActivated, InputManager *inputManager)
 	else
 		m_uiProperties->colour = isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
 
-	inputManager->toggleTextInput(isActivated);
+	inputManager.toggleTextInput(isActivated);
 }
 
 void UITextField::updateUI()

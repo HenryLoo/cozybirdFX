@@ -35,14 +35,8 @@ public:
 	// Flag the window size to be updated.
 	void updateNewWindowSize();
 
-	// Get the current emitter.
-	Emitter *getEmitter(int index) const;
-
-	// Toggle an emitter.
-	void toggleEmitter(int index, bool isEnabled) const;
-
 	// Get the camera.
-	Camera *getCamera() const;
+	Camera &getCamera() const;
 
 	// Get the window size.
 	glm::ivec2 getWindowSize() const;
@@ -59,10 +53,6 @@ private:
 
 	// The application window.
 	GLFWwindow *m_window{ nullptr };
-
-	// Hold all renderers.
-	std::vector<std::shared_ptr<IRenderer>> m_renderers;
-	std::shared_ptr<EmitterRenderer> m_emitterRenderer;
 
 	// Flag for if the window was resized.
 	bool m_hasNewWindowSize{ true };

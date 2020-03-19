@@ -4,13 +4,13 @@
 
 #include <glad/glad.h>
 
-SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
+SpriteRenderer::SpriteRenderer(AssetLoader &assetLoader)
 {
     // TODO: Clean up this initialization code.
-    m_shader = assetLoader->load<Shader>({ "sprite.vs", "sprite.fs" });
+    m_shader = assetLoader.load<Shader>({ "sprite.vs", "sprite.fs" });
     if (m_shader != nullptr)
         m_shader->link();
-    m_texture = assetLoader->load<Texture>("particle.png");
+    m_texture = assetLoader.load<Texture>("particle.png");
 
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.
@@ -54,11 +54,8 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
     glEnableVertexAttribArray(1);
 }
 
-void SpriteRenderer::render(float deltaTime, Camera *camera)
+void SpriteRenderer::render(float deltaTime, const Camera &camera)
 {
-    if (camera == nullptr)
-        return;
-
     // Enable blending.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -68,8 +65,8 @@ void SpriteRenderer::render(float deltaTime, Camera *camera)
     m_shader->use();
     glBindVertexArray(m_VAO);
 
-    glm::mat4 view{ camera->getView() };
-    glm::mat4 proj{ camera->getSceneProjection() };
+    glm::mat4 view{ camera.getView() };
+    glm::mat4 proj{ camera.getSceneProjection() };
 
     for (auto it = m_models.begin(); it != m_models.end(); ++it)
     {

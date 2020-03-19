@@ -12,8 +12,8 @@ public:
 	IUserInterface(glm::vec2 position, glm::vec2 size, glm::vec4 colour, 
 		bool hasBorder);
 
-	void process(InputManager *inputManager);
-	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
+	void process(InputManager &inputManager);
+	virtual void addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer);
 
 	// Setter functions.
 	virtual void setPosition(glm::vec2 position);
@@ -28,7 +28,7 @@ public:
 	bool hasBorder() const;
 
 protected:
-	virtual void handleInput(InputManager *inputManager) = 0;
+	virtual void handleInput(InputManager &inputManager) = 0;
 
 	// The x, y position of this element.
 	glm::vec2 m_position{ 0.f };

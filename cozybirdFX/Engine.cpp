@@ -26,12 +26,6 @@ Engine::Engine(GLFWwindow *window) :
     // Instantiate the input manager.
     m_inputManager = std::make_unique<InputManager>(m_window);
 
-    // Instantiate renderers.
-    m_emitterRenderer = std::make_shared<EmitterRenderer>(m_assetLoader.get());
-    //auto spriteRenderer{ std::make_shared<SpriteRenderer>(m_assetLoader.get()) };
-    auto uiRenderer{ std::make_shared<UIRenderer>(m_assetLoader.get()) };
-    auto textRenderer{ std::make_shared<TextRenderer>(m_assetLoader.get()) };
-
     // Instantiate entity manager.
     //m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), 
     //    m_assetLoader.get());
@@ -41,15 +35,8 @@ Engine::Engine(GLFWwindow *window) :
     m_camera = std::make_unique<Camera>(windowSize, 1.f);
 
     // Default to editor state.
-    EditorState *state{ new EditorState(this, m_assetLoader.get(),
-        m_emitterRenderer, textRenderer.get(), uiRenderer.get()) };
+    EditorState *state{ new EditorState(*this, *m_assetLoader) };
     pushState(state);
-
-    // Add renderers to the list.
-    m_renderers.push_back(m_emitterRenderer);
-    m_renderers.push_back(uiRenderer);
-    m_renderers.push_back(textRenderer);
-    //m_renderers.push_back(spriteRenderer);
 }
 
 Engine::~Engine()
@@ -111,7 +98,7 @@ void Engine::handleInput()
     // Handle input for the current state.
     IState *state{ getState() };
     if (state != nullptr)
-        state->handleInput(m_inputManager.get());
+        state->handleInput(*m_inputManager);
 }
 
 void Engine::update(float deltaTime)
@@ -123,7 +110,7 @@ void Engine::update(float deltaTime)
     // Update the current state.
     IState *state{ getState() };
     if (state != nullptr)
-        state->update(this, deltaTime);
+        state->update(deltaTime, *this);
 }
 
 void Engine::render(float deltaTime)
@@ -131,12 +118,10 @@ void Engine::render(float deltaTime)
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Call render for all renderers.
-    for (const auto &renderer : m_renderers)
-    {
-        if (renderer != nullptr)
-            renderer->render(deltaTime, m_camera.get());
-    }
+    // Render the scene.
+    IState *state{ getState() };
+    if (state != nullptr)
+        state->render(deltaTime, *m_camera);
 
     glfwSwapBuffers(m_window);
 }
@@ -146,19 +131,9 @@ void Engine::updateNewWindowSize()
     m_hasNewWindowSize = true;
 }
 
-Emitter *Engine::getEmitter(int index) const
+Camera &Engine::getCamera() const
 {
-    return m_emitterRenderer->getEmitter(index);
-}
-
-void Engine::toggleEmitter(int index, bool isEnabled) const
-{
-    m_emitterRenderer->toggleEmitter(index, isEnabled);
-}
-
-Camera *Engine::getCamera() const
-{
-    return m_camera.get();
+    return *m_camera;
 }
 
 glm::ivec2 Engine::getWindowSize() const

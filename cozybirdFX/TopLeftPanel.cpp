@@ -7,9 +7,9 @@
 #include <iomanip>
 #include <sstream>
 
-TopLeftPanel::TopLeftPanel(Engine *engine, 
-    std::shared_ptr<EmitterRenderer> eRenderer, TextRenderer *tRenderer,
-    UIRenderer *uRenderer, UIRenderer::Properties *clipSizeBox) :
+TopLeftPanel::TopLeftPanel(Engine &engine, 
+    std::shared_ptr<EmitterRenderer> eRenderer, TextRenderer &tRenderer,
+    UIRenderer &uRenderer, UIRenderer::Properties &clipSizeBox) :
     m_eRenderer(eRenderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
@@ -21,17 +21,16 @@ TopLeftPanel::TopLeftPanel(Engine *engine,
 
     auto exportButton{ std::make_shared<UIButton>("Export",
         BUTTON_SIZE, false,
-        [eRenderer, engine]()
+        [eRenderer, &engine]()
         {
-            glm::ivec2 windowSize{ engine->getWindowSize() };
+            glm::ivec2 windowSize{ engine.getWindowSize() };
             eRenderer->exportSpriteSheet(windowSize);
         }) };
     m_panel->addElement(exportButton);
 
-    UIRenderer::Properties *clipSize{ clipSizeBox };
     auto clipButton{ std::make_shared<UIButton>("Show Clip",
        BUTTON_SIZE, true,
-       [clipSize]() { clipSize->isEnabled = !clipSize->isEnabled; }) };
+       [&clipSizeBox]() { clipSizeBox.isEnabled = !clipSizeBox.isEnabled; }) };
     m_panel->addElement(clipButton);
 
     auto playButton{ std::make_shared<UIButton>("Play", BUTTON_SIZE, true) };
@@ -49,7 +48,7 @@ TopLeftPanel::TopLeftPanel(Engine *engine,
     clipButton->setToggled(true);
 }
 
-void TopLeftPanel::update(Emitter *emitter, float deltaTime)
+void TopLeftPanel::update(float deltaTime, Emitter &emitter)
 {
     std::stringstream ss;
     ss << std::fixed << std::setprecision(3);
@@ -61,7 +60,7 @@ void TopLeftPanel::update(Emitter *emitter, float deltaTime)
     m_playbackTimer->setText(ss.str());
 }
 
-void TopLeftPanel::updateUIFromEmitter(Emitter *emitter)
+void TopLeftPanel::updateUIFromEmitter(const Emitter &emitter)
 {
 
 }

@@ -26,24 +26,29 @@ class RenderPanel;
 class EditorState : public IState
 {
 public:
-	EditorState(Engine *engine, AssetLoader *assetLoader,
-		std::shared_ptr<EmitterRenderer> eRenderer, 
-		TextRenderer *tRenderer, UIRenderer *uRenderer);
+	EditorState(Engine &engine, AssetLoader &assetLoader);
 
-	virtual void handleInput(InputManager *inputManager);
+	virtual void handleInput(InputManager &inputManager) override;
 
-	virtual void update(Engine *engine, float deltaTime);
+	virtual void update(float deltaTime, Engine &engine) override;
 
-	void selectEmitter(Engine *engine, int index);
+	virtual void render(float deltaTime, const Camera &camera) override;
+
+	void selectEmitter(int index);
 
 	// Update the position of the clip box.
 	void updateClipBoxPos();
 
 private:
-	void resize(glm::vec2 windowSize, Camera *camera);
+	void resize(glm::vec2 windowSize, Camera &camera);
 
 	// Calculate the size of the viewport.
 	glm::ivec2 getViewportSize() const;
+
+	// This state's renderers.
+	std::shared_ptr<TextRenderer> m_tRenderer{ nullptr };
+	std::shared_ptr<UIRenderer> m_uRenderer{ nullptr };
+	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
 
 	// Store the current window size.
 	// Use this to detect window size changes and then rescale UI.
@@ -52,11 +57,8 @@ private:
 	// The index of the currently selected emitter.
 	int m_emitter{ 0 };
 
-	// Pointer to the emitter renderer.
-	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
-
 	// The clip size's visual representation.
-	UIRenderer::Properties *m_clipSizeBox{ nullptr };
+	UIRenderer::Properties *m_clipSizeBox;
 
 	// UI Elements for editing emitters.
 	std::vector<std::shared_ptr<IEditorPanel>> m_panels;

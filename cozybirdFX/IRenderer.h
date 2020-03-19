@@ -6,5 +6,5 @@ class IRenderer
 {
 public:
 	// Render all elements.
-	virtual void render(float deltaTime, Camera *camera) = 0;
+	virtual void render(float deltaTime, const Camera &camera) = 0;
 };

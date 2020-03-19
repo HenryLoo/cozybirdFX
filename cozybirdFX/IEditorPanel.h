@@ -13,11 +13,11 @@ class IUserInterface;
 class IEditorPanel
 {
 public:
-	void handleInput(InputManager *inputManager);
+	void handleInput(InputManager &inputManager);
 
-	virtual void update(Emitter *emitter, float deltaTime) = 0;
+	virtual void update(float deltaTime, Emitter &emitter) = 0;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) = 0;
+	virtual void updateUIFromEmitter(const Emitter &emitter) = 0;
 
 	void setPosition(glm::vec2 position);
     void setSize(glm::vec2 size);

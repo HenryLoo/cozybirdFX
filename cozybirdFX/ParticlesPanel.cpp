@@ -3,7 +3,7 @@
 #include "UIText.h"
 #include "UITextField.h"
 
-ParticlesPanel::ParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
+ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
@@ -85,20 +85,20 @@ ParticlesPanel::ParticlesPanel(TextRenderer *tRenderer, UIRenderer *uRenderer)
     m_panel->addToRenderer(uRenderer, tRenderer);
 }
 
-void ParticlesPanel::update(Emitter *emitter, float deltaTime)
+void ParticlesPanel::update(float deltaTime, Emitter &emitter)
 {
     // Set delay time.
     float delay;
     if (m_delay->getValue(delay))
     {
-        emitter->setDelayBeforeStart(delay);
+        emitter.setDelayBeforeStart(delay);
     }
 
     // Set emitter duration.
     float duration;
     if (m_duration->getValue(duration))
     {
-        emitter->setEmitterDuration(duration);
+        emitter.setEmitterDuration(duration);
     }
 
     // Set position.
@@ -107,21 +107,21 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
     bool isPosY{ m_yPosition->getValue(pos.y) };
     if (isPosX || isPosY)
     {
-        emitter->setPosition(pos);
+        emitter.setPosition(pos);
     }
 
     // Set number of particles to generate.
     int numToGen;
     if (m_numToGenerate->getValue(numToGen))
     {
-        emitter->setNumToGenerate(numToGen);
+        emitter.setNumToGenerate(numToGen);
     }
 
     // Set spawn time.
     float spawnTime;
     if (m_spawnTime->getValue(spawnTime))
     {
-        emitter->setTimeToSpawn(spawnTime);
+        emitter.setTimeToSpawn(spawnTime);
     }
 
     // Set velocity.
@@ -130,7 +130,7 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
     bool isVelYMin{ m_velYMin->getValue(velMin.y) };
     if (isVelXMin || isVelYMin)
     {
-        emitter->setVelocityMin(velMin);
+        emitter.setVelocityMin(velMin);
     }
 
     // Convert max to offset.
@@ -141,7 +141,7 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
     {
         glm::vec2 velOffset{ velMax.x - velMin.x, velMax.y - velMin.y };
         velOffset = glm::clamp(velOffset, { 0.f, 0.f }, velOffset);
-        emitter->setVelocityOffset(velOffset);
+        emitter.setVelocityOffset(velOffset);
     }
 
     // Set acceleration.
@@ -150,14 +150,14 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
     bool isAccelY{ m_accelY->getValue(accel.y) };
     if (isAccelX || isAccelY)
     {
-        emitter->setAcceleration(accel);
+        emitter.setAcceleration(accel);
     }
 
     // Set particle size.
     float size;
     if (m_size->getValue(size))
     {
-        emitter->setSize(size);
+        emitter.setSize(size);
     }
 
     // Set duration.
@@ -165,7 +165,7 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
     bool isLifeMin{ m_lifeMin->getValue(lifeMin) };
     if (isLifeMin)
     {
-        emitter->setLifeMin(lifeMin);
+        emitter.setLifeMin(lifeMin);
     }
 
     // Convert max to offset.
@@ -175,36 +175,36 @@ void ParticlesPanel::update(Emitter *emitter, float deltaTime)
     {
         float lifeOffset{ lifeMax - lifeMin };
         lifeOffset = glm::clamp(lifeOffset, 0.f, lifeOffset);
-        emitter->setLifeOffset(lifeOffset);
+        emitter.setLifeOffset(lifeOffset);
     }
 }
 
-void ParticlesPanel::updateUIFromEmitter(Emitter *emitter)
+void ParticlesPanel::updateUIFromEmitter(const Emitter &emitter)
 {
-    m_delay->setValue(emitter->getDelayBeforeStart());
-    m_duration->setValue(emitter->getEmitterDuration());
+    m_delay->setValue(emitter.getDelayBeforeStart());
+    m_duration->setValue(emitter.getEmitterDuration());
 
-    glm::vec2 pos{ emitter->getPosition() };
+    glm::vec2 pos{ emitter.getPosition() };
     m_xPosition->setValue(pos.x);
     m_yPosition->setValue(pos.y);
 
-    m_numToGenerate->setValue(emitter->getNumToGenerate());
-    m_spawnTime->setValue(emitter->getTimeToSpawn());
+    m_numToGenerate->setValue(emitter.getNumToGenerate());
+    m_spawnTime->setValue(emitter.getTimeToSpawn());
 
-    glm::vec2 velMin{ emitter->getVelocityMin() };
-    glm::vec2 velOffset{ emitter->getVelocityOffset() };
+    glm::vec2 velMin{ emitter.getVelocityMin() };
+    glm::vec2 velOffset{ emitter.getVelocityOffset() };
     m_velXMin->setValue(velMin.x);
     m_velXMax->setValue(velMin.x + velOffset.x);
     m_velYMin->setValue(velMin.y);
     m_velYMax->setValue(velMin.y + velOffset.y);
 
-    glm::vec2 accel{ emitter->getAcceleration() };
+    glm::vec2 accel{ emitter.getAcceleration() };
     m_accelX->setValue(accel.x);
     m_accelY->setValue(accel.y);
 
-    m_size->setValue(emitter->getSize());
+    m_size->setValue(emitter.getSize());
 
-    float durationMin{ emitter->getLifeMin() };
+    float durationMin{ emitter.getLifeMin() };
     m_lifeMin->setValue(durationMin);
-    m_lifeMax->setValue(durationMin + emitter->getLifeOffset());
+    m_lifeMax->setValue(durationMin + emitter.getLifeOffset());
 }

@@ -13,15 +13,18 @@ public:
 		std::function<void()> action = []() {}, glm::vec2 position = { 0.f, 0.f },
 		bool hasBorder = true);
 
-	virtual void handleInput(InputManager *inputManager);
-	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
+	virtual void addToRenderer(UIRenderer &uRenderer, 
+		TextRenderer &tRenderer) override;
 
-	virtual void setPosition(glm::vec2 position);
-	virtual void setEnabled(bool isEnabled);
+	virtual void setPosition(glm::vec2 position) override;
+	virtual void setEnabled(bool isEnabled) override;
 
 	void setAction(std::function<void()> action);
 	void setToggled(bool isToggled);
 	bool isToggled() const;
+
+protected:
+	virtual void handleInput(InputManager &inputManager) override;
 
 private:
 	// Call this function when the button is clicked.

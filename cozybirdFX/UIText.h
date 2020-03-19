@@ -12,13 +12,16 @@ class UIText : public IUserInterface
 public:
 	UIText(std::string text, glm::vec2 size, glm::vec2 position = { 0.f, 0.f });
 
-	virtual void handleInput(InputManager *inputManager);
-	virtual void addToRenderer(UIRenderer *uRenderer, TextRenderer *tRenderer);
+	virtual void addToRenderer(UIRenderer &uRenderer, 
+		TextRenderer &tRenderer) override;
 
-	virtual void setPosition(glm::vec2 position);
-	virtual void setEnabled(bool isEnabled);
+	virtual void setPosition(glm::vec2 position) override;
+	virtual void setEnabled(bool isEnabled) override;
 
 	void setText(const std::string &text);
+
+protected:
+	virtual void handleInput(InputManager &inputManager) override;
 
 private:
 	// The label's text.

@@ -9,11 +9,11 @@ class UITextField;
 class MovementPanel : public IEditorPanel
 {
 public:
-	MovementPanel(TextRenderer *tRenderer, UIRenderer *uRenderer);
+	MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 private:
 	std::shared_ptr<UITextField> m_particleSpeed{ nullptr };

@@ -25,16 +25,16 @@ namespace
 
 const int EmitterRenderer::NUM_EMITTERS{ 9 };
 
-EmitterRenderer::EmitterRenderer(AssetLoader *assetLoader)
+EmitterRenderer::EmitterRenderer(AssetLoader &assetLoader)
 {    
     // Create update shader program.
-    m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
+    m_updateShader = assetLoader.load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
     glTransformFeedbackVaryings(m_updateShader->getProgramId(),
         NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
     m_updateShader->link();
 
     // Create render shader program.
-    m_renderShader = assetLoader->load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
+    m_renderShader = assetLoader.load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
     m_renderShader->link();
 
     // Calculate axes for billboarding.
@@ -53,14 +53,14 @@ EmitterRenderer::EmitterRenderer(AssetLoader *assetLoader)
     for (int i = 0; i < NUM_EMITTERS; ++i)
     {
         auto emitter{ std::make_unique<Emitter>() };
-        emitter->setTexture(assetLoader->load<Texture>("particle.png"));
+        emitter->setTexture(assetLoader.load<Texture>("particle.png"));
         m_emitters.push_back(std::move(emitter));
     }
     m_isEnabled.resize(m_emitters.size());
     m_isEnabled[0] = true;
 }
 
-void EmitterRenderer::render(float deltaTime, Camera *camera)
+void EmitterRenderer::render(float deltaTime, const Camera &camera)
 {    
     // Skip render if the animation is not playing.
     if (!m_isPlaying)

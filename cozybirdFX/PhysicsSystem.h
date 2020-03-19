@@ -13,7 +13,7 @@ public:
 		std::vector<ECSComponent::Velocity> &velocities);
 
 protected:
-	virtual void updateEntity(int entityId, float deltaTime);
+	virtual void updateEntity(int entityId, float deltaTime) override;
 
 private:
 	// Component references.

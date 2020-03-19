@@ -183,6 +183,9 @@
     <ClInclude Include="RenderPanel.h">
       <Filter>Header Files\States\Editor Panels</Filter>
     </ClInclude>
+    <ClInclude Include="FileState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="EmitterRenderer.cpp">
       <Filter>Source Files\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="FileState.cpp">
+      <Filter>Source Files\States</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,17 +3,18 @@
 #include "IEditorPanel.h"
 
 class EditorState;
-class Engine;
+
+class EmitterRenderer;
 class TextRenderer;
 class UIRenderer;
 
 class EmittersPanel : public IEditorPanel
 {
 public:
-	EmittersPanel(EditorState *editor, Engine *engine, TextRenderer *tRenderer, 
-		UIRenderer *uRenderer);
+	EmittersPanel(EditorState &editor, EmitterRenderer &eRenderer, 
+		TextRenderer &tRenderer, UIRenderer &uRenderer);
 
-	virtual void update(Emitter *emitter, float deltaTime) override;
+	virtual void update(float deltaTime, Emitter &emitter) override;
 
-	virtual void updateUIFromEmitter(Emitter *emitter) override;
+	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 };
