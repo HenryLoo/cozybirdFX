@@ -19,6 +19,7 @@ public:
 	virtual void setEnabled(bool isEnabled) override;
 
 	void setText(const std::string &text);
+	void setAlign(TextRenderer::TextAlign align);
 
 protected:
 	virtual void handleInput(InputManager &inputManager) override;

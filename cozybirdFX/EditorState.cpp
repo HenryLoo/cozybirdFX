@@ -49,8 +49,8 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     m_clipSizeBox = &*it;
 
     // Initialize UI panels.
-    m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, m_eRenderer,
-        *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
+    m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, assetLoader,
+        m_eRenderer, *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
     m_particlesPanel = std::make_shared<ParticlesPanel>(*m_tRenderer,
         *m_uRenderer);
     m_visualsPanel = std::make_shared<VisualsPanel>(*m_tRenderer, *m_uRenderer,
@@ -84,26 +84,6 @@ void EditorState::handleInput(InputManager &inputManager)
         panel->handleInput(inputManager);
 }
 
-void EditorState::update(float deltaTime, Engine &engine)
-{
-    // If window size changed, rescale UI.
-    glm::vec2 windowSize{ engine.getWindowSize() };
-    if (m_windowSize != windowSize)
-    {
-        Camera &camera{ engine.getCamera() };
-        resize(windowSize, camera);
-    }
-
-    // Update emitter with UI values.
-    Emitter *emitter{ m_eRenderer->getEmitter(m_emitter) };
-    if (emitter == nullptr)
-        return;
-
-    // Update panels.
-    for (auto &panel : m_panels)
-        panel->update(deltaTime, *emitter);
-}
-
 void EditorState::render(float deltaTime, const Camera &camera)
 {
     m_eRenderer->render(deltaTime, camera);
@@ -123,16 +103,26 @@ void EditorState::selectEmitter(int index)
         panel->updateUIFromEmitter(*emitter);
 }
 
-void EditorState::resize(glm::vec2 windowSize, Camera &camera)
+void EditorState::update(float deltaTime)
 {
-    m_windowSize = windowSize;
+    // Update emitter with UI values.
+    Emitter *emitter{ m_eRenderer->getEmitter(m_emitter) };
+    if (emitter == nullptr)
+        return;
 
+    // Update panels.
+    for (auto &panel : m_panels)
+        panel->update(deltaTime, *emitter);
+}
+
+void EditorState::resize(Camera &camera)
+{
     // Rescale and reposition side panels.
     glm::vec2 tlSize{ m_topLeftPanel->getSize() };
     glm::vec2 trSize{ m_topRightPanel->getSize() };
-    m_particlesPanel->setSize(glm::vec2(-1.f, windowSize.y - tlSize.y - trSize.y - 2.f));
+    m_particlesPanel->setSize(glm::vec2(-1.f, m_windowSize.y - tlSize.y - trSize.y - 2.f));
     glm::vec2 sideSize{ m_particlesPanel->getSize() };
-    m_particlesPanel->setPosition(glm::vec2(windowSize.x - sideSize.x, trSize.y + 1.f));
+    m_particlesPanel->setPosition(glm::vec2(m_windowSize.x - sideSize.x, trSize.y + 1.f));
 
     glm::vec2 sidePos{ m_particlesPanel->getPosition() };
     m_visualsPanel->setSize(sideSize);
@@ -145,19 +135,20 @@ void EditorState::resize(glm::vec2 windowSize, Camera &camera)
     m_renderPanel->setPosition(sidePos);
 
     // Rescale and reposition top panels.
-    m_topLeftPanel->setSize(glm::vec2(windowSize.x - trSize.x - 1.f, -1.f));
+    m_topLeftPanel->setSize(glm::vec2(m_windowSize.x - trSize.x - 1.f, -1.f));
     glm::vec2 tlPos{ m_topLeftPanel->getPosition() };
-    m_topRightPanel->setPosition(glm::vec2(windowSize.x - trSize.x, tlPos.y));
+    m_topRightPanel->setPosition(glm::vec2(m_windowSize.x - trSize.x, tlPos.y));
 
     // Rescale and reposition bottom panel.
-    m_bottomPanel->setSize(glm::vec2(windowSize.x, windowSize.y - tlSize.y - sideSize.y - 2.f));
+    m_bottomPanel->setSize(glm::vec2(m_windowSize.x, 
+        m_windowSize.y - tlSize.y - sideSize.y - 2.f));
     glm::vec2 bottomSize{ m_bottomPanel->getSize() };
-    m_bottomPanel->setPosition(glm::vec2(-1.f, windowSize.y - bottomSize.y));
+    m_bottomPanel->setPosition(glm::vec2(-1.f, m_windowSize.y - bottomSize.y));
 
     // Reposition the camera.
     glm::ivec2 viewportSize{ getViewportSize() };
     float zoom{ camera.getZoom() };
-    glm::vec2 cameraPos{ (viewportSize.x - windowSize.x) / (2.f * zoom), -1.f };
+    glm::vec2 cameraPos{ (viewportSize.x - m_windowSize.x) / (2.f * zoom), -1.f };
     camera.setPosition(cameraPos);
 
     // Reposition the clip size box.

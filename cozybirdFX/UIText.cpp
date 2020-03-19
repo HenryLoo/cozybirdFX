@@ -46,5 +46,12 @@ void UIText::setEnabled(bool isEnabled)
 
 void UIText::setText(const std::string &text)
 {
-	m_tProperties->text = text;
+	if (m_tProperties != nullptr)
+		m_tProperties->text = text;
+}
+
+void UIText::setAlign(TextRenderer::TextAlign align)
+{
+	if (m_tProperties != nullptr)
+		m_tProperties->align = align;
 }

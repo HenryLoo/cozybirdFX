@@ -3,15 +3,19 @@
 #include "IEditorPanel.h"
 #include "UIText.h"
 
+class AssetLoader;
+class EditorState;
 class Engine;
 class EmitterRenderer;
+class IState;
 class TextRenderer;
 class UIRenderer;
 
 class TopLeftPanel : public IEditorPanel
 {
 public:
-	TopLeftPanel(Engine &engine, std::shared_ptr<EmitterRenderer> eRenderer,
+	TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
+		std::shared_ptr<EmitterRenderer> eRenderer,
 		TextRenderer &tRenderer, UIRenderer &uRenderer,
 		UIRenderer::Properties &clipSizeBox);
 

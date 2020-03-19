@@ -30,8 +30,6 @@ public:
 
 	virtual void handleInput(InputManager &inputManager) override;
 
-	virtual void update(float deltaTime, Engine &engine) override;
-
 	virtual void render(float deltaTime, const Camera &camera) override;
 
 	void selectEmitter(int index);
@@ -40,7 +38,9 @@ public:
 	void updateClipBoxPos();
 
 private:
-	void resize(glm::vec2 windowSize, Camera &camera);
+	virtual void update(float deltaTime) override;
+
+	virtual void resize(Camera &camera) override;
 
 	// Calculate the size of the viewport.
 	glm::ivec2 getViewportSize() const;
@@ -49,10 +49,6 @@ private:
 	std::shared_ptr<TextRenderer> m_tRenderer{ nullptr };
 	std::shared_ptr<UIRenderer> m_uRenderer{ nullptr };
 	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
-
-	// Store the current window size.
-	// Use this to detect window size changes and then rescale UI.
-	glm::vec2 m_windowSize{ 0.f };
 
 	// The index of the currently selected emitter.
 	int m_emitter{ 0 };

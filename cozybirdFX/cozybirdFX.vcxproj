@@ -202,6 +202,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="IEditorPanel.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="IState.cpp" />
     <ClCompile Include="ITypeLoader.cpp" />
     <ClCompile Include="IUserInterface.cpp" />
     <ClCompile Include="Main.cpp" />
