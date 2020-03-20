@@ -19,11 +19,9 @@ public:
 
 	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
-	void setTexture(std::shared_ptr<Texture> texture);
+	void prepareToLoadTexture();
 
 private:
-	std::shared_ptr<Texture> m_emitterTexture{ nullptr };
-
 	std::shared_ptr<UISlider> m_red{ nullptr };
 	std::shared_ptr<UISlider> m_green{ nullptr };
 	std::shared_ptr<UISlider> m_blue{ nullptr };
@@ -40,6 +38,7 @@ private:
 	std::shared_ptr<UISlider> m_deathOpacity{ nullptr };
 	std::shared_ptr<UISlider> m_deathAdditivity{ nullptr };
 
-	std::shared_ptr<UITextField> m_texture{ nullptr };
-	std::string m_texturePath;
+	std::shared_ptr<UITextField> m_textureName{ nullptr };
+	bool m_hasNewTexture{ true };
+	AssetLoader &m_assetLoader;
 };

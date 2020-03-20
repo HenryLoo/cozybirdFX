@@ -46,53 +46,61 @@ FileState::FileState(Engine &engine, AssetLoader &assetLoader,
 
 				eRenderer.init(assetLoader);
 
-				eRenderer.setDuration(j["duration"].get<float>());
-				eRenderer.setClipSize(glm::ivec2(j["clipSize"]["x"].get<int>(), 
-					j["clipSize"]["y"].get<int>()));
-				eRenderer.setExportFPS(j["exportFPS"].get<int>());
-				eRenderer.setLooping(j["isLooping"].get<bool>());
-
-				for (nlohmann::json &e : j["emitters"])
+				try
 				{
-					int index{ glm::clamp(e["emitter"].get<int>(), 0, 
-						EmitterRenderer::NUM_EMITTERS - 1) };
-					Emitter &emitter{ eRenderer.getEmitter(index) };
+					eRenderer.setDuration(j.at("duration").get<float>());
+					eRenderer.setClipSize(glm::ivec2(j.at("clipSize").at("x").get<int>(),
+						j.at("clipSize").at("y").get<int>()));
+					eRenderer.setExportFPS(j.at("exportFPS").get<int>());
+					eRenderer.setLooping(j.at("isLooping").get<bool>());
 
-					eRenderer.toggleEmitter(index, true);
+					for (nlohmann::json &e : j.at("emitters"))
+					{
+						int index{ glm::clamp(e.at("emitter").get<int>(), 0,
+							EmitterRenderer::NUM_EMITTERS - 1) };
+						Emitter &emitter{ eRenderer.getEmitter(index) };
 
-					emitter.setNumToGenerate(e["numToGenerate"].get<int>());
-					emitter.setPosition(glm::vec2(e["position"]["x"].get<float>(), 
-						e["position"]["y"].get<float>()));
-					emitter.setTimeToSpawn(e["timeToSpawn"].get<float>());
-					emitter.setVelocityMin(glm::vec2(e["velocityMin"]["x"].get<float>(),
-						e["velocityMin"]["y"].get<float>()));
-					emitter.setVelocityOffset(glm::vec2(e["velocityOffset"]["x"].get<float>(),
-						e["velocityOffset"]["y"].get<float>()));
-					emitter.setAcceleration(glm::vec2(e["acceleration"]["x"].get<float>(),
-						e["acceleration"]["y"].get<float>()));
-					emitter.setSize(e["size"].get<float>());
-					emitter.setLifeMin(e["lifeMin"].get<float>());
-					emitter.setLifeOffset(e["lifeOffset"].get<float>());
-					emitter.setColour(glm::vec4(e["colour"]["r"].get<float>(), 
-						e["colour"]["g"].get<float>(), e["colour"]["b"].get<float>(), 
-						e["colour"]["a"].get<float>()));
-					emitter.setAdditivity(e["additivity"].get<float>());
-					emitter.setBirthColour(glm::vec4(e["birthColour"]["r"].get<float>(), 
-						e["birthColour"]["g"].get<float>(), e["birthColour"]["b"].get<float>(), 
-						e["birthColour"]["a"].get<float>()));
-					emitter.setBirthAdditivity(e["birthAdditivity"].get<float>());
-					emitter.setDeathColour(glm::vec4(e["deathColour"]["r"].get<float>(), 
-						e["deathColour"]["g"].get<float>(), e["deathColour"]["b"].get<float>(), 
-						e["deathColour"]["a"].get<float>()));
-					emitter.setDeathAdditivity(e["deathAdditivity"].get<float>());
-					emitter.setDelayBeforeStart(e["delay"].get<float>());
-					emitter.setEmitterDuration(e["duration"].get<float>());
-					emitter.setHSineAmplitude(e["hSineAmplitude"].get<float>());
-					emitter.setHSinePeriod(e["hSinePeriod"].get<float>());
-					emitter.setVSineAmplitude(e["vSineAmplitude"].get<float>());
-					emitter.setVSinePeriod(e["vSinePeriod"].get<float>());
-					emitter.setCircleRadius(e["circleRadius"].get<float>());
-					emitter.setCirclePeriod(e["circlePeriod"].get<float>());
+						eRenderer.toggleEmitter(index, true);
+
+						emitter.setTexture(assetLoader, e.at("textureName").get<std::string>());
+						emitter.setNumToGenerate(e.at("numToGenerate").get<int>());
+						emitter.setPosition(glm::vec2(e.at("position").at("x").get<float>(),
+							e.at("position").at("y").get<float>()));
+						emitter.setTimeToSpawn(e.at("timeToSpawn").get<float>());
+						emitter.setVelocityMin(glm::vec2(e.at("velocityMin").at("x").get<float>(),
+							e.at("velocityMin").at("y").get<float>()));
+						emitter.setVelocityOffset(glm::vec2(e.at("velocityOffset").at("x").get<float>(),
+							e.at("velocityOffset").at("y").get<float>()));
+						emitter.setAcceleration(glm::vec2(e.at("acceleration").at("x").get<float>(),
+							e.at("acceleration").at("y").get<float>()));
+						emitter.setSize(e.at("size").get<float>());
+						emitter.setLifeMin(e.at("lifeMin").get<float>());
+						emitter.setLifeOffset(e.at("lifeOffset").get<float>());
+						emitter.setColour(glm::vec4(e.at("colour").at("r").get<float>(),
+							e.at("colour").at("g").get<float>(), e.at("colour").at("b").get<float>(),
+								e.at("colour").at("a").get<float>()));
+						emitter.setAdditivity(e.at("additivity").get<float>());
+						emitter.setBirthColour(glm::vec4(e.at("birthColour").at("r").get<float>(),
+							e.at("birthColour").at("g").get<float>(), e.at("birthColour").at("b").get<float>(),
+								e.at("birthColour").at("a").get<float>()));
+						emitter.setBirthAdditivity(e.at("birthAdditivity").get<float>());
+						emitter.setDeathColour(glm::vec4(e.at("deathColour").at("r").get<float>(),
+							e.at("deathColour").at("g").get<float>(), e.at("deathColour").at("b").get<float>(),
+								e.at("deathColour").at("a").get<float>()));
+						emitter.setDeathAdditivity(e.at("deathAdditivity").get<float>());
+						emitter.setDelayBeforeStart(e.at("delay").get<float>());
+						emitter.setEmitterDuration(e.at("duration").get<float>());
+						emitter.setHSineAmplitude(e.at("hSineAmplitude").get<float>());
+						emitter.setHSinePeriod(e.at("hSinePeriod").get<float>());
+						emitter.setVSineAmplitude(e.at("vSineAmplitude").get<float>());
+						emitter.setVSinePeriod(e.at("vSinePeriod").get<float>());
+						emitter.setCircleRadius(e.at("circleRadius").get<float>());
+						emitter.setCirclePeriod(e.at("circlePeriod").get<float>());
+					}
+				}
+				catch (nlohmann::json::out_of_range &e)
+				{
+					std::cout << "FileState, load: Invalid JSON format: " << e.what() << std::endl;
 				}
 
 				// Return to the previous state.
@@ -137,6 +145,8 @@ FileState::FileState(Engine &engine, AssetLoader &assetLoader,
 					e["emitter"] = i;
 
 					Emitter &emitter{ eRenderer.getEmitter(i) };
+
+					e["textureName"] = emitter.getTextureName();
 					e["numToGenerate"] = emitter.getNumToGenerate();
 
 					glm::vec2 pos{ emitter.getPosition() };

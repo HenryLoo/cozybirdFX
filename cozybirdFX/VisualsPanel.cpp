@@ -7,9 +7,6 @@
 #include "UIText.h"
 #include "UITextField.h"
 
-//#include <nfd/nfd.h>
-//#include <iostream>
-
 namespace
 {
     const glm::vec2 COLOUR_RANGE{ 0.f, 255.f };
@@ -17,7 +14,8 @@ namespace
 }
 
 VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer, 
-    AssetLoader &assetLoader)
+    AssetLoader &assetLoader) :
+    m_assetLoader(assetLoader)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
@@ -89,32 +87,14 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     m_panel->addElement(textureLabel);
 
     m_panel->addNewHalfLine();
-    //auto textureButton{ std::make_shared<UIButton>("Select...", 
-    //    ONE_BUTTON_SIZE, false, [this, &assetLoader]()
-    //    {
-    //        nfdchar_t *texturePath{ nullptr };
-    //        nfdresult_t result = NFD_OpenDialog("png", nullptr, &texturePath);
-
-    //        if (result == NFD_OKAY)
-    //        {
-    //            setTexture(assetLoader.load<Texture>(texturePath, 0, true));
-    //            free(texturePath);
-    //        }
-    //        else if (result != NFD_CANCEL)
-    //        {
-    //            std::cout << "VisualsPanel, texture select error: " << 
-    //                NFD_GetError() << std::endl;
-    //        }
-    //    }) };
-    //m_panel->addElement(textureButton);
-    m_texture = std::make_shared<UITextField>("", ONE_VAL_SIZE);
-    m_panel->addElement(m_texture);
+    m_textureName = std::make_shared<UITextField>("", ONE_VAL_SIZE);
+    m_panel->addElement(m_textureName);
 
     m_panel->addNewHalfLine();
     auto textureButton{ std::make_shared<UIButton>("Load",
-        BUTTON_SIZE, false, []()
+        BUTTON_SIZE, false, [this]()
         {
-
+            prepareToLoadTexture();
         }
     ) };
     m_panel->addElement(textureButton);
@@ -156,10 +136,13 @@ void VisualsPanel::update(float deltaTime, Emitter &emitter)
     emitter.setDeathAdditivity(deathAdditivity);
 
     // Set emitter texture.
-    if (m_emitterTexture != nullptr)
+    if (m_hasNewTexture)
     {
-        emitter.setTexture(m_emitterTexture);
-        m_emitterTexture = nullptr;
+        m_hasNewTexture = false;
+
+        std::string textureName;
+        m_textureName->getValue(textureName);
+        emitter.setTexture(m_assetLoader, textureName);
     }
 }
 
@@ -185,9 +168,12 @@ void VisualsPanel::updateUIFromEmitter(const Emitter &emitter)
     m_deathBlue->setValue(static_cast<int>(deathColour.b * COLOUR_RANGE.y));
     m_deathOpacity->setValue(static_cast<int>(deathColour.a * PERCENT_RANGE.y));
     m_deathAdditivity->setValue(static_cast<int>(emitter.getDeathAdditivity() * PERCENT_RANGE.y));
+
+    const std::string &textureName{ emitter.getTextureName() };
+    m_textureName->setValue(textureName);
 }
 
-void VisualsPanel::setTexture(std::shared_ptr<Texture> texture)
+void VisualsPanel::prepareToLoadTexture()
 {
-    m_emitterTexture = texture;
+    m_hasNewTexture = true;
 }

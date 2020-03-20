@@ -120,11 +120,6 @@ void Emitter::render(const Camera &camera,
     glm::mat4 mvp = proj * view;
     renderShader->use();
     renderShader->setMat4("mvp", mvp);
-    renderShader->setVec4("colour", m_colour);
-    renderShader->setVec4("birthColour", m_birthColour);
-    renderShader->setVec4("deathColour", m_deathColour);
-    renderShader->setVec3("additivity", 
-        glm::vec3(m_birthAdditivity, m_additivity, m_deathAdditivity));
 
     // Render the particles.
     render(renderShader);
@@ -145,9 +140,14 @@ int Emitter::getNumParticles() const
     return m_numParticles;
 }
 
-void Emitter::setTexture(std::shared_ptr<Texture> texture)
+void Emitter::setTexture(AssetLoader &assetLoader, const std::string &filePath)
 {
-    m_texture = texture;
+    std::shared_ptr<Texture> texture{ assetLoader.load<Texture>(filePath) };
+    if (texture != nullptr)
+    {
+        m_texture = texture;
+        m_textureName = filePath;
+    }
 }
 
 void Emitter::setNumToGenerate(int num)
@@ -263,6 +263,11 @@ void Emitter::setCircleRadius(float radius)
 void Emitter::setCirclePeriod(float period)
 {
     m_circlePeriod = period;
+}
+
+const std::string &Emitter::getTextureName() const
+{
+    return m_textureName;
 }
 
 int Emitter::getNumToGenerate() const
@@ -457,6 +462,12 @@ void Emitter::render(std::shared_ptr<Shader> renderShader)
     // Enable rasterizer for graphical output.
     glDisable(GL_RASTERIZER_DISCARD);
     renderShader->use();
+
+    renderShader->setVec4("colour", m_colour);
+    renderShader->setVec4("birthColour", m_birthColour);
+    renderShader->setVec4("deathColour", m_deathColour);
+    renderShader->setVec3("additivity",
+        glm::vec3(m_birthAdditivity, m_additivity, m_deathAdditivity));
 
     // Bind to the read buffer's vertex array object.
     glBindVertexArray(m_vao[m_currentReadBuffer]);

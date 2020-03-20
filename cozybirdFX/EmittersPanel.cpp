@@ -65,9 +65,6 @@ void EmittersPanel::updateUIFromEmitter(const Emitter &emitter)
 {
     for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
     {
-        if (!m_eRenderer->isEnabled(i))
-            continue;
-
-        m_toggleButtons[i]->setToggled(true);
+        m_toggleButtons[i]->setToggled(m_eRenderer->isEnabled(i));
     }
 }

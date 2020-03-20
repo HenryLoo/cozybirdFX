@@ -59,6 +59,10 @@ void EmitterRenderer::render(float deltaTime, const Camera &camera)
     if (!m_isPlaying)
         return;
 
+    // Ensure that the animation ends at the proper duration if not looping.
+    //if (!m_isLooping && m_currentTime + deltaTime > m_duration)
+    //    deltaTime = m_duration - m_currentTime;
+
     // Render all emitters.
     for (int i = 0; i < m_emitters.size(); ++i)
     {
@@ -93,7 +97,7 @@ void EmitterRenderer::init(AssetLoader &assetLoader)
     for (int i = 0; i < NUM_EMITTERS; ++i)
     {
         auto emitter{ std::make_unique<Emitter>() };
-        emitter->setTexture(assetLoader.load<Texture>("particle.png"));
+        emitter->setTexture(assetLoader, "particle.png");
         m_emitters.push_back(std::move(emitter));
     }
     m_isEnabled.resize(m_emitters.size());
@@ -239,9 +243,9 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
     {
         for (int i = 0; i < numCols; ++i)
         {
-            glClear(GL_COLOR_BUFFER_BIT);
             glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
+            //glClear(GL_COLOR_BUFFER_BIT);
 
             for (int k = 0; k < m_emitters.size(); ++k)
             {
@@ -250,8 +254,8 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
                     continue;
 
                 auto &emitter{ m_emitters[k] };
-                emitter->render(m_renderShader);
                 emitter->update(fixedDeltaTime, m_currentTime, m_updateShader);
+                emitter->render(m_renderShader);
                 glEnable(GL_RASTERIZER_DISCARD);
             }
 
