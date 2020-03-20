@@ -76,11 +76,15 @@ void Engine::pushState(IState *state)
         return;
 
     m_states.push(std::move(std::unique_ptr<IState>(state)));
+    m_states.top()->enter();
 }
 
 void Engine::popState()
 {
     m_states.pop();
+
+    if (!m_states.empty())
+        m_states.top()->enter();
 }
 
 IState *Engine::getState() const

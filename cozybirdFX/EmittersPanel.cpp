@@ -6,8 +6,9 @@
 #include "UIText.h"
 
 EmittersPanel::EmittersPanel(EditorState &editor, 
-    EmitterRenderer &eRenderer, TextRenderer &tRenderer, 
-    UIRenderer &uRenderer)
+    std::shared_ptr<EmitterRenderer> eRenderer, TextRenderer &tRenderer,
+    UIRenderer &uRenderer) :
+    m_eRenderer(eRenderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
@@ -24,7 +25,6 @@ EmittersPanel::EmittersPanel(EditorState &editor,
         buttons.push_back(emSelectButton);
     }
 
-    std::shared_ptr<UIButton> firstToggle{ nullptr };
     for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
     {
         auto &button{ buttons[i] };
@@ -41,14 +41,12 @@ EmittersPanel::EmittersPanel(EditorState &editor,
         m_panel->addElement(button);
 
         auto emToggleButton{ std::make_shared<UIButton>("ON", TWO_BUTTON_SIZE, true) };
-        emToggleButton->setAction([&eRenderer, emToggleButton, i]()
+        emToggleButton->setAction([eRenderer, emToggleButton, i]()
             {
-                eRenderer.toggleEmitter(i, emToggleButton->isToggled());
+                eRenderer->toggleEmitter(i, emToggleButton->isToggled());
             });
         m_panel->addElement(emToggleButton);
-
-        if (i == 0)
-            firstToggle = emToggleButton;
+        m_toggleButtons.push_back(emToggleButton);
 
         if (i < EmitterRenderer::NUM_EMITTERS - 1)
             m_panel->addNewLine();
@@ -56,7 +54,6 @@ EmittersPanel::EmittersPanel(EditorState &editor,
 
     m_panel->addToRenderer(uRenderer, tRenderer);
     buttons[0]->setToggled(true);
-    firstToggle->setToggled(true);
     m_panel->setEnabled(false);
 }
 
@@ -66,4 +63,11 @@ void EmittersPanel::update(float deltaTime, Emitter &emitter)
 
 void EmittersPanel::updateUIFromEmitter(const Emitter &emitter)
 {
+    for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
+    {
+        if (!m_eRenderer->isEnabled(i))
+            continue;
+
+        m_toggleButtons[i]->setToggled(true);
+    }
 }

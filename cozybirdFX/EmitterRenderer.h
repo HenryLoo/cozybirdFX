@@ -16,13 +16,19 @@ public:
 
 	virtual void render(float deltaTime, const Camera &camera) override;
 
+	// Reinitialize emitters.
+	void init(AssetLoader &assetLoader);
+
 	// Getter functions.
-	Emitter *getEmitter(int index) const;
+	Emitter &getEmitter(int index) const;
 	glm::ivec2 getClipSize() const;
 	float getCurrentTime() const;
 	float getDuration() const;
 	int getExportFPS() const;
 	bool isLooping() const;
+
+	// Check if an emitter is enabled.
+	bool isEnabled(int emitterIndex) const;
 
 	// Setter functions.
 	void setClipSize(glm::ivec2 size);

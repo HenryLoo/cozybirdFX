@@ -18,6 +18,9 @@ public:
 	// Render this state.
 	virtual void render(float deltaTime, const Camera &camera) = 0;
 
+	// Call this when entering the state.
+	virtual void enter() = 0;
+
 protected:
 	// Store the current window size.
 	// Use this to detect window size changes and then rescale UI.

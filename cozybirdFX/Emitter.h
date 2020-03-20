@@ -28,6 +28,7 @@ public:
 
 	// Setter functions.
 	void setTexture(std::shared_ptr<Texture> texture);
+	//void setTexture(AssetLoader &assetLoader, const std::string &filePath);
 	void setNumToGenerate(int num);
 	void setPosition(glm::vec2 position);
 	void setTimeToSpawn(float duration);
@@ -119,6 +120,7 @@ private:
 
 	// The particle's texture.
 	std::shared_ptr<Texture> m_texture;
+	//std::string m_textureName;
 
 	// The current number of particles in the system.
 	// Initialize with one emitter.

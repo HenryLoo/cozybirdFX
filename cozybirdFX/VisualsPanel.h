@@ -7,6 +7,7 @@ class Texture;
 class TextRenderer;
 class UIRenderer;
 class UISlider;
+class UITextField;
 
 class VisualsPanel : public IEditorPanel
 {
@@ -38,4 +39,7 @@ private:
 	std::shared_ptr<UISlider> m_deathBlue{ nullptr };
 	std::shared_ptr<UISlider> m_deathOpacity{ nullptr };
 	std::shared_ptr<UISlider> m_deathAdditivity{ nullptr };
+
+	std::shared_ptr<UITextField> m_texture{ nullptr };
+	std::string m_texturePath;
 };

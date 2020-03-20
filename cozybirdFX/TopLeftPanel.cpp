@@ -18,9 +18,9 @@ TopLeftPanel::TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
         glm::vec2(0.f, -1.f));
 
     auto fileButton{ std::make_shared<UIButton>("File",
-        BUTTON_SIZE, false, [&engine, &assetLoader]()
+        BUTTON_SIZE, false, [&engine, &assetLoader, eRenderer]()
         {  
-            FileState *state{ new FileState(engine, assetLoader) };
+            FileState *state{ new FileState(engine, assetLoader, *eRenderer) };
             engine.pushState(state);
         }) };
     m_panel->addElement(fileButton);

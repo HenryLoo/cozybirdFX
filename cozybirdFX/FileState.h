@@ -7,6 +7,7 @@
 
 class AssetLoader;
 class Camera;
+class EmitterRenderer;
 class Engine;
 class InputManager;
 class TextRenderer;
@@ -17,11 +18,14 @@ class UIText;
 class FileState : public IState
 {
 public:
-	FileState(Engine &engine, AssetLoader &assetLoader);
+	FileState(Engine &engine, AssetLoader &assetLoader, 
+		EmitterRenderer &eRenderer);
 
 	virtual void handleInput(InputManager &inputManager) override;
 
 	virtual void render(float deltaTime, const Camera &camera) override;
+
+	virtual void enter() override;
 
 private:
 	virtual void update(float deltaTime) override;

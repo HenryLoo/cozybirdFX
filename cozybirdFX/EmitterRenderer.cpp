@@ -50,14 +50,7 @@ EmitterRenderer::EmitterRenderer(AssetLoader &assetLoader)
     m_renderShader->setVec3("axis2", axis2);
 
     // Initialize emitters and start with one emitter enabled.
-    for (int i = 0; i < NUM_EMITTERS; ++i)
-    {
-        auto emitter{ std::make_unique<Emitter>() };
-        emitter->setTexture(assetLoader.load<Texture>("particle.png"));
-        m_emitters.push_back(std::move(emitter));
-    }
-    m_isEnabled.resize(m_emitters.size());
-    m_isEnabled[0] = true;
+    init(assetLoader);
 }
 
 void EmitterRenderer::render(float deltaTime, const Camera &camera)
@@ -89,13 +82,30 @@ void EmitterRenderer::render(float deltaTime, const Camera &camera)
         m_currentTime = 0.f;
 }
 
-Emitter *EmitterRenderer::getEmitter(int index) const
+void EmitterRenderer::init(AssetLoader &assetLoader)
 {
-    if (m_emitters.empty())
-        return nullptr;
+    reset();
 
+    m_emitters.clear();
+    m_isEnabled.clear();
+
+    // Initialize emitters and start with one emitter enabled.
+    for (int i = 0; i < NUM_EMITTERS; ++i)
+    {
+        auto emitter{ std::make_unique<Emitter>() };
+        emitter->setTexture(assetLoader.load<Texture>("particle.png"));
+        m_emitters.push_back(std::move(emitter));
+    }
+    m_isEnabled.resize(m_emitters.size());
+    m_isEnabled[0] = true;
+
+    m_isPlaying = true;
+}
+
+Emitter &EmitterRenderer::getEmitter(int index) const
+{
     index = glm::clamp(index, 0, static_cast<int>(m_emitters.size()) - 1);
-    return m_emitters[index].get();
+    return *m_emitters[index];
 }
 
 glm::ivec2 EmitterRenderer::getClipSize() const
@@ -121,6 +131,12 @@ int EmitterRenderer::getExportFPS() const
 bool EmitterRenderer::isLooping() const
 {
 	return m_isLooping;
+}
+
+bool EmitterRenderer::isEnabled(int emitterIndex) const
+{
+    emitterIndex = glm::clamp(emitterIndex, 0, static_cast<int>(m_emitters.size()) - 1);
+	return m_isEnabled[emitterIndex];
 }
 
 void EmitterRenderer::setClipSize(glm::ivec2 size)

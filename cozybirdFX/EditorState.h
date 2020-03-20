@@ -32,6 +32,8 @@ public:
 
 	virtual void render(float deltaTime, const Camera &camera) override;
 
+	virtual void enter() override;
+
 	void selectEmitter(int index);
 
 	// Update the position of the clip box.

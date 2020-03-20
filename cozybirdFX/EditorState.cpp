@@ -56,7 +56,7 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     m_visualsPanel = std::make_shared<VisualsPanel>(*m_tRenderer, *m_uRenderer,
         assetLoader);
     m_movementPanel = std::make_shared<MovementPanel>(*m_tRenderer, *m_uRenderer);
-    m_emittersPanel = std::make_shared<EmittersPanel>(*this, *m_eRenderer,
+    m_emittersPanel = std::make_shared<EmittersPanel>(*this, m_eRenderer,
         *m_tRenderer, *m_uRenderer);
     m_renderPanel = std::make_shared<RenderPanel>(*this, m_eRenderer,
         *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
@@ -91,28 +91,29 @@ void EditorState::render(float deltaTime, const Camera &camera)
     m_tRenderer->render(deltaTime, camera);
 }
 
+void EditorState::enter()
+{
+    selectEmitter(m_emitter);
+}
+
 void EditorState::selectEmitter(int index)
 {
     m_emitter = index;
-    Emitter *emitter{ m_eRenderer->getEmitter(index) };
-    if (emitter == nullptr)
-        return;
+    const Emitter &emitter{ m_eRenderer->getEmitter(index) };
 
     // Update panels.
     for (auto &panel : m_panels)
-        panel->updateUIFromEmitter(*emitter);
+        panel->updateUIFromEmitter(emitter);
 }
 
 void EditorState::update(float deltaTime)
 {
     // Update emitter with UI values.
-    Emitter *emitter{ m_eRenderer->getEmitter(m_emitter) };
-    if (emitter == nullptr)
-        return;
+    Emitter &emitter{ m_eRenderer->getEmitter(m_emitter) };
 
     // Update panels.
     for (auto &panel : m_panels)
-        panel->update(deltaTime, *emitter);
+        panel->update(deltaTime, emitter);
 }
 
 void EditorState::resize(Camera &camera)

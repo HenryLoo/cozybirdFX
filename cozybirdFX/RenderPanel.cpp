@@ -29,12 +29,13 @@ RenderPanel::RenderPanel(EditorState &editor,
     m_panel->addElement(m_duration);
 
     m_panel->addNewLine();
-    auto loopButton{ std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true) };
-    loopButton->setAction([eRenderer, loopButton]()
+    m_loopButton = std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true);
+    const UIButton &loopButton{ *m_loopButton };
+    m_loopButton->setAction([eRenderer, &loopButton]()
         {
-            eRenderer->setLooping(loopButton->isToggled());
+            eRenderer->setLooping(loopButton.isToggled());
         });
-    m_panel->addElement(loopButton);
+    m_panel->addElement(m_loopButton);
 
     m_panel->addNewLine();
     m_fps = std::make_shared<UITextField>("Export FPS", ONE_VAL_SIZE);
@@ -42,7 +43,6 @@ RenderPanel::RenderPanel(EditorState &editor,
 
     m_panel->addToRenderer(uRenderer, tRenderer);
     m_panel->setEnabled(false);
-    loopButton->setToggled(true);
 }
 
 void RenderPanel::update(float deltaTime, Emitter &emitter)
@@ -82,4 +82,5 @@ void RenderPanel::updateUIFromEmitter(const Emitter &emitter)
     m_clipY->setValue(clipSize.y);
     m_duration->setValue(m_eRenderer->getDuration());
     m_fps->setValue(m_eRenderer->getExportFPS());
+    m_loopButton->setToggled(m_eRenderer->isLooping());
 }

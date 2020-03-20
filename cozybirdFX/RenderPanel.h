@@ -6,6 +6,7 @@
 class EditorState;
 class EmitterRenderer;
 class TextRenderer;
+class UIButton;
 class UITextField;
 
 class RenderPanel : public IEditorPanel
@@ -29,4 +30,5 @@ private:
 	std::shared_ptr<UITextField> m_clipY{ nullptr };
 	std::shared_ptr<UITextField> m_duration{ nullptr };
 	std::shared_ptr<UITextField> m_fps{ nullptr };
+	std::shared_ptr<UIButton> m_loopButton{ nullptr };
 };

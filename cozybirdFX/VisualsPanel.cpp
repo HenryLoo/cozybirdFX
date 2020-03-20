@@ -5,9 +5,10 @@
 #include "UIButton.h"
 #include "UISlider.h"
 #include "UIText.h"
+#include "UITextField.h"
 
-#include <nfd/nfd.h>
-#include <iostream>
+//#include <nfd/nfd.h>
+//#include <iostream>
 
 namespace
 {
@@ -88,23 +89,34 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     m_panel->addElement(textureLabel);
 
     m_panel->addNewHalfLine();
-    auto textureButton{ std::make_shared<UIButton>("Select...", 
-        ONE_BUTTON_SIZE, false, [this, &assetLoader]()
-        {
-            nfdchar_t *texturePath{ nullptr };
-            nfdresult_t result = NFD_OpenDialog(nullptr, nullptr, &texturePath);
+    //auto textureButton{ std::make_shared<UIButton>("Select...", 
+    //    ONE_BUTTON_SIZE, false, [this, &assetLoader]()
+    //    {
+    //        nfdchar_t *texturePath{ nullptr };
+    //        nfdresult_t result = NFD_OpenDialog("png", nullptr, &texturePath);
 
-            if (result == NFD_OKAY)
-            {
-                setTexture(assetLoader.load<Texture>(texturePath, 0, true));
-                free(texturePath);
-            }
-            else if (result != NFD_CANCEL)
-            {
-                std::cout << "VisualsPanel, texture select error: " << 
-                    NFD_GetError() << std::endl;
-            }
-        }) };
+    //        if (result == NFD_OKAY)
+    //        {
+    //            setTexture(assetLoader.load<Texture>(texturePath, 0, true));
+    //            free(texturePath);
+    //        }
+    //        else if (result != NFD_CANCEL)
+    //        {
+    //            std::cout << "VisualsPanel, texture select error: " << 
+    //                NFD_GetError() << std::endl;
+    //        }
+    //    }) };
+    //m_panel->addElement(textureButton);
+    m_texture = std::make_shared<UITextField>("", ONE_VAL_SIZE);
+    m_panel->addElement(m_texture);
+
+    m_panel->addNewHalfLine();
+    auto textureButton{ std::make_shared<UIButton>("Load",
+        BUTTON_SIZE, false, []()
+        {
+
+        }
+    ) };
     m_panel->addElement(textureButton);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
