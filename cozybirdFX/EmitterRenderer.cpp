@@ -60,8 +60,8 @@ void EmitterRenderer::render(float deltaTime, const Camera &camera)
         return;
 
     // Ensure that the animation ends at the proper duration if not looping.
-    //if (!m_isLooping && m_currentTime + deltaTime > m_duration)
-    //    deltaTime = m_duration - m_currentTime;
+    if (!m_isLooping && m_currentTime + deltaTime > m_duration)
+        deltaTime = m_duration - m_currentTime;
 
     // Render all emitters.
     for (int i = 0; i < m_emitters.size(); ++i)
@@ -243,6 +243,10 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
     {
         for (int i = 0; i < numCols; ++i)
         {
+            // Ensure that the animation ends at the proper duration if not looping.
+            if (!m_isLooping && m_currentTime + fixedDeltaTime > m_duration)
+                fixedDeltaTime = m_duration - m_currentTime;
+
             glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
             //glClear(GL_COLOR_BUFFER_BIT);

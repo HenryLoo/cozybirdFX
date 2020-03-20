@@ -133,6 +133,7 @@ void Emitter::clear(std::shared_ptr<Shader> updateShader)
     update();
 
     updateShader->setBool("isClearParticles", false);
+    m_spawnTimer = 0.f;
 }
 
 int Emitter::getNumParticles() const
