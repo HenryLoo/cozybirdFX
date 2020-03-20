@@ -8,6 +8,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include <gif.h>
+
 namespace
 {
     const int NUM_PARTICLE_ATTRIBUTES{ 6 };
@@ -291,6 +293,114 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
     glViewport(0, 0, windowSize.x, windowSize.y);
 }
 
+void EmitterRenderer::exportGif(glm::ivec2 windowSize, 
+    const std::string &outputPath)
+{
+    // Get projection matrix.
+    glm::mat4 view{ glm::mat4(1.f) };
+    glm::vec2 halfClipSize{ m_clipSize.x / 2.f, m_clipSize.y / 2.f };
+    glm::mat4 proj{ glm::ortho(
+        -halfClipSize.x, halfClipSize.x,
+        -halfClipSize.y, halfClipSize.y,
+        -1000.f, 1000.f) };
+    proj = glm::scale(proj, glm::vec3(1, -1, 1));
+
+    // View matrix is identity.
+    m_renderShader->use();
+    m_renderShader->setMat4("mvp", proj);
+
+    // Prepare the framebuffer's texture.
+    float fixedDeltaTime{ 1.f / m_exportFPS };
+    createFramebuffer(m_clipSize);
+
+    // Bind to the framebuffer to draw to it.
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+    // Clear all particles before starting to render.
+    for (int i = 0; i < m_emitters.size(); ++i)
+    {
+        // Skip if disabled.
+        if (!m_isEnabled[i])
+            continue;
+
+        m_emitters[i]->clear(m_updateShader);
+    }
+
+    // Update through the entire duration once to get better loop animation.
+    if (m_isLooping)
+    {
+        m_currentTime = 0.f;
+        while (m_currentTime + fixedDeltaTime < m_duration)
+        {
+            for (int i = 0; i < m_emitters.size(); ++i)
+            {
+                // Skip if disabled.
+                if (!m_isEnabled[i])
+                    continue;
+
+                m_emitters[i]->update(fixedDeltaTime, m_currentTime, m_updateShader);
+            }
+
+            m_currentTime += fixedDeltaTime;
+        }
+    }
+
+    // Initialize gif writer.
+    const int DELAY{ static_cast<int>(round(1.f / m_exportFPS * 100)) };
+    GifWriter gif;
+    GifBegin(&gif, outputPath.c_str(), m_clipSize.x, m_clipSize.y, DELAY);
+
+    // Render the emitters.
+    glViewport(0, 0, m_clipSize.x, m_clipSize.y);
+    m_currentTime = 0.f;
+    int numFrames{ static_cast<int>(glm::ceil(m_duration / fixedDeltaTime)) };
+    for (int i = 0; i < numFrames; ++i)
+    {
+        // Ensure that the animation ends at the proper duration if not looping.
+        if (!m_isLooping && m_currentTime + fixedDeltaTime > m_duration)
+            fixedDeltaTime = m_duration - m_currentTime;
+        
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        for (int k = 0; k < m_emitters.size(); ++k)
+        {
+            // Skip if disabled.
+            if (!m_isEnabled[k])
+                continue;
+
+            auto &emitter{ m_emitters[k] };
+            emitter->update(fixedDeltaTime, m_currentTime, m_updateShader);
+            emitter->render(m_renderShader);
+            glEnable(GL_RASTERIZER_DISCARD);
+        }
+
+        // Output this gif frame.
+        if (m_fboTexture != nullptr)
+        {
+            m_fboTexture->bind();
+
+            int numChannels{ m_fboTexture->getNumChannels() };
+            int dataSize{ m_clipSize.x * m_clipSize.y * numChannels };
+            stbi_uc *data{ new stbi_uc[dataSize] };
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            GifWriteFrame(&gif, data, m_clipSize.x, m_clipSize.y, DELAY);
+
+            delete[] data;
+
+            // Prepare the next frame's texture if this isn't the last frame.
+            if (i < numFrames - 1)
+                createFramebufferTexture(m_clipSize);
+        }
+
+        m_currentTime += fixedDeltaTime;
+    }
+
+    // Reset configurations after rendering.
+    GifEnd(&gif);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, windowSize.x, windowSize.y);
+}
+
 void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
 {
     // Delete any existing old buffers.
@@ -299,6 +409,21 @@ void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
     // Set up buffers for rendering to texture.
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+    // Check if the framebuffer is complete.
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << "EmitterRenderer::createFramebuffer: Framebuffer not complete." << std::endl;
+    }
+
+    createFramebufferTexture(textureSize);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void EmitterRenderer::createFramebufferTexture(glm::ivec2 textureSize)
+{
+    if (!m_fbo)
+        return;
 
     unsigned int outputTexture;
     glGenTextures(1, &outputTexture);
@@ -309,14 +434,6 @@ void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outputTexture, 0);
     m_fboTexture = std::make_shared<Texture>(outputTexture, textureSize.x, textureSize.y, 4);
-
-    // Check if the framebuffer is complete.
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "EmitterRenderer::createFramebuffer: Framebuffer not complete." << std::endl;
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void EmitterRenderer::reset()

@@ -53,11 +53,14 @@ ExportState::ExportState(Engine &engine, AssetLoader &assetLoader,
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };
-			nfdresult_t result = NFD_SaveDialog("json", nullptr, &path);
+			nfdresult_t result = NFD_SaveDialog("gif", nullptr, &path);
 
 			// Save if path is valid.
 			if (result == NFD_OKAY)
 			{
+				glm::vec2 windowSize{ engine.getWindowSize() };
+				eRenderer.exportGif(windowSize, path);
+				engine.popState();
 			}
 			else if (result != NFD_CANCEL)
 			{

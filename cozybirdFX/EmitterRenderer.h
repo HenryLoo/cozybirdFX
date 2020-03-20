@@ -46,11 +46,16 @@ public:
 	// The window size is used to reset the viewport after rendering.
 	void exportSpriteSheet(glm::ivec2 windowSize, const std::string &outputPath);
 
+	// Prepare to export the current emitter effects as an animated gif.
+	// The window size is used to reset the viewport after rendering.
+	void exportGif(glm::ivec2 windowSize, const std::string &outputPath);
+
 	static const int NUM_EMITTERS;
 
 private:
 	// Create a frame buffer object for rendering to texture.
 	void createFramebuffer(glm::ivec2 textureSize);
+	void createFramebufferTexture(glm::ivec2 textureSize);
 
 	// Reset the animation.
 	void reset();
