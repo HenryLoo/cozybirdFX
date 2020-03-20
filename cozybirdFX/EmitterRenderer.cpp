@@ -183,7 +183,8 @@ void EmitterRenderer::toggleEmitter(int index, bool isEnabled)
     m_isEnabled[index] = isEnabled;
 }
 
-void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
+void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize, 
+    const std::string &outputPath)
 {
     // Get projection matrix.
     glm::mat4 view{ glm::mat4(1.f) };
@@ -280,8 +281,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize)
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
         stbi_flip_vertically_on_write(true);
-        std::string output{ "output.png" };
-        stbi_write_png(output.c_str(), size.x, size.y, numChannels, data, 0);
+        stbi_write_png(outputPath.c_str(), size.x, size.y, numChannels, data, 0);
 
         delete[] data;
     }

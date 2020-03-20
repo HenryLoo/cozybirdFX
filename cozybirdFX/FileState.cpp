@@ -31,7 +31,7 @@ FileState::FileState(Engine &engine, AssetLoader &assetLoader,
 	m_panel->addElement(m_title);
 
 	m_panel->addNewLine();
-	m_loadButton = std::make_shared<UIButton>("Load",
+	m_loadButton = std::make_shared<UIButton>("Load FX...",
 		BUTTON_SIZE, false, [&engine, &assetLoader, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };
@@ -115,7 +115,7 @@ FileState::FileState(Engine &engine, AssetLoader &assetLoader,
 	m_panel->addElement(m_loadButton);
 
 	m_panel->addNewLine();
-	m_saveButton = std::make_shared<UIButton>("Save",
+	m_saveButton = std::make_shared<UIButton>("Save FX as...",
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };

@@ -44,7 +44,7 @@ public:
 
 	// Prepare to export the current emitter effects as a sprite sheet.
 	// The window size is used to reset the viewport after rendering.
-	void exportSpriteSheet(glm::ivec2 windowSize);
+	void exportSpriteSheet(glm::ivec2 windowSize, const std::string &outputPath);
 
 	static const int NUM_EMITTERS;
 

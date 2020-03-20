@@ -1,6 +1,7 @@
 #include "TopLeftPanel.h"
 #include "EmitterRenderer.h"
 #include "Engine.h"
+#include "ExportState.h"
 #include "FileState.h"
 #include "UIButton.h"
 #include "UIRenderer.h"
@@ -27,10 +28,10 @@ TopLeftPanel::TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
 
     auto exportButton{ std::make_shared<UIButton>("Export",
         BUTTON_SIZE, false,
-        [eRenderer, &engine]()
+        [&engine, &assetLoader, eRenderer]()
         {
-            glm::ivec2 windowSize{ engine.getWindowSize() };
-            eRenderer->exportSpriteSheet(windowSize);
+            ExportState *state{ new ExportState(engine, assetLoader, *eRenderer) };
+            engine.pushState(state);
         }) };
     m_panel->addElement(exportButton);
 
