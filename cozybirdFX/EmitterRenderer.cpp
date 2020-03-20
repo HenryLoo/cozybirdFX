@@ -188,57 +188,13 @@ void EmitterRenderer::toggleEmitter(int index, bool isEnabled)
 void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize, 
     const std::string &outputPath)
 {
-    // Get projection matrix.
-    glm::mat4 view{ glm::mat4(1.f) };
-    glm::vec2 halfClipSize{ m_clipSize.x / 2.f, m_clipSize.y / 2.f };
-    glm::mat4 proj{ glm::ortho(
-        -halfClipSize.x, halfClipSize.x,
-        -halfClipSize.y, halfClipSize.y,
-        -1000.f, 1000.f) };
-
-    // View matrix is identity.
-    m_renderShader->use();
-    m_renderShader->setMat4("mvp", proj);
-
     // Prepare the framebuffer's texture.
-    float fixedDeltaTime{ 1.f / m_exportFPS };
+    float fixedDeltaTime{ getFixedDeltaTime() };
     int numFrames{ static_cast<int>(glm::ceil(m_duration / fixedDeltaTime)) };
     int numCols{ static_cast<int>(glm::ceil(glm::sqrt(numFrames))) };
     int numRows{ static_cast<int>(glm::ceil(numFrames / numCols)) };
     glm::ivec2 textureSize{ numCols * m_clipSize.x, numRows * m_clipSize.y };
-    createFramebuffer(textureSize);
-
-    // Bind to the framebuffer to draw to it.
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-
-    // Clear all particles before starting to render.
-    for (int i = 0; i < m_emitters.size(); ++i)
-    {
-        // Skip if disabled.
-        if (!m_isEnabled[i])
-            continue;
-
-        m_emitters[i]->clear(m_updateShader);
-    }
-
-    // Update through the entire duration once to get better loop animation.
-    if (m_isLooping)
-    {
-        m_currentTime = 0.f;
-        while (m_currentTime + fixedDeltaTime < m_duration)
-        {
-            for (int i = 0; i < m_emitters.size(); ++i)
-            {
-                // Skip if disabled.
-                if (!m_isEnabled[i])
-                    continue;
-
-                m_emitters[i]->update(fixedDeltaTime, m_currentTime, m_updateShader);
-            }
-
-            m_currentTime += fixedDeltaTime;
-        }
-    }
+    prepareExport(textureSize);
 
     // Render the emitters.
     m_currentTime = 0.f;
@@ -250,7 +206,9 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
             if (!m_isLooping && m_currentTime + fixedDeltaTime > m_duration)
                 fixedDeltaTime = m_duration - m_currentTime;
 
-            glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
+            /*glViewport(i * m_clipSize.x, textureSize.y - (j + 1) * m_clipSize.y,
+                m_clipSize.x, m_clipSize.y);*/
+            glViewport(i * m_clipSize.x, j * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
             //glClear(GL_COLOR_BUFFER_BIT);
 
@@ -282,7 +240,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
         stbi_uc *data{ new stbi_uc[dataSize] };
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-        stbi_flip_vertically_on_write(true);
+        //stbi_flip_vertically_on_write(true);
         stbi_write_png(outputPath.c_str(), size.x, size.y, numChannels, data, 0);
 
         delete[] data;
@@ -296,54 +254,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
 void EmitterRenderer::exportGif(glm::ivec2 windowSize, 
     const std::string &outputPath)
 {
-    // Get projection matrix.
-    glm::mat4 view{ glm::mat4(1.f) };
-    glm::vec2 halfClipSize{ m_clipSize.x / 2.f, m_clipSize.y / 2.f };
-    glm::mat4 proj{ glm::ortho(
-        -halfClipSize.x, halfClipSize.x,
-        -halfClipSize.y, halfClipSize.y,
-        -1000.f, 1000.f) };
-    proj = glm::scale(proj, glm::vec3(1, -1, 1));
-
-    // View matrix is identity.
-    m_renderShader->use();
-    m_renderShader->setMat4("mvp", proj);
-
-    // Prepare the framebuffer's texture.
-    float fixedDeltaTime{ 1.f / m_exportFPS };
-    createFramebuffer(m_clipSize);
-
-    // Bind to the framebuffer to draw to it.
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-
-    // Clear all particles before starting to render.
-    for (int i = 0; i < m_emitters.size(); ++i)
-    {
-        // Skip if disabled.
-        if (!m_isEnabled[i])
-            continue;
-
-        m_emitters[i]->clear(m_updateShader);
-    }
-
-    // Update through the entire duration once to get better loop animation.
-    if (m_isLooping)
-    {
-        m_currentTime = 0.f;
-        while (m_currentTime + fixedDeltaTime < m_duration)
-        {
-            for (int i = 0; i < m_emitters.size(); ++i)
-            {
-                // Skip if disabled.
-                if (!m_isEnabled[i])
-                    continue;
-
-                m_emitters[i]->update(fixedDeltaTime, m_currentTime, m_updateShader);
-            }
-
-            m_currentTime += fixedDeltaTime;
-        }
-    }
+    prepareExport(m_clipSize);
 
     // Initialize gif writer.
     const int DELAY{ static_cast<int>(round(1.f / m_exportFPS * 100)) };
@@ -353,6 +264,7 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
     // Render the emitters.
     glViewport(0, 0, m_clipSize.x, m_clipSize.y);
     m_currentTime = 0.f;
+    float fixedDeltaTime{ getFixedDeltaTime() };
     int numFrames{ static_cast<int>(glm::ceil(m_duration / fixedDeltaTime)) };
     for (int i = 0; i < numFrames; ++i)
     {
@@ -410,13 +322,14 @@ void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
     glGenFramebuffers(1, &m_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
+    createFramebufferTexture(textureSize);
+
     // Check if the framebuffer is complete.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
         std::cout << "EmitterRenderer::createFramebuffer: Framebuffer not complete." << std::endl;
     }
 
-    createFramebufferTexture(textureSize);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -444,4 +357,63 @@ void EmitterRenderer::reset()
     {
         emitter->clear(m_updateShader);
     }
+}
+
+void EmitterRenderer::prepareExport(glm::ivec2 textureSize)
+{
+    // Get projection matrix.
+    glm::mat4 view{ glm::mat4(1.f) };
+    glm::vec2 halfClipSize{ m_clipSize.x / 2.f, m_clipSize.y / 2.f };
+    glm::mat4 proj{ glm::ortho(
+        -halfClipSize.x, halfClipSize.x,
+        -halfClipSize.y, halfClipSize.y,
+        -1000.f, 1000.f) };
+
+    // Flip vertically on output to fix OpenGL's flipped vertical axis.
+    proj = glm::scale(proj, glm::vec3(1, -1, 1));
+
+    // View matrix is identity.
+    m_renderShader->use();
+    m_renderShader->setMat4("mvp", proj);
+
+    // Prepare the framebuffer's texture.
+    float fixedDeltaTime{ getFixedDeltaTime() };
+    createFramebuffer(textureSize);
+
+    // Bind to the framebuffer to draw to it.
+    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+    // Clear all particles before starting to render.
+    for (int i = 0; i < m_emitters.size(); ++i)
+    {
+        // Skip if disabled.
+        if (!m_isEnabled[i])
+            continue;
+
+        m_emitters[i]->clear(m_updateShader);
+    }
+
+    // Update through the entire duration once to get better loop animation.
+    if (m_isLooping)
+    {
+        m_currentTime = 0.f;
+        while (m_currentTime + fixedDeltaTime < m_duration)
+        {
+            for (int i = 0; i < m_emitters.size(); ++i)
+            {
+                // Skip if disabled.
+                if (!m_isEnabled[i])
+                    continue;
+
+                m_emitters[i]->update(fixedDeltaTime, m_currentTime, m_updateShader);
+            }
+
+            m_currentTime += fixedDeltaTime;
+        }
+    }
+}
+
+float EmitterRenderer::getFixedDeltaTime() const
+{
+    return 1.f / m_exportFPS;
 }

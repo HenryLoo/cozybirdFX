@@ -60,6 +60,12 @@ private:
 	// Reset the animation.
 	void reset();
 
+	// Prepare common export attributes.
+	void prepareExport(glm::ivec2 textureSize);
+
+	// Calculate the deltaTime to use when exporting.
+	float getFixedDeltaTime() const;
+
 	// The renderer's shader program.
 	std::shared_ptr<Shader> m_updateShader{ nullptr };
 	std::shared_ptr<Shader> m_renderShader{ nullptr };
