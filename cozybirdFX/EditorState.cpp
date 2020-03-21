@@ -94,6 +94,7 @@ void EditorState::render(float deltaTime, const Camera &camera)
 void EditorState::enter()
 {
     selectEmitter(m_emitter);
+    updateClipBoxPos();
 }
 
 void EditorState::selectEmitter(int index)
@@ -169,10 +170,13 @@ glm::ivec2 EditorState::getViewportSize() const
 
 void EditorState::updateClipBoxPos()
 {
+    glm::ivec2 clipSize{ m_eRenderer->getClipSize() };
+    m_clipSizeBox->size = clipSize;
+
     glm::vec2 tlSize{ m_topLeftPanel->getSize() };
     glm::ivec2 viewportSize{ getViewportSize() };
 
     m_clipSizeBox->pos = glm::round(glm::vec2(
-    (viewportSize.x - m_clipSizeBox->size.x) / 2.f,
-        (viewportSize.y - m_clipSizeBox->size.y) / 2.f + tlSize.y));
+    (viewportSize.x - clipSize.x) / 2.f,
+        (viewportSize.y - clipSize.y) / 2.f + tlSize.y));
 }

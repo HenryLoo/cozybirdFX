@@ -53,9 +53,8 @@ void RenderPanel::update(float deltaTime, Emitter &emitter)
     bool isClipY{ m_clipY->getValue(clipSize.y) };
     if (isClipX || isClipY)
     {
-        m_clipSizeBox.size = clipSize;
-        m_editor.updateClipBoxPos();
         m_eRenderer->setClipSize(clipSize);
+        m_editor.updateClipBoxPos();
     }
 
     // Set the animation duration.

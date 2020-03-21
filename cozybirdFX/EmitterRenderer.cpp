@@ -105,6 +105,11 @@ void EmitterRenderer::init(AssetLoader &assetLoader)
     m_isEnabled.resize(m_emitters.size());
     m_isEnabled[0] = true;
 
+    // Set default values.
+    m_duration = 3.f;
+    m_clipSize = glm::ivec2(200.f, 200.f);
+    m_exportFPS = 60;
+    m_isLooping = true;
     m_isPlaying = true;
 }
 
