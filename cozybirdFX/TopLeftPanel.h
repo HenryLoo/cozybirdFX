@@ -1,14 +1,13 @@
 #pragma once
 
 #include "IEditorPanel.h"
-#include "UIText.h"
 
 class AssetLoader;
-class EditorState;
 class Engine;
 class EmitterRenderer;
-class IState;
 class TextRenderer;
+class UIButton;
+class UIText;
 class UIRenderer;
 
 class TopLeftPanel : public IEditorPanel
@@ -26,4 +25,5 @@ public:
 private:
 	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
 	std::shared_ptr<UIText> m_playbackTimer{ nullptr };
+	std::shared_ptr<UIButton> m_playButton{ nullptr };
 };

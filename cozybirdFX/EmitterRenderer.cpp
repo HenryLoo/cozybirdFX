@@ -110,7 +110,7 @@ void EmitterRenderer::init(AssetLoader &assetLoader)
     m_clipSize = glm::ivec2(200.f, 200.f);
     m_exportFPS = 60;
     m_isLooping = true;
-    m_isPlaying = true;
+    m_isPlaying = false;
 }
 
 Emitter &EmitterRenderer::getEmitter(int index) const
@@ -142,6 +142,11 @@ int EmitterRenderer::getExportFPS() const
 bool EmitterRenderer::isLooping() const
 {
 	return m_isLooping;
+}
+
+bool EmitterRenderer::isPlaying() const
+{
+    return m_isPlaying;
 }
 
 bool EmitterRenderer::isEnabled(int emitterIndex) const

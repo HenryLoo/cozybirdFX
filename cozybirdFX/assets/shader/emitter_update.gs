@@ -86,6 +86,10 @@ void main()
         EmitVertex();
         EndPrimitive();
 
+        // Don't generate particles if clearing.
+        if (isClearParticles)
+            return;
+
         for (int i = 0; i < emNumToGenerate; ++i)
         {
             // Set the new particle attributes from emitter properties.

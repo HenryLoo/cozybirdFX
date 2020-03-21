@@ -5,6 +5,7 @@
 #include "FileState.h"
 #include "UIButton.h"
 #include "UIRenderer.h"
+#include "UIText.h"
 
 #include <iomanip>
 #include <sstream>
@@ -40,8 +41,9 @@ TopLeftPanel::TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
        [&clipSizeBox]() { clipSizeBox.isEnabled = !clipSizeBox.isEnabled; }) };
     m_panel->addElement(clipButton);
 
-    auto playButton{ std::make_shared<UIButton>("Play", BUTTON_SIZE, true) };
-    playButton->setAction([eRenderer, playButton]()
+    m_playButton = std::make_shared<UIButton>("Play", BUTTON_SIZE, true);
+    auto playButton{ m_playButton };
+    m_playButton->setAction([eRenderer, playButton]()
         {
             eRenderer->setPlaying(playButton->isToggled());
         });
@@ -51,7 +53,6 @@ TopLeftPanel::TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
     m_panel->addElement(m_playbackTimer);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
-    playButton->setToggled(true);
     clipButton->setToggled(true);
 }
 
@@ -69,5 +70,5 @@ void TopLeftPanel::update(float deltaTime, Emitter &emitter)
 
 void TopLeftPanel::updateUIFromEmitter(const Emitter &emitter)
 {
-
+    m_playButton->setToggled(m_eRenderer->isPlaying());
 }

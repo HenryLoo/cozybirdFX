@@ -26,6 +26,7 @@ public:
 	float getDuration() const;
 	int getExportFPS() const;
 	bool isLooping() const;
+	bool isPlaying() const;
 
 	// Check if an emitter is enabled.
 	bool isEnabled(int emitterIndex) const;

@@ -43,11 +43,10 @@ void NewState::initMenu()
 	m_fireButton = std::make_shared<UIButton>("Fire",
 		BUTTON_SIZE, false, [&engine, &assetLoader, &eRenderer]()
 		{
-			// TODO;
 			eRenderer.init(assetLoader);
 
 			eRenderer.setClipSize(glm::ivec2(200, 280));
-			float duration{ glm::linearRand(2.5f, 4.f) };
+			float duration{ 3.f };
 			eRenderer.setDuration(duration);
 
 			Emitter &emitter{ eRenderer.getEmitter(0) };

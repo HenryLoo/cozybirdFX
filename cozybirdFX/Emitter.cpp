@@ -88,8 +88,8 @@ void Emitter::update(float deltaTime, float currentTime,
 
     // Update spawn timer and flag the emitter to spawn particles if necessary.
     if (currentTime >= m_delayBeforeStart && 
-        (currentTime < m_delayBeforeStart + m_emitterDuration) || 
-        m_emitterDuration == 0.f)
+        (currentTime < m_delayBeforeStart + m_emitterDuration || 
+        m_emitterDuration == 0.f))
     {
         m_spawnTimer += deltaTime;
         if (m_spawnTimer >= m_timeToSpawn)
@@ -104,7 +104,6 @@ void Emitter::update(float deltaTime, float currentTime,
     }
     else
     {
-        m_spawnTimer = 0.f;
         updateShader->setInt("emNumToGenerate", 0);
     }
 
@@ -133,7 +132,7 @@ void Emitter::clear(std::shared_ptr<Shader> updateShader)
     update();
 
     updateShader->setBool("isClearParticles", false);
-    m_spawnTimer = 0.f;
+    m_spawnTimer = m_timeToSpawn;
 }
 
 int Emitter::getNumParticles() const
