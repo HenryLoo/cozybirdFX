@@ -99,7 +99,7 @@ void EmitterRenderer::init(AssetLoader &assetLoader)
     for (int i = 0; i < NUM_EMITTERS; ++i)
     {
         auto emitter{ std::make_unique<Emitter>() };
-        emitter->setTexture(assetLoader, "particle.png");
+        emitter->setTexture(assetLoader, "circle.png");
         m_emitters.push_back(std::move(emitter));
     }
     m_isEnabled.resize(m_emitters.size());

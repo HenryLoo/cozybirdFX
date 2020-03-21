@@ -3,6 +3,20 @@
 #include "Engine.h"
 #include "UIButton.h"
 
+#include <glm/gtc/random.hpp>
+
+namespace
+{
+	const std::vector<std::string> FIRE_TEXTURES{
+		"flames", 
+		"fireball1",
+		"fireball2",
+		"fireball3",
+		"fireball4",
+		"fireball5"
+	};
+}
+
 NewState::NewState(Engine &engine, AssetLoader &assetLoader, 
 	EmitterRenderer &eRenderer) :
 	IMenuState(engine, assetLoader, eRenderer, "Select a preset to generate...")
@@ -33,30 +47,49 @@ void NewState::initMenu()
 			eRenderer.init(assetLoader);
 
 			eRenderer.setClipSize(glm::ivec2(200, 280));
-			eRenderer.setDuration(3.f);
+			float duration{ glm::linearRand(2.5f, 4.f) };
+			eRenderer.setDuration(duration);
 
 			Emitter &emitter{ eRenderer.getEmitter(0) };
 			emitter.setPosition(glm::vec2(0.f, -100.f));
-			emitter.setPosition(glm::vec2(0.f, -100.f));
-			emitter.setNumToGenerate(30);
-			emitter.setTimeToSpawn(0.5f);
-			emitter.setSize(32.f);
-			emitter.setLifeMin(2.f);
-			emitter.setLifeOffset(0.3f);
-			emitter.setVelocityMin(glm::vec2(-32.f, 0.f));
-			emitter.setVelocityOffset(glm::vec2(64.f, 100.f));
+			emitter.setNumToGenerate(glm::linearRand(20, 40));
+			emitter.setTimeToSpawn(glm::linearRand(0.4f, 0.6f));
+			emitter.setSize(glm::linearRand(24.f, 48.f));
+			emitter.setLifeMin(glm::linearRand(1.7f, 2.5f));
+			emitter.setLifeOffset(glm::linearRand(0.2f, 0.4f));
+			float velX{ glm::linearRand(24.f, 48.f) };
+			float velY{ glm::linearRand(80.f, 100.f) };
+			emitter.setVelocityMin(glm::vec2(-velX, 0.f));
+			emitter.setVelocityOffset(glm::vec2(2 * velX, velY));
 
-			emitter.setColour(glm::vec4(1.f, 0.43f, 0.23f, 1.f));
-			emitter.setAdditivity(1.f);
-			emitter.setBirthColour(glm::vec4(0.76f, 0.2f, 0.2f, 0.f));
-			emitter.setBirthAdditivity(0.f);
-			emitter.setDeathColour(glm::vec4(0.51f, 0.29f, 0.f, 0.05f));
+			emitter.setColour(glm::vec4(
+				glm::linearRand(0.7f, 1.f),
+				glm::linearRand(0.2f, 0.55f),
+				glm::linearRand(0.f, 0.4f),
+				glm::linearRand(0.7f, 1.f)));
+			emitter.setAdditivity(glm::linearRand(0.8f, 1.f));
+			emitter.setBirthColour(glm::vec4(
+				glm::linearRand(0.6f, 0.8f),
+				glm::linearRand(0.f, 0.3f),
+				glm::linearRand(0.f, 0.3f),
+				glm::linearRand(0.f, 0.1f)));
+			emitter.setBirthAdditivity(glm::linearRand(0.f, 0.2f));
+			emitter.setDeathColour(glm::vec4(
+				glm::linearRand(0.4f, 0.6f),
+				glm::linearRand(0.f, 0.3f),
+				0.f, 
+				glm::linearRand(0.f, 0.1f)));
 			emitter.setDeathAdditivity(0.f);
 
-			emitter.setTexture(assetLoader, "particle.png");
+			int textureIndex{ glm::linearRand(0, static_cast<int>(FIRE_TEXTURES.size()) - 1) };
+			emitter.setTexture(assetLoader, FIRE_TEXTURES[textureIndex] + ".png");
 
-			emitter.setHSineAmplitude(5.f);
-			emitter.setHSinePeriod(3.f);
+			bool hasHSine{ glm::linearRand(0, 1) == 0 };
+			if (hasHSine)
+			{
+				emitter.setHSineAmplitude(glm::linearRand(3.f, 10.f));
+				emitter.setHSinePeriod(glm::linearRand(2.f, duration));
+			}
 
 			engine.popState();
 			engine.popState();

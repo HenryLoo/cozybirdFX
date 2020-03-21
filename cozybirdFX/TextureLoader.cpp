@@ -38,7 +38,8 @@ std::shared_ptr<IAsset> TextureLoader::interpretAsset(
     std::shared_ptr<Texture> texture{ nullptr };
     if (loadedImage)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, loadedImage);
+        const int FORMAT{ numChannels == 4 ? GL_RGBA : GL_RGB };
+        glTexImage2D(GL_TEXTURE_2D, 0, FORMAT, width, height, 0, FORMAT, GL_UNSIGNED_BYTE, loadedImage);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         // Clean up.

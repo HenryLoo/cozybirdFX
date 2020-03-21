@@ -144,7 +144,7 @@ void UITextField::setValue(int value)
 void UITextField::setValue(float value)
 {
 	std::stringstream ss;
-	ss << std::fixed << std::setprecision(1) << value;
+	ss << std::fixed << std::setprecision(3) << value;
 	std::string valueStr = ss.str();
 	m_value = valueStr;
 	updateUI();

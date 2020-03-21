@@ -129,7 +129,7 @@ private:
 	int m_numParticles{ 1 };
 
 	// The number of particles to generate.
-	int m_numToGenerate{ 30 };
+	int m_numToGenerate{ 20 };
 
 	// The origin position of the emitter.
 	glm::vec2 m_origin{ 0.f };
@@ -145,17 +145,17 @@ private:
 
 	// The velocity at which the particle moves at.
 	// Defines the minimum velocity and the offset from that minimum.
-	glm::vec2 m_velocityMin{ -32.f };
-	glm::vec2 m_velocityOffset{ 64.f };
+	glm::vec2 m_velocityMin{ -48.f };
+	glm::vec2 m_velocityOffset{ 96.f };
 
 	// Acceleration vector.
 	glm::vec2 m_acceleration{ 0.f };
 
 	// The size of the particle.
-	float m_size{ 32.f };
+	float m_size{ 16.f };
 
 	// The colour of the particle.
-	glm::vec4 m_colour{ 0.2f, 0.2f, 0.2f, 1.f };
+	glm::vec4 m_colour{ 0.2f, 0.2f, 1.f, 1.f };
 	float m_additivity{ 0.f };
 
 	// The time to live for the particle.
@@ -163,11 +163,11 @@ private:
 	float m_lifeOffset{ 0.3f };
 
 	// The colour of the particle when it is created.
-	glm::vec4 m_birthColour{ 0.2f, 0.2f, 0.2f, 0.f };
+	glm::vec4 m_birthColour{ 0.2f, 0.2f, 1.f, 0.f };
 	float m_birthAdditivity{ 0.f };
 
 	// The colour of the particle when it is expiring.
-	glm::vec4 m_deathColour{ 0.2f, 0.2f, 0.2f, 0.f };
+	glm::vec4 m_deathColour{ 0.2f, 0.2f, 1.f, 0.f };
 	float m_deathAdditivity{ 0.f };
 
 	// The time from animation start before starting to emit particles.
