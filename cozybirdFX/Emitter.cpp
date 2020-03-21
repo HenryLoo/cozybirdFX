@@ -94,7 +94,8 @@ void Emitter::update(float deltaTime, float currentTime,
         m_spawnTimer += deltaTime;
         if (m_spawnTimer >= m_timeToSpawn)
         {
-            m_spawnTimer -= m_timeToSpawn;
+            while (m_spawnTimer >= m_timeToSpawn)
+                m_spawnTimer -= m_timeToSpawn;
             updateShader->setInt("emNumToGenerate", m_numToGenerate);
         }
         else
@@ -104,6 +105,10 @@ void Emitter::update(float deltaTime, float currentTime,
     }
     else
     {
+        // Get ready to spawn particles as soon as the next iteration starts.
+        if (currentTime >= m_delayBeforeStart + m_emitterDuration)
+            m_spawnTimer = m_timeToSpawn;
+
         updateShader->setInt("emNumToGenerate", 0);
     }
 
