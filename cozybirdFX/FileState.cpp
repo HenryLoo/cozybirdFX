@@ -1,10 +1,8 @@
 #include "FileState.h"
 #include "EmitterRenderer.h"
 #include "Engine.h"
-#include "TextRenderer.h"
+#include "NewState.h"
 #include "UIButton.h"
-#include "UIRenderer.h"
-#include "UIText.h"
 
 #include <json/single_include/nlohmann/json.hpp>
 #include <nfd/nfd.h>
@@ -12,25 +10,29 @@
 #include <fstream>
 #include <iomanip>
 
-namespace
+FileState::FileState(Engine &engine, AssetLoader &assetLoader,
+	EmitterRenderer &eRenderer) :
+	IMenuState(engine, assetLoader, eRenderer, "File Menu")
 {
-	const glm::vec2 BUTTON_SIZE{ 500.f, 80.f };
+
 }
 
-FileState::FileState(Engine &engine, AssetLoader &assetLoader,
-	EmitterRenderer &eRenderer)
+void FileState::initMenu()
 {
-	m_tRenderer = std::make_shared<TextRenderer>(assetLoader);
-	m_uRenderer = std::make_shared<UIRenderer>(assetLoader);
+	Engine &engine{ m_engine };
+	AssetLoader &assetLoader{ m_assetLoader };
+	EmitterRenderer &eRenderer{ m_eRenderer };
 
-	glm::vec2 windowSize{ engine.getWindowSize() };
-	m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
-		windowSize);
+	m_newButton = std::make_shared<UIButton>("New",
+		BUTTON_SIZE, false, [&engine, &assetLoader, &eRenderer]()
+		{
+			NewState *state{ new NewState(engine, assetLoader, eRenderer) };
+			engine.pushState(state);
+		});
 
-	m_title = std::make_shared<UIText>("File Menu", BUTTON_SIZE);
-	m_panel->addElement(m_title);
+	addButton(m_newButton);
 
-	m_panel->addNewLine();
+	// Load button.
 	m_loadButton = std::make_shared<UIButton>("Load FX...",
 		BUTTON_SIZE, false, [&engine, &assetLoader, &eRenderer]()
 		{
@@ -112,9 +114,9 @@ FileState::FileState(Engine &engine, AssetLoader &assetLoader,
 					NFD_GetError() << std::endl;
 			}
 		});
-	m_panel->addElement(m_loadButton);
 
-	m_panel->addNewLine();
+	addButton(m_loadButton);
+
 	m_saveButton = std::make_shared<UIButton>("Save FX as...",
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
@@ -213,48 +215,6 @@ FileState::FileState(Engine &engine, AssetLoader &assetLoader,
 					NFD_GetError() << std::endl;
 			}
 		});
-	m_panel->addElement(m_saveButton);
 
-	m_panel->addNewLine();
-	m_closeButton = std::make_shared<UIButton>("Close",
-		BUTTON_SIZE, false, [&engine]()
-		{
-			engine.popState();
-		});
-	m_panel->addElement(m_closeButton);
-
-	m_panel->addToRenderer(*m_uRenderer, *m_tRenderer);
-	m_title->setAlign(TextRenderer::TextAlign::CENTER);
-}
-
-void FileState::handleInput(InputManager &inputManager)
-{
-	m_panel->process(inputManager);
-}
-
-void FileState::render(float deltaTime, const Camera &camera)
-{
-	m_uRenderer->render(deltaTime, camera);
-	m_tRenderer->render(deltaTime, camera);
-}
-
-void FileState::enter()
-{
-
-}
-
-void FileState::update(float deltaTime)
-{
-
-}
-
-void FileState::resize(Camera &camera)
-{
-	m_panel->setSize(m_windowSize);
-
-	glm::vec2 buttonPos{ (m_panel->getSize().x - BUTTON_SIZE.x) / 2.f, -1.f };
-	m_title->setPosition(buttonPos);
-	m_loadButton->setPosition(buttonPos);
-	m_saveButton->setPosition(buttonPos);
-	m_closeButton->setPosition(buttonPos);
+	addButton(m_saveButton);
 }
