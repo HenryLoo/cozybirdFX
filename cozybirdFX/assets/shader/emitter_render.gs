@@ -5,9 +5,7 @@ layout(points) in;
 layout(triangle_strip) out;
 layout(max_vertices = 4) out;
 
-in float vsCurrentLife[];
-in float vsLife[];
-in float vsSize[];
+in vec4 vsRotationSizeLife[];
 in int vsType[];
 
 smooth out vec2 texCoord;
@@ -25,6 +23,21 @@ uniform vec3 additivity;
 uniform vec3 axis1;
 uniform vec3 axis2;
 
+vec2 rotatePoint(vec2 point, float radians)
+{
+    return vec2(
+        point.x * cos(radians) - point.y * sin(radians),
+        point.x * sin(radians) + point.y * cos(radians)
+    );
+}
+
+vec4 getPosition(vec3 position, vec3 origin)
+{
+    float rotation = vsRotationSizeLife[0].x;
+    vec2 point = rotatePoint(position.xy, rotation);
+    return mvp * vec4(origin.xy + point, origin.z, 1.0);
+}
+
 void main()
 {
     // Skip this if it is an emitter.
@@ -35,7 +48,9 @@ void main()
 
     // Blend colour, birth colour, and death colour based on the particle's
     // current life.
-    float dur = (vsLife[0] - vsCurrentLife[0]) / vsLife[0];
+    float currentLife = vsRotationSizeLife[0].z;
+    float totalLife = vsRotationSizeLife[0].w;
+    float dur = (totalLife - currentLife) / totalLife;
     float birthThreshold = 0.33;
     float deathThreshold = 0.66;
     if (dur <= birthThreshold)
@@ -57,24 +72,26 @@ void main()
     }
 
     // Define quad vertices.
-    vec3 position = origin + (-axis1 - axis2) * vsSize[0];
+    float size = vsRotationSizeLife[0].y;
+
+    vec3 position = (-axis1 - axis2) * size;
+    gl_Position = getPosition(position, origin);
     texCoord = vec2(0.0, 1.0);
-    gl_Position = mvp * vec4(position, 1.0);
     EmitVertex();
 
-    position = origin + (-axis1 + axis2) * vsSize[0];
+    position = (-axis1 + axis2) * size;
+    gl_Position = getPosition(position, origin);
     texCoord = vec2(0.0, 0.0);
-    gl_Position = mvp * vec4(position, 1.0);
     EmitVertex();
 
-    position = origin + (axis1 - axis2) * vsSize[0];
+    position = (axis1 - axis2) * size;
     texCoord = vec2(1.0, 1.0);
-    gl_Position = mvp * vec4(position, 1.0);
+    gl_Position = getPosition(position, origin);
     EmitVertex();
 
-    position = origin + (axis1 + axis2) * vsSize[0];
+    position = (axis1 + axis2) * size;
     texCoord = vec2(1.0, 0.0);
-    gl_Position = mvp * vec4(position, 1.0);
+    gl_Position = getPosition(position, origin);
     EmitVertex();
 
     EndPrimitive();

@@ -12,15 +12,13 @@
 
 namespace
 {
-    const int NUM_PARTICLE_ATTRIBUTES{ 6 };
+    const int NUM_PARTICLE_ATTRIBUTES{ 4 };
 
     const char *PARTICLE_ATTRIBUTES[NUM_PARTICLE_ATTRIBUTES]
     {
        "gsPosition",
-       "gsVelocity",
-       "gsCurrentLife",
-       "gsLife",
-       "gsSize",
+       "gsSpeedDirection",
+       "gsRotationSizeLife",
        "gsType",
     };
 }

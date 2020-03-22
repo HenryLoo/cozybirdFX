@@ -14,6 +14,7 @@
 namespace
 {
     const int MAX_PARTICLES{ 1000 };
+    const int MS_PER_SECOND{ 1000 };
 }
 
 Emitter::Emitter()
@@ -35,29 +36,21 @@ Emitter::Emitter()
         glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * MAX_PARTICLES, NULL, GL_DYNAMIC_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle), &particle);
 
-        // Position
+        // x/y position
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)0);
 
-        // Velocity
+        // Speed and direction
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(2 * sizeof(float)));
 
-        // Current particle life
+        // Rotation, size, current particle life, and total particle life
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(4 * sizeof(float)));
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(4 * sizeof(float)));
 
-        // Total particle life
+        // Type (emitter or particle)
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(5 * sizeof(float)));
-
-        // Size
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(6 * sizeof(float)));
-
-        // Type
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(7 * sizeof(float)));
+        glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(8 * sizeof(float)));
     }
 }
 
@@ -72,18 +65,18 @@ void Emitter::update(float deltaTime, float currentTime,
     // Set emitter uniforms for the update shader.
     updateShader->setFloat("deltaTime", deltaTime);
     updateShader->setVec2("emPos", m_position);
-    updateShader->setVec2("emVelocityMin", m_velocityMin);
-    updateShader->setVec2("emVelocityOffset", m_velocityOffset);
-    updateShader->setVec2("emAcceleration", m_acceleration);
-    updateShader->setFloat("emLifeMin", m_lifeMin);
-    updateShader->setFloat("emLifeOffset", m_lifeOffset);
-    updateShader->setFloat("emSize", m_size);
+    updateShader->setVec3("emSpeed", m_speed);
+    updateShader->setVec3("emDirection", glm::radians(glm::vec3(m_direction)));
+    updateShader->setVec3("emRotation", glm::radians(glm::vec3(m_rotation)));
+    updateShader->setVec2("emLife", m_life);
+    updateShader->setVec3("emSize", m_size);
 
     // Set the seed.
-    //std::random_device randdev;
-    //std::mt19937 generator(randdev());
-    std::mt19937 generator(static_cast<unsigned int>(currentTime));
-    std::uniform_real_distribution<> distrib(-1, 1);
+    // Convert currentTime to ms to avoid precision loss when converting to
+    // unsigned integer. Otherwise, the seed will be unchanged over 
+    // multiple frames.
+    std::mt19937 generator(static_cast<unsigned int>(currentTime * MS_PER_SECOND));
+    std::uniform_real_distribution<> distrib(-100, 100);
     updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
     // Update spawn timer and flag the emitter to spawn particles if necessary.
@@ -170,24 +163,74 @@ void Emitter::setTimeToSpawn(float duration)
     m_timeToSpawn = duration;
 }
 
-void Emitter::setVelocityMin(glm::vec2 velocity)
+void Emitter::setSpeedMin(float speed)
 {
-    m_velocityMin = velocity;
+    m_speed.x = speed;
 }
 
-void Emitter::setVelocityOffset(glm::vec2 velocity)
+void Emitter::setSpeedMax(float speed)
 {
-    m_velocityOffset = velocity;
+    m_speed.y = speed;
 }
 
-void Emitter::setAcceleration(glm::vec2 acceleration)
+void Emitter::setSpeedGrowth(float amount)
 {
-    m_acceleration = acceleration;
+    m_speed.z = amount;
 }
 
-void Emitter::setSize(float size)
+void Emitter::setDirectionMin(int degAngle)
 {
-    m_size = size;
+    m_direction.x = degAngle;
+}
+
+void Emitter::setDirectionMax(int degAngle)
+{
+    m_direction.y = degAngle;
+}
+
+void Emitter::setDirectionGrowth(int degAngle)
+{
+    m_direction.z = degAngle;
+}
+
+void Emitter::setRotationMin(int degAngle)
+{
+    m_rotation.x = degAngle;
+}
+
+void Emitter::setRotationMax(int degAngle)
+{
+    m_rotation.y = degAngle;
+}
+
+void Emitter::setRotationGrowth(int degAngle)
+{
+    m_rotation.z = degAngle;
+}
+
+void Emitter::setSizeMin(float size)
+{
+    m_size.x = size;
+}
+
+void Emitter::setSizeMax(float size)
+{
+    m_size.y = size;
+}
+
+void Emitter::setSizeGrowth(float amount)
+{
+    m_size.z = amount;
+}
+
+void Emitter::setLifeMin(float duration)
+{
+    m_life.x = duration;
+}
+
+void Emitter::setLifeMax(float duration)
+{
+    m_life.y = duration;
 }
 
 void Emitter::setColour(glm::vec4 colour)
@@ -208,16 +251,6 @@ void Emitter::setBirthAdditivity(float additivity)
 void Emitter::setDeathAdditivity(float additivity)
 {
     m_deathAdditivity = additivity;
-}
-
-void Emitter::setLifeMin(float duration)
-{
-    m_lifeMin = duration;
-}
-
-void Emitter::setLifeOffset(float duration)
-{
-    m_lifeOffset = duration;
 }
 
 void Emitter::setBirthColour(glm::vec4 colour)
@@ -290,22 +323,22 @@ float Emitter::getTimeToSpawn() const
     return m_timeToSpawn;
 }
 
-glm::vec2 Emitter::getVelocityMin() const
+glm::vec3 Emitter::getSpeed() const
 {
-    return m_velocityMin;
+    return m_speed;
 }
 
-glm::vec2 Emitter::getVelocityOffset() const
+glm::ivec3 Emitter::getDirection() const
 {
-    return m_velocityOffset;
+    return m_direction;
 }
 
-glm::vec2 Emitter::getAcceleration() const
+glm::ivec3 Emitter::getRotation() const
 {
-    return m_acceleration;
+    return m_rotation;
 }
 
-float Emitter::getSize() const
+glm::vec3 Emitter::getSize() const
 {
     return m_size;
 }
@@ -313,6 +346,11 @@ float Emitter::getSize() const
 glm::vec4 Emitter::getColour() const
 {
     return m_colour;
+}
+
+glm::vec2 Emitter::getLife() const
+{
+    return m_life;
 }
 
 float Emitter::getAdditivity() const
@@ -328,16 +366,6 @@ float Emitter::getBirthAdditivity() const
 float Emitter::getDeathAdditivity() const
 {
     return m_deathAdditivity;
-}
-
-float Emitter::getLifeMin() const
-{
-    return m_lifeMin;
-}
-
-float Emitter::getLifeOffset() const
-{
-    return m_lifeOffset;
 }
 
 glm::vec4 Emitter::getBirthColour() const

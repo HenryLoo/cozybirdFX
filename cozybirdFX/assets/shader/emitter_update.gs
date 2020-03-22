@@ -8,28 +8,23 @@ layout(max_vertices = 50) out;
 
 // Particle attributes from the vertex shader.
 in vec2 vsPosition[];
-in vec2 vsVelocity[];
-in float vsCurrentLife[];
-in float vsLife[];
-in float vsSize[];
+in vec2 vsSpeedDirection[];
+in vec4 vsRotationSizeLife[];
 in int vsType[];
 
 // Particle attributes to output for transform feedback.
 out vec2 gsPosition;
-out vec2 gsVelocity;
-out float gsCurrentLife;
-out float gsLife;
-out float gsSize;
+out vec2 gsSpeedDirection;
+out vec4 gsRotationSizeLife;
 out int gsType;
 
 // Emitter properties.
 uniform vec2 emPos;
-uniform vec2 emVelocityMin;
-uniform vec2 emVelocityOffset;
-uniform vec2 emAcceleration;
-uniform float emLifeMin;
-uniform float emLifeOffset;
-uniform float emSize;
+uniform vec3 emSpeed; // Min, max, growth
+uniform vec3 emDirection; // Min, max, growth
+uniform vec3 emRotation; // Min, max, growth
+uniform vec2 emLife; // Min, max
+uniform vec3 emSize; // Min, max, growth
 uniform int emNumToGenerate;
 
 uniform float deltaTime;
@@ -64,19 +59,41 @@ void main()
 
     // Set output values.
     gsPosition = vsPosition[0];
-    gsVelocity = vsVelocity[0];
+    gsSpeedDirection = vsSpeedDirection[0];
+    gsRotationSizeLife = vsRotationSizeLife[0];
+    gsType = vsType[0];
 
     // If this is a particle, update its position and velocity.
     if (vsType[0] != 0)
     {
-        gsPosition += gsVelocity * deltaTime;
-        gsVelocity += emAcceleration * deltaTime;
-    }
+        // Get direction unit vector from rotating by direction.
+        vec2 unitVec = vec2(1, 0);
+        float dirAngle = gsSpeedDirection.y;
+        vec2 direction = vec2(
+            unitVec.x * cos(dirAngle) - unitVec.y * sin(dirAngle),
+            unitVec.x * sin(dirAngle) + unitVec.y * cos(dirAngle)
+        );
 
-    gsCurrentLife = vsCurrentLife[0] - deltaTime;
-    gsLife = vsLife[0];
-    gsSize = vsSize[0];
-    gsType = vsType[0];
+        // Update position.
+        float speed = gsSpeedDirection.x;
+        gsPosition.x += direction.x * speed * deltaTime;
+        gsPosition.y += direction.y * speed * deltaTime;
+
+        // Update speed.
+        gsSpeedDirection.x += emSpeed.z * deltaTime;
+
+        // Update direction.
+        gsSpeedDirection.y += emDirection.z * deltaTime;
+
+        // Update rotation.
+        gsRotationSizeLife.x += emRotation.z * deltaTime;
+
+        // Update current life.
+        gsRotationSizeLife.z -= deltaTime;
+
+        // Update size.
+        gsRotationSizeLife.y += emSize.z * deltaTime;
+    }
 
     // If this is an emitter, generate its particles.
     if (gsType == 0)
@@ -94,14 +111,22 @@ void main()
         {
             // Set the new particle attributes from emitter properties.
             gsPosition = emPos;
-            vec2 velOffset = vec2(
-                emVelocityOffset.x * noise(),
-                emVelocityOffset.y * noise()
-            );
-            gsVelocity = emVelocityMin + velOffset;
-            gsCurrentLife = emLifeMin + emLifeOffset * noise();
-            gsLife = gsCurrentLife;
-            gsSize = emSize;
+
+            float speedOffset = emSpeed.y - emSpeed.x;
+            gsSpeedDirection.x = emSpeed.x + speedOffset * noise();
+
+            float directionOffset = emDirection.y - emDirection.x;
+            gsSpeedDirection.y = emDirection.x + directionOffset * noise();
+
+            float rotationOffset = emRotation.y - emRotation.x;
+            gsRotationSizeLife.x = emRotation.x + rotationOffset * noise();
+
+            float sizeOffset = emSize.y - emSize.x;
+            gsRotationSizeLife.y = emSize.x + sizeOffset * noise();
+
+            float lifeOffset = emLife.y - emLife.x;
+            gsRotationSizeLife.z = emLife.x + lifeOffset * noise();
+            gsRotationSizeLife.w = gsRotationSizeLife.z;
 
             // Emit the particle.
             gsType = 1;
@@ -110,7 +135,7 @@ void main()
         }
     }
     // Otherwise, this is a particle. So just emit it.
-    else if (!isClearParticles && gsCurrentLife > 0.0)
+    else if (!isClearParticles && gsRotationSizeLife.z > 0.0)
     {
         EmitVertex();
         EndPrimitive();

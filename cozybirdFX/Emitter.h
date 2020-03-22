@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/constants.hpp>
 
 #include <memory>
 #include <string>
@@ -33,16 +34,24 @@ public:
 	void setNumToGenerate(int num);
 	void setPosition(glm::vec2 position);
 	void setTimeToSpawn(float duration);
-	void setVelocityMin(glm::vec2 velocity);
-	void setVelocityOffset(glm::vec2 velocity);
-	void setAcceleration(glm::vec2 acceleration);
-	void setSize(float size);
+	void setSpeedMin(float speed);
+	void setSpeedMax(float speed);
+	void setSpeedGrowth(float amount);
+	void setDirectionMin(int degAngle);
+	void setDirectionMax(int degAngle);
+	void setDirectionGrowth(int degAngle);
+	void setRotationMin(int degAngle);
+	void setRotationMax(int degAngle);
+	void setRotationGrowth(int degAngle);
+	void setSizeMin(float size);
+	void setSizeMax(float size);
+	void setSizeGrowth(float amount);
+	void setLifeMin(float duration);
+	void setLifeMax(float duration);
 	void setColour(glm::vec4 colour);
 	void setAdditivity(float additivity);
 	void setBirthAdditivity(float additivity);
 	void setDeathAdditivity(float additivity);
-	void setLifeMin(float duration);
-	void setLifeOffset(float duration);
 	void setBirthColour(glm::vec4 colour);
 	void setDeathColour(glm::vec4 colour);
 	void setDelayBeforeStart(float duration);
@@ -59,16 +68,15 @@ public:
 	int getNumToGenerate() const;
 	glm::vec2 getPosition() const;
 	float getTimeToSpawn() const;
-	glm::vec2 getVelocityMin() const;
-	glm::vec2 getVelocityOffset() const;
-	glm::vec2 getAcceleration() const;
-	float getSize() const;
+	glm::vec3 getSpeed() const;
+	glm::ivec3 getDirection() const;
+	glm::ivec3 getRotation() const;
+	glm::vec3 getSize() const;
 	glm::vec4 getColour() const;
+	glm::vec2 getLife() const;
 	float getAdditivity() const;
 	float getBirthAdditivity() const;
 	float getDeathAdditivity() const;
-	float getLifeMin() const;
-	float getLifeOffset() const;
 	glm::vec4 getBirthColour() const;
 	glm::vec4 getDeathColour() const;
 	float getDelayBeforeStart() const;
@@ -90,10 +98,12 @@ private:
 	struct Particle
 	{
 		glm::vec2 position;
-		glm::vec2 velocity;
-		float currentLife;
-		float life;
-		float size;
+
+		// Speed, direction of movement.
+		glm::vec2 speedDirection;
+
+		// Rotation, size, current life, total life.
+		glm::vec4 rotationSizeLife;
 
 		// This is the integer representation of ParticleType.
 		int type;
@@ -143,24 +153,29 @@ private:
 	// The time since the last particle generation.
 	float m_spawnTimer{ 0.f };
 
-	// The velocity at which the particle moves at.
-	// Defines the minimum velocity and the offset from that minimum.
-	glm::vec2 m_velocityMin{ -48.f };
-	glm::vec2 m_velocityOffset{ 96.f };
+	// The speed at which the particle moves at.
+	// Defines minimum, maximum, and growth rate.
+	glm::vec3 m_speed{ 0.f, 48.f, 0.f };
 
-	// Acceleration vector.
-	glm::vec2 m_acceleration{ 0.f };
+	// The direction that the particle moves toward.
+	// Defines minimum, maximum, and growth rate.
+	glm::ivec3 m_direction{ 0, 359, 0 };
+
+	// The rotation of the particle.
+	// Defines minimum, maximum, and growth rate.
+	glm::ivec3 m_rotation{ 0, 0, 0 };
 
 	// The size of the particle.
-	float m_size{ 16.f };
+	// Defines minimum, maximum, and growth rate.
+	glm::vec3 m_size{ 16.f, 16.f, 0.f };
 
 	// The colour of the particle.
 	glm::vec4 m_colour{ 0.2f, 0.2f, 1.f, 1.f };
 	float m_additivity{ 0.f };
 
 	// The time to live for the particle.
-	float m_lifeMin{ 2.f };
-	float m_lifeOffset{ 0.3f };
+	// Defines minimum and maximum.
+	glm::vec2 m_life{ 2.f, 2.3f };
 
 	// The colour of the particle when it is created.
 	glm::vec4 m_birthColour{ 0.2f, 0.2f, 1.f, 0.f };

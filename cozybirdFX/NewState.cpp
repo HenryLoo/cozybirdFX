@@ -53,13 +53,13 @@ void NewState::initMenu()
 			emitter.setPosition(glm::vec2(0.f, -100.f));
 			emitter.setNumToGenerate(glm::linearRand(20, 40));
 			emitter.setTimeToSpawn(glm::linearRand(0.4f, 0.6f));
-			emitter.setSize(glm::linearRand(24.f, 48.f));
+			emitter.setSizeMin(glm::linearRand(24.f, 48.f));
 			emitter.setLifeMin(glm::linearRand(1.7f, 2.5f));
-			emitter.setLifeOffset(glm::linearRand(0.2f, 0.4f));
+			emitter.setLifeMax(glm::linearRand(0.2f, 0.4f));
 			float velX{ glm::linearRand(24.f, 48.f) };
 			float velY{ glm::linearRand(80.f, 100.f) };
-			emitter.setVelocityMin(glm::vec2(-velX, 0.f));
-			emitter.setVelocityOffset(glm::vec2(2 * velX, velY));
+			//emitter.setSpeedMin(glm::vec2(-velX, 0.f));
+			//emitter.setSpeedMax(glm::vec2(2 * velX, velY));
 
 			emitter.setColour(glm::vec4(
 				glm::linearRand(0.7f, 1.f),

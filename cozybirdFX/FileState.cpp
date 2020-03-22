@@ -69,15 +69,15 @@ void FileState::initMenu()
 						emitter.setPosition(glm::vec2(e.at("position").at("x").get<float>(),
 							e.at("position").at("y").get<float>()));
 						emitter.setTimeToSpawn(e.at("timeToSpawn").get<float>());
-						emitter.setVelocityMin(glm::vec2(e.at("velocityMin").at("x").get<float>(),
-							e.at("velocityMin").at("y").get<float>()));
-						emitter.setVelocityOffset(glm::vec2(e.at("velocityOffset").at("x").get<float>(),
-							e.at("velocityOffset").at("y").get<float>()));
-						emitter.setAcceleration(glm::vec2(e.at("acceleration").at("x").get<float>(),
-							e.at("acceleration").at("y").get<float>()));
-						emitter.setSize(e.at("size").get<float>());
+						//emitter.setSpeedMin(glm::vec2(e.at("velocityMin").at("x").get<float>(),
+						//	e.at("velocityMin").at("y").get<float>()));
+						//emitter.setSpeedMax(glm::vec2(e.at("velocityOffset").at("x").get<float>(),
+						//	e.at("velocityOffset").at("y").get<float>()));
+						//emitter.setSpeedGrowth(glm::vec2(e.at("acceleration").at("x").get<float>(),
+							//e.at("acceleration").at("y").get<float>()));
+						emitter.setSizeMin(e.at("size").get<float>());
 						emitter.setLifeMin(e.at("lifeMin").get<float>());
-						emitter.setLifeOffset(e.at("lifeOffset").get<float>());
+						emitter.setLifeMax(e.at("lifeOffset").get<float>());
 						emitter.setColour(glm::vec4(e.at("colour").at("r").get<float>(),
 							e.at("colour").at("g").get<float>(), e.at("colour").at("b").get<float>(),
 								e.at("colour").at("a").get<float>()));
@@ -156,18 +156,18 @@ void FileState::initMenu()
 
 					e["timeToSpawn"] = emitter.getTimeToSpawn();
 
-					glm::vec2 velocityMin{ emitter.getVelocityMin() };
-					e["velocityMin"] = { { "x", velocityMin.x }, { "y", velocityMin.y } };
+					//glm::vec2 velocityMin{ emitter.getVelocityMin() };
+					//e["velocityMin"] = { { "x", velocityMin.x }, { "y", velocityMin.y } };
 
-					glm::vec2 velocityOffset{ emitter.getVelocityOffset() };
-					e["velocityOffset"] = { { "x", velocityOffset.x }, { "y", velocityOffset.y } };
+					//glm::vec2 velocityOffset{ emitter.getVelocityOffset() };
+					//e["velocityOffset"] = { { "x", velocityOffset.x }, { "y", velocityOffset.y } };
 
-					glm::vec2 acceleration{ emitter.getAcceleration() };
-					e["acceleration"] = { { "x", acceleration.x }, { "y", acceleration.y } };
+					//glm::vec2 acceleration{ emitter.getAcceleration() };
+					//e["acceleration"] = { { "x", acceleration.x }, { "y", acceleration.y } };
 
-					e["size"] = emitter.getSize();
-					e["lifeMin"] = emitter.getLifeMin();
-					e["lifeOffset"] = emitter.getLifeOffset();
+					//e["size"] = emitter.getSize();
+					//e["lifeMin"] = emitter.getLifeMin();
+					//e["lifeOffset"] = emitter.getLifeOffset();
 
 					glm::vec4 colour{ emitter.getColour() };
 					e["colour"] = { { "r", colour.r }, { "g", colour.g }, 

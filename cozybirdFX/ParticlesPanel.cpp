@@ -35,10 +35,6 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(m_spawnTime);
 
     m_panel->addNewLine();
-    m_size = std::make_shared<UITextField>("Particle Size", ONE_VAL_SIZE);
-    m_panel->addElement(m_size);
-
-    m_panel->addNewLine();
     auto lifeLabel{ std::make_shared<UIText>("Particle Life", LABEL_SIZE) };
     m_panel->addElement(lifeLabel);
 
@@ -50,37 +46,60 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(m_lifeMax);
 
     m_panel->addNewLine();
-    auto velXLabel{ std::make_shared<UIText>("Velocity.x", LABEL_SIZE) };
-    m_panel->addElement(velXLabel);
+    auto speedLabel{ std::make_shared<UIText>("Speed", LABEL_SIZE) };
+    m_panel->addElement(speedLabel);
 
     m_panel->addNewHalfLine();
-    m_velXMin = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
-    m_panel->addElement(m_velXMin);
+    m_speedMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_panel->addElement(m_speedMin);
 
-    m_velXMax = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
-    m_panel->addElement(m_velXMax);
+    m_speedMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_panel->addElement(m_speedMax);
+
+    m_speedGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_panel->addElement(m_speedGrowth);
 
     m_panel->addNewLine();
-    auto velYLabel{ std::make_shared<UIText>("Velocity.y", LABEL_SIZE) };
-    m_panel->addElement(velYLabel);
+    auto dirLabel{ std::make_shared<UIText>("Direction", LABEL_SIZE) };
+    m_panel->addElement(dirLabel);
 
     m_panel->addNewHalfLine();
-    m_velYMin = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
-    m_panel->addElement(m_velYMin);
+    m_directionMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_panel->addElement(m_directionMin);
 
-    m_velYMax = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
-    m_panel->addElement(m_velYMax);
+    m_directionMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_panel->addElement(m_directionMax);
+
+    m_directionGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_panel->addElement(m_directionGrowth);
 
     m_panel->addNewLine();
-    auto accelLabel{ std::make_shared<UIText>("Acceleration", LABEL_SIZE) };
-    m_panel->addElement(accelLabel);
+    auto rotLabel{ std::make_shared<UIText>("Rotation", LABEL_SIZE) };
+    m_panel->addElement(rotLabel);
 
     m_panel->addNewHalfLine();
-    m_accelX = std::make_shared<UITextField>("x", TWO_VAL_SIZE);
-    m_panel->addElement(m_accelX);
+    m_rotationMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_panel->addElement(m_rotationMin);
 
-    m_accelY = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
-    m_panel->addElement(m_accelY);
+    m_rotationMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_panel->addElement(m_rotationMax);
+
+    m_rotationGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_panel->addElement(m_rotationGrowth);
+
+    m_panel->addNewLine();
+    auto sizeLabel{ std::make_shared<UIText>("Particle Size", LABEL_SIZE) };
+    m_panel->addElement(sizeLabel);
+
+    m_panel->addNewHalfLine();
+    m_sizeMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_panel->addElement(m_sizeMin);
+
+    m_sizeMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_panel->addElement(m_sizeMax);
+
+    m_sizeGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_panel->addElement(m_sizeGrowth);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
 }
@@ -124,58 +143,102 @@ void ParticlesPanel::update(float deltaTime, Emitter &emitter)
         emitter.setTimeToSpawn(spawnTime);
     }
 
-    // Set velocity.
-    glm::vec2 velMin;
-    bool isVelXMin{ m_velXMin->getValue(velMin.x) };
-    bool isVelYMin{ m_velYMin->getValue(velMin.y) };
-    if (isVelXMin || isVelYMin)
+    // Set minimum speed.
+    float speedMin;
+    if (m_speedMin->getValue(speedMin))
     {
-        emitter.setVelocityMin(velMin);
+        emitter.setSpeedMin(speedMin);
     }
 
-    // Convert max to offset.
-    glm::vec2 velMax;
-    bool isVelXMax{ m_velXMax->getValue(velMax.x) };
-    bool isVelYMax{ m_velYMax->getValue(velMax.y) };
-    if (isVelXMin || isVelYMin || isVelXMax || isVelYMax)
+    // Set maximum speed.
+    float speedMax;
+    if (m_speedMax->getValue(speedMax))
     {
-        glm::vec2 velOffset{ velMax.x - velMin.x, velMax.y - velMin.y };
-        velOffset = glm::clamp(velOffset, { 0.f, 0.f }, velOffset);
-        emitter.setVelocityOffset(velOffset);
+        emitter.setSpeedMax(speedMax);
     }
 
-    // Set acceleration.
-    glm::vec2 accel;
-    bool isAccelX{ m_accelX->getValue(accel.x) };
-    bool isAccelY{ m_accelY->getValue(accel.y) };
-    if (isAccelX || isAccelY)
+    // Set speed growth rate.
+    float speedGrowth;
+    if (m_speedGrowth->getValue(speedGrowth))
     {
-        emitter.setAcceleration(accel);
+        emitter.setSpeedGrowth(speedGrowth);
     }
 
-    // Set particle size.
-    float size;
-    if (m_size->getValue(size))
+    // Set minimum direction.
+    int directionMin;
+    if (m_directionMin->getValue(directionMin))
     {
-        emitter.setSize(size);
+        emitter.setDirectionMin(directionMin);
+    }
+
+    // Set maximum direction.
+    int directionMax;
+    if (m_directionMax->getValue(directionMax))
+    {
+        emitter.setDirectionMax(directionMax);
+    }
+
+    // Set direction growth rate.
+    int directionGrowth;
+    if (m_directionGrowth->getValue(directionGrowth))
+    {
+        emitter.setDirectionGrowth(directionGrowth);
+    }
+
+    // Set minimum rotation.
+    int rotationMin;
+    if (m_rotationMin->getValue(rotationMin))
+    {
+        emitter.setRotationMin(rotationMin);
+    }
+
+    // Set maximum rotation.
+    int rotationMax;
+    if (m_rotationMax->getValue(rotationMax))
+    {
+        emitter.setRotationMax(rotationMax);
+    }
+
+    // Set rotation growth rate.
+    int rotationGrowth;
+    if (m_rotationGrowth->getValue(rotationGrowth))
+    {
+        emitter.setRotationGrowth(rotationGrowth);
+    }
+
+    // Set minimum particle size.
+    float sizeMin;
+    if (m_sizeMin->getValue(sizeMin))
+    {
+        emitter.setSizeMin(sizeMin);
+    }
+
+    // Set maximum particle size.
+    float sizeMax;
+    if (m_sizeMax->getValue(sizeMax))
+    {
+        emitter.setSizeMax(sizeMax);
+    }
+
+    // Set particle size growth rate.
+    float sizeGrowth;
+    if (m_sizeGrowth->getValue(sizeGrowth))
+    {
+        emitter.setSizeGrowth(sizeGrowth);
     }
 
     // Set duration.
     float lifeMin;
-    bool isLifeMin{ m_lifeMin->getValue(lifeMin) };
-    if (isLifeMin)
+    if (m_lifeMin->getValue(lifeMin))
     {
         emitter.setLifeMin(lifeMin);
     }
 
     // Convert max to offset.
     float lifeMax;
-    bool isLifeMax{ m_lifeMax->getValue(lifeMax) };
-    if (isLifeMin || isLifeMax)
+    if (m_lifeMax->getValue(lifeMax))
     {
-        float lifeOffset{ lifeMax - lifeMin };
-        lifeOffset = glm::clamp(lifeOffset, 0.f, lifeOffset);
-        emitter.setLifeOffset(lifeOffset);
+        emitter.setLifeMax(lifeMax);
     }
 }
 
@@ -191,20 +254,27 @@ void ParticlesPanel::updateUIFromEmitter(const Emitter &emitter)
     m_numToGenerate->setValue(emitter.getNumToGenerate());
     m_spawnTime->setValue(emitter.getTimeToSpawn());
 
-    glm::vec2 velMin{ emitter.getVelocityMin() };
-    glm::vec2 velOffset{ emitter.getVelocityOffset() };
-    m_velXMin->setValue(velMin.x);
-    m_velXMax->setValue(velMin.x + velOffset.x);
-    m_velYMin->setValue(velMin.y);
-    m_velYMax->setValue(velMin.y + velOffset.y);
+    glm::vec3 speed{ emitter.getSpeed() };
+    m_speedMin->setValue(speed.x);
+    m_speedMax->setValue(speed.y);
+    m_speedGrowth->setValue(speed.z);
 
-    glm::vec2 accel{ emitter.getAcceleration() };
-    m_accelX->setValue(accel.x);
-    m_accelY->setValue(accel.y);
+    glm::ivec3 direction{ emitter.getDirection() };
+    m_directionMin->setValue(direction.x);
+    m_directionMax->setValue(direction.y);
+    m_directionGrowth->setValue(direction.z);
 
-    m_size->setValue(emitter.getSize());
+    glm::ivec3 rotation{ emitter.getRotation() };
+    m_rotationMin->setValue(rotation.x);
+    m_rotationMax->setValue(rotation.y);
+    m_rotationGrowth->setValue(rotation.z);
 
-    float durationMin{ emitter.getLifeMin() };
-    m_lifeMin->setValue(durationMin);
-    m_lifeMax->setValue(durationMin + emitter.getLifeOffset());
+    glm::vec3 size{ emitter.getSize() };
+    m_sizeMin->setValue(size.x);
+    m_sizeMax->setValue(size.y);
+    m_sizeGrowth->setValue(size.z);
+
+    glm::vec2 life{ emitter.getLife() };
+    m_lifeMin->setValue(life.x);
+    m_lifeMax->setValue(life.y);
 }
