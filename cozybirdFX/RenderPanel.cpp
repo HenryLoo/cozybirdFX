@@ -5,6 +5,11 @@
 #include "UIText.h"
 #include "UITextField.h"
 
+namespace
+{
+    const int DURATION_PRECISION{ 3 };
+}
+
 RenderPanel::RenderPanel(EditorState &editor, 
     std::shared_ptr<EmitterRenderer> eRenderer,
     TextRenderer &tRenderer, UIRenderer &uRenderer,
@@ -59,7 +64,7 @@ void RenderPanel::update(float deltaTime, Emitter &emitter)
 
     // Set the animation duration.
     float duration;
-    bool isDuration{ m_duration->getValue(duration) };
+    bool isDuration{ m_duration->getValue(duration, DURATION_PRECISION) };
     if (isDuration)
     {
         m_eRenderer->setDuration(duration);
@@ -79,7 +84,7 @@ void RenderPanel::updateUIFromEmitter(const Emitter &emitter)
     glm::ivec2 clipSize{ m_eRenderer->getClipSize() };
     m_clipX->setValue(clipSize.x);
     m_clipY->setValue(clipSize.y);
-    m_duration->setValue(m_eRenderer->getDuration());
+    m_duration->setValue(m_eRenderer->getDuration(), DURATION_PRECISION);
     m_fps->setValue(m_eRenderer->getExportFPS());
     m_loopButton->setToggled(m_eRenderer->isLooping());
 }

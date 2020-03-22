@@ -141,10 +141,10 @@ void UITextField::setValue(int value)
 	updateUI();
 }
 
-void UITextField::setValue(float value)
+void UITextField::setValue(float value, int precision)
 {
 	std::stringstream ss;
-	ss << std::fixed << std::setprecision(3) << value;
+	ss << std::fixed << std::setprecision(precision) << value;
 	std::string valueStr = ss.str();
 	m_value = valueStr;
 	updateUI();
@@ -176,11 +176,13 @@ bool UITextField::getValue(int &output)
 	}
 }
 
-bool UITextField::getValue(float &output)
+bool UITextField::getValue(float &output, int precision)
 {
 	try
 	{
-		output = std::stof(m_value);
+		std::stringstream ss;
+		ss << std::fixed << std::setprecision(precision) << m_value;
+		output = std::stof(ss.str());
 		m_isError = false;
 		bool isNew = m_isNewValue;
 		m_isNewValue = false;

@@ -4,6 +4,7 @@
 
 class TextRenderer;
 class UIRenderer;
+class UISlider;
 class UITextField;
 
 class ParticlesPanel : public IEditorPanel
@@ -25,12 +26,12 @@ private:
 	std::shared_ptr<UITextField> m_speedMin{ nullptr };
 	std::shared_ptr<UITextField> m_speedMax{ nullptr };
 	std::shared_ptr<UITextField> m_speedGrowth{ nullptr };
-	std::shared_ptr<UITextField> m_directionMin{ nullptr };
-	std::shared_ptr<UITextField> m_directionMax{ nullptr };
-	std::shared_ptr<UITextField> m_directionGrowth{ nullptr };
-	std::shared_ptr<UITextField> m_rotationMin{ nullptr };
-	std::shared_ptr<UITextField> m_rotationMax{ nullptr };
-	std::shared_ptr<UITextField> m_rotationGrowth{ nullptr };
+	std::shared_ptr<UISlider> m_directionMin{ nullptr };
+	std::shared_ptr<UISlider> m_directionMax{ nullptr };
+	std::shared_ptr<UISlider> m_directionGrowth{ nullptr };
+	std::shared_ptr<UISlider> m_rotationMin{ nullptr };
+	std::shared_ptr<UISlider> m_rotationMax{ nullptr };
+	std::shared_ptr<UISlider> m_rotationGrowth{ nullptr };
 	std::shared_ptr<UITextField> m_sizeMin{ nullptr };
 	std::shared_ptr<UITextField> m_sizeMax{ nullptr };
 	std::shared_ptr<UITextField> m_sizeGrowth{ nullptr };

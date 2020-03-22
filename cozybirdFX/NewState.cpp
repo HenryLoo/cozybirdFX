@@ -45,7 +45,7 @@ void NewState::initMenu()
 		{
 			eRenderer.init(assetLoader);
 
-			eRenderer.setClipSize(glm::ivec2(200, 280));
+			eRenderer.setClipSize(glm::ivec2(200, 300));
 			float duration{ 3.f };
 			eRenderer.setDuration(duration);
 
@@ -53,32 +53,48 @@ void NewState::initMenu()
 			emitter.setPosition(glm::vec2(0.f, -100.f));
 			emitter.setNumToGenerate(glm::linearRand(20, 40));
 			emitter.setTimeToSpawn(glm::linearRand(0.4f, 0.6f));
-			emitter.setSizeMin(glm::linearRand(24.f, 48.f));
-			emitter.setLifeMin(glm::linearRand(1.7f, 2.5f));
-			emitter.setLifeMax(glm::linearRand(0.2f, 0.4f));
-			float velX{ glm::linearRand(24.f, 48.f) };
-			float velY{ glm::linearRand(80.f, 100.f) };
-			//emitter.setSpeedMin(glm::vec2(-velX, 0.f));
-			//emitter.setSpeedMax(glm::vec2(2 * velX, velY));
 
+			emitter.setSpeedMin(0.f);
+			emitter.setSpeedMax(glm::linearRand(70.f, 110.f));
+			emitter.setSpeedGrowth(0.f);
+
+			int dirMin{ glm::linearRand(60, 80) };
+			emitter.setDirectionMin(dirMin);
+			const int DIR_CENTER{ 90 };
+			emitter.setDirectionMax(DIR_CENTER * 2 - dirMin);
+			emitter.setDirectionGrowth(0);
+
+			emitter.setRotationMin(0);
+			emitter.setRotationMax(359);
+			emitter.setRotationGrowth(glm::linearRand(5, 30));
+
+			float sizeMin{ glm::linearRand(24.f, 48.f) };
+			emitter.setSizeMin(sizeMin);
+			emitter.setSizeMax(glm::linearRand(sizeMin, sizeMin + 16.f));
+
+			float lifeMin{ glm::linearRand(1.7f, 2.5f) };
+			emitter.setLifeMin(lifeMin);
+			emitter.setLifeMax(glm::linearRand(lifeMin, lifeMin + 0.2f));
+
+			float green{ glm::linearRand(0.2f, 0.55f) };
 			emitter.setColour(glm::vec4(
 				glm::linearRand(0.7f, 1.f),
-				glm::linearRand(0.2f, 0.55f),
-				glm::linearRand(0.f, 0.4f),
+				green,
+				glm::linearRand(0.f, green),
 				glm::linearRand(0.7f, 1.f)));
-			emitter.setAdditivity(glm::linearRand(0.8f, 1.f));
+			emitter.setAdditivity(1.f);
 			emitter.setBirthColour(glm::vec4(
 				glm::linearRand(0.6f, 0.8f),
 				glm::linearRand(0.f, 0.3f),
 				glm::linearRand(0.f, 0.3f),
 				glm::linearRand(0.f, 0.1f)));
-			emitter.setBirthAdditivity(glm::linearRand(0.f, 0.2f));
+			emitter.setBirthAdditivity(1.f);
 			emitter.setDeathColour(glm::vec4(
 				glm::linearRand(0.4f, 0.6f),
 				glm::linearRand(0.f, 0.3f),
 				0.f, 
 				glm::linearRand(0.f, 0.1f)));
-			emitter.setDeathAdditivity(0.f);
+			emitter.setDeathAdditivity(1.f);
 
 			int textureIndex{ glm::linearRand(0, static_cast<int>(FIRE_TEXTURES.size()) - 1) };
 			emitter.setTexture(assetLoader, FIRE_TEXTURES[textureIndex] + ".png");

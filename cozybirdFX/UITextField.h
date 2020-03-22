@@ -24,13 +24,13 @@ public:
 	// Set the current value.
 	void setValue(const std::string &value);
 	void setValue(int value);
-	void setValue(float value);
+	void setValue(float value, int precision = 1);
 
 	// Get the text field's current value.
 	// Return whether or not this is a new value.
 	bool getValue(std::string &output);
 	bool getValue(int &output);
-	bool getValue(float &output);
+	bool getValue(float &output, int precision = 1);
 
 protected:
 	virtual void handleInput(InputManager &inputManager) override;

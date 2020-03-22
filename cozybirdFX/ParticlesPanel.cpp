@@ -1,7 +1,13 @@
 #include "ParticlesPanel.h"
 #include "Emitter.h"
+#include "UISlider.h"
 #include "UIText.h"
 #include "UITextField.h"
+
+namespace
+{
+    const glm::ivec2 ANGLE_RANGE{ 0, 359 };
+}
 
 ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 {
@@ -27,11 +33,11 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(m_yPosition);
 
     m_panel->addNewLine();
-    m_numToGenerate = std::make_shared<UITextField>("Particle Density", ONE_VAL_SIZE);
+    m_numToGenerate = std::make_shared<UITextField>("Particle Amount", ONE_VAL_SIZE);
     m_panel->addElement(m_numToGenerate);
 
     m_panel->addNewLine();
-    m_spawnTime = std::make_shared<UITextField>("Time to Spawn", ONE_VAL_SIZE);
+    m_spawnTime = std::make_shared<UITextField>("Spawn Interval", ONE_VAL_SIZE);
     m_panel->addElement(m_spawnTime);
 
     m_panel->addNewLine();
@@ -64,13 +70,13 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(dirLabel);
 
     m_panel->addNewHalfLine();
-    m_directionMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_directionMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_directionMin);
 
-    m_directionMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_directionMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_directionMax);
 
-    m_directionGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_directionGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_directionGrowth);
 
     m_panel->addNewLine();
@@ -78,13 +84,13 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(rotLabel);
 
     m_panel->addNewHalfLine();
-    m_rotationMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_rotationMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_rotationMin);
 
-    m_rotationMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_rotationMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_rotationMax);
 
-    m_rotationGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_rotationGrowth);
 
     m_panel->addNewLine();
@@ -165,46 +171,28 @@ void ParticlesPanel::update(float deltaTime, Emitter &emitter)
     }
 
     // Set minimum direction.
-    int directionMin;
-    if (m_directionMin->getValue(directionMin))
-    {
-        emitter.setDirectionMin(directionMin);
-    }
+    int directionMin{ m_directionMin->getValue() };
+    emitter.setDirectionMin(directionMin);
 
     // Set maximum direction.
-    int directionMax;
-    if (m_directionMax->getValue(directionMax))
-    {
-        emitter.setDirectionMax(directionMax);
-    }
+    int directionMax{ m_directionMax->getValue() };
+    emitter.setDirectionMax(directionMax);
 
     // Set direction growth rate.
-    int directionGrowth;
-    if (m_directionGrowth->getValue(directionGrowth))
-    {
-        emitter.setDirectionGrowth(directionGrowth);
-    }
+    int directionGrowth{ m_directionGrowth->getValue() };
+    emitter.setDirectionGrowth(directionGrowth);
 
     // Set minimum rotation.
-    int rotationMin;
-    if (m_rotationMin->getValue(rotationMin))
-    {
-        emitter.setRotationMin(rotationMin);
-    }
+    int rotationMin{ m_rotationMin->getValue() };
+    emitter.setRotationMin(rotationMin);
 
     // Set maximum rotation.
-    int rotationMax;
-    if (m_rotationMax->getValue(rotationMax))
-    {
-        emitter.setRotationMax(rotationMax);
-    }
+    int rotationMax{ m_rotationMax->getValue() };
+    emitter.setRotationMax(rotationMax);
 
     // Set rotation growth rate.
-    int rotationGrowth;
-    if (m_rotationGrowth->getValue(rotationGrowth))
-    {
-        emitter.setRotationGrowth(rotationGrowth);
-    }
+    int rotationGrowth{ m_rotationGrowth->getValue() };
+    emitter.setRotationGrowth(rotationGrowth);
 
     // Set minimum particle size.
     float sizeMin;
