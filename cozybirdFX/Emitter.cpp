@@ -1,6 +1,5 @@
 #include "Emitter.h"
 #include "AssetLoader.h"
-#include "Camera.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -106,20 +105,6 @@ void Emitter::update(float deltaTime, float currentTime,
     }
 
     update();
-}
-
-void Emitter::render(const Camera &camera, 
-    std::shared_ptr<Shader> renderShader)
-{
-    // Get camera matrices.
-    glm::mat4 view{ camera.getView() };
-    glm::mat4 proj{ camera.getSceneProjection() };
-    glm::mat4 mvp = proj * view;
-    renderShader->use();
-    renderShader->setMat4("mvp", mvp);
-
-    // Render the particles.
-    render(renderShader);
 }
 
 void Emitter::clear(std::shared_ptr<Shader> updateShader)

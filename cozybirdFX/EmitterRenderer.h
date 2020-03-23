@@ -64,6 +64,9 @@ private:
 	// Prepare common export attributes.
 	void prepareExport(glm::ivec2 textureSize);
 
+	// Common emitter render code.
+	void render(float deltaTime);
+
 	// Calculate the deltaTime to use when exporting.
 	float getFixedDeltaTime() const;
 
