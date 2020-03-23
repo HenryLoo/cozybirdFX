@@ -23,7 +23,7 @@ TopRightPanel::TopRightPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
         BUTTON_SIZE, true) };
     auto emittersButton{ std::make_shared<UIButton>("Emitters",
         BUTTON_SIZE, true) };
-    auto renderButton{ std::make_shared<UIButton>("Render",
+    auto renderButton{ std::make_shared<UIButton>("Renderer",
         BUTTON_SIZE, true) };
 
     particlesButton->setAction([&particles, &visuals, &movement, &emitters, &render,

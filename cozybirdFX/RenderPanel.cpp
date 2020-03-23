@@ -29,9 +29,9 @@ RenderPanel::RenderPanel(EditorState &editor,
     m_clipY = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
     m_panel->addElement(m_clipY);
 
-    m_panel->addNewLine();
-    m_duration = std::make_shared<UITextField>("Animation Duration", ONE_VAL_SIZE);
-    m_panel->addElement(m_duration);
+    //m_panel->addNewLine();
+    //m_duration = std::make_shared<UITextField>("Animation Duration", ONE_VAL_SIZE);
+    //m_panel->addElement(m_duration);
 
     m_panel->addNewLine();
     m_loopButton = std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true);
@@ -63,12 +63,12 @@ void RenderPanel::update(float deltaTime, Emitter &emitter)
     }
 
     // Set the animation duration.
-    float duration;
-    bool isDuration{ m_duration->getValue(duration, DURATION_PRECISION) };
-    if (isDuration)
-    {
-        m_eRenderer->setDuration(duration);
-    }
+    //float duration;
+    //bool isDuration{ m_duration->getValue(duration, DURATION_PRECISION) };
+    //if (isDuration)
+    //{
+    //    m_eRenderer->setDuration(duration);
+    //}
 
     // Set the export FPS.
     int fps;
@@ -84,7 +84,7 @@ void RenderPanel::updateUIFromEmitter(const Emitter &emitter)
     glm::ivec2 clipSize{ m_eRenderer->getClipSize() };
     m_clipX->setValue(clipSize.x);
     m_clipY->setValue(clipSize.y);
-    m_duration->setValue(m_eRenderer->getDuration(), DURATION_PRECISION);
+    //m_duration->setValue(m_eRenderer->getDuration(), DURATION_PRECISION);
     m_fps->setValue(m_eRenderer->getExportFPS());
     m_loopButton->setToggled(m_eRenderer->isLooping());
 }

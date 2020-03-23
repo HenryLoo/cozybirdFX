@@ -33,7 +33,7 @@ public:
 
 	// Setter functions.
 	void setClipSize(glm::ivec2 size);
-	void setDuration(float duration);
+	//void setDuration(float duration);
 	void setExportFPS(int fps);
 	void setLooping(bool isLooping);
 
@@ -65,7 +65,7 @@ private:
 	void prepareExport(glm::ivec2 textureSize);
 
 	// Common emitter render code.
-	void render(float deltaTime);
+	void render(float deltaTime, bool isOnlyUpdate = false);
 
 	// Calculate the deltaTime to use when exporting.
 	float getFixedDeltaTime() const;
@@ -82,7 +82,7 @@ private:
 
 	// The duration of the animation.
 	float m_currentTime{ 0.f };
-	float m_duration{ 3.f };
+	//float m_duration{ 3.f };
 
 	// The size of each clip in the animation.
 	glm::ivec2 m_clipSize{ 200.f, 200.f };

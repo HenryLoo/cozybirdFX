@@ -54,7 +54,7 @@ Emitter::Emitter()
 }
 
 void Emitter::update(float deltaTime, float currentTime, 
-    std::shared_ptr<Shader> updateShader)
+    std::shared_ptr<Shader> updateShader, bool isLooping)
 {
     // Update emitter position based on movement patterns.
     updateMotion(currentTime);
@@ -76,12 +76,15 @@ void Emitter::update(float deltaTime, float currentTime,
     // multiple frames.
     std::mt19937 generator(static_cast<unsigned int>(currentTime * MS_PER_SECOND));
     std::uniform_real_distribution<> distrib(-100, 100);
+    //std::cout << static_cast<unsigned int>(currentTime * MS_PER_SECOND) << ", " << static_cast<float>(distrib(generator)) << std::endl;
     updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
     // Update spawn timer and flag the emitter to spawn particles if necessary.
-    if (currentTime >= m_delayBeforeStart && 
-        (currentTime < m_delayBeforeStart + m_emitterDuration || 
-        m_emitterDuration == 0.f))
+    bool isAboveLowerBound{ currentTime >= m_delayBeforeStart };
+    bool isBelowUpperBound{ (currentTime < m_delayBeforeStart + m_emitterDuration ||
+        m_emitterDuration == 0.f) };
+    bool isLoopingOrExpired{ (isLooping || currentTime < m_life.y) };
+    if (isAboveLowerBound && isBelowUpperBound && isLoopingOrExpired)
     {
         m_spawnTimer += deltaTime;
         if (m_spawnTimer >= m_timeToSpawn)

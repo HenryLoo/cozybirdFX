@@ -46,8 +46,8 @@ void NewState::initMenu()
 			eRenderer.init(assetLoader);
 
 			eRenderer.setClipSize(glm::ivec2(200, 300));
-			float duration{ 3.f };
-			eRenderer.setDuration(duration);
+			//float duration{ 3.f };
+			//eRenderer.setDuration(duration);
 
 			Emitter &emitter{ eRenderer.getEmitter(0) };
 			emitter.setPosition(glm::vec2(0.f, -100.f));
@@ -74,7 +74,8 @@ void NewState::initMenu()
 
 			float lifeMin{ glm::linearRand(1.7f, 2.5f) };
 			emitter.setLifeMin(lifeMin);
-			emitter.setLifeMax(glm::linearRand(lifeMin, lifeMin + 0.2f));
+			float lifeMax{ glm::linearRand(lifeMin, lifeMin + 0.2f) };
+			emitter.setLifeMax(lifeMax);
 
 			float green{ glm::linearRand(0.2f, 0.55f) };
 			emitter.setColour(glm::vec4(
@@ -103,7 +104,8 @@ void NewState::initMenu()
 			if (hasHSine)
 			{
 				emitter.setHSineAmplitude(glm::linearRand(3.f, 10.f));
-				emitter.setHSinePeriod(glm::linearRand(2.f, duration));
+				//emitter.setHSinePeriod(glm::linearRand(2.f, duration));
+				emitter.setHSinePeriod(glm::linearRand(2.f, lifeMax));
 			}
 
 			engine.popState();

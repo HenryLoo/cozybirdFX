@@ -50,7 +50,7 @@ void FileState::initMenu()
 
 				try
 				{
-					eRenderer.setDuration(j.at("duration").get<float>());
+					//eRenderer.setDuration(j.at("duration").get<float>());
 					eRenderer.setClipSize(glm::ivec2(j.at("clipSize").at("x").get<int>(),
 						j.at("clipSize").at("y").get<int>()));
 					eRenderer.setExportFPS(j.at("exportFPS").get<int>());
@@ -133,7 +133,7 @@ void FileState::initMenu()
 			{
 				nlohmann::json j;
 
-				j["duration"] = eRenderer.getDuration();
+				//j["duration"] = eRenderer.getDuration();
 
 				glm::ivec2 clipSize{ eRenderer.getClipSize() };
 				j["clipSize"] = { { "x", clipSize.x }, { "y", clipSize.y } };

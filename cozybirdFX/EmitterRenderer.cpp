@@ -88,7 +88,7 @@ void EmitterRenderer::init(AssetLoader &assetLoader)
     m_isEnabled[0] = true;
 
     // Set default values.
-    m_duration = 3.f;
+    //m_duration = 3.f;
     m_clipSize = glm::ivec2(200.f, 200.f);
     m_exportFPS = 60;
     m_isLooping = true;
@@ -113,7 +113,27 @@ float EmitterRenderer::getCurrentTime() const
 
 float EmitterRenderer::getDuration() const
 {
-	return m_duration;
+    // TODO: FIX THIS
+    // Duration needs to bound the largest max particle life of all emitters,
+    // while also being a multiple of timeToSpawn for that emitter.
+	//return m_duration;
+    float duration{ 0.f };
+    float timeToSpawn{ 0.f };
+    for (int i = 0; i < m_emitters.size(); ++i)
+    {
+        if (!m_isEnabled[i])
+            continue;
+
+        duration = glm::max(duration, m_emitters[i]->getLife().y);
+        timeToSpawn = glm::max(timeToSpawn, m_emitters[i]->getTimeToSpawn());
+    }
+
+    if (!m_isLooping)
+        duration *= 2;
+    else
+        duration = timeToSpawn * glm::ceil(duration / timeToSpawn);
+
+    return duration;
 }
 
 int EmitterRenderer::getExportFPS() const
@@ -146,10 +166,10 @@ void EmitterRenderer::setClipSize(glm::ivec2 size)
         m_clipSize.y = size.y;
 }
 
-void EmitterRenderer::setDuration(float duration)
-{
-    m_duration = duration;
-}
+//void EmitterRenderer::setDuration(float duration)
+//{
+//    m_duration = duration;
+//}
 
 void EmitterRenderer::setExportFPS(int fps)
 {
@@ -182,20 +202,20 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
 {
     // Prepare the framebuffer's texture.
     float fixedDeltaTime{ getFixedDeltaTime() };
-    int numFrames{ static_cast<int>(glm::ceil(m_duration / fixedDeltaTime)) };
+    int numFrames{ static_cast<int>(glm::ceil(getDuration() / fixedDeltaTime)) };
     int numCols{ static_cast<int>(glm::ceil(glm::sqrt(numFrames))) };
     int numRows{ static_cast<int>(glm::ceil(numFrames / numCols)) };
     glm::ivec2 textureSize{ numCols * m_clipSize.x, numRows * m_clipSize.y };
     prepareExport(textureSize);
 
     // Render the emitters.
+    glClear(GL_COLOR_BUFFER_BIT);
     for (int j = 0; j < numRows; ++j)
     {
         for (int i = 0; i < numCols; ++i)
         {
             glViewport(i * m_clipSize.x, j * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
-            //glClear(GL_COLOR_BUFFER_BIT);
 
             render(fixedDeltaTime);
         }
@@ -237,7 +257,7 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
     // Render the emitters.
     glViewport(0, 0, m_clipSize.x, m_clipSize.y);
     float fixedDeltaTime{ getFixedDeltaTime() };
-    int numFrames{ static_cast<int>(glm::ceil(m_duration / fixedDeltaTime)) };
+    int numFrames{ static_cast<int>(glm::ceil(getDuration() / fixedDeltaTime)) };
     for (int i = 0; i < numFrames; ++i)
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -353,18 +373,21 @@ void EmitterRenderer::prepareExport(glm::ivec2 textureSize)
     m_currentTime = 0.f;
     if (m_isLooping)
     {
-        while (m_currentTime + fixedDeltaTime < m_duration)
+        while (m_currentTime + fixedDeltaTime < getDuration())
         {
-            render(fixedDeltaTime);
+            render(fixedDeltaTime, true);
         }
+
+        m_currentTime = 0.f;
     }
 }
 
-void EmitterRenderer::render(float deltaTime)
+void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
 {
     // Ensure that the animation ends at the proper duration if not looping.
-    if (!m_isLooping && m_currentTime + deltaTime > m_duration)
-        deltaTime = m_duration - m_currentTime;
+    float duration{ getDuration() };
+    if (!m_isLooping && m_currentTime + deltaTime > duration)
+        deltaTime = duration - m_currentTime;
 
     // Render all emitters.
     for (int i = 0; i < m_emitters.size(); ++i)
@@ -372,21 +395,21 @@ void EmitterRenderer::render(float deltaTime)
         auto &emitter{ m_emitters[i] };
 
         if (m_isLooping ||
-            (!m_isLooping && m_currentTime < m_duration))
-            emitter->update(deltaTime, m_currentTime, m_updateShader);
+            (!m_isLooping && m_currentTime < duration))
+            emitter->update(deltaTime, m_currentTime, m_updateShader, m_isLooping);
 
         // Hide the emitter if not enabled.
-        if (m_isEnabled[i])
+        if (!isOnlyUpdate && m_isEnabled[i])
             emitter->render(m_renderShader);
     }
 
     // Update the current time.
     if (m_isLooping ||
-        (!m_isLooping && m_currentTime < m_duration))
+        (!m_isLooping && m_currentTime < duration))
         m_currentTime += deltaTime;
 
-    if (m_isLooping && m_currentTime >= m_duration)
-        m_currentTime -= m_duration;
+    if (m_isLooping && m_currentTime >= duration)
+        m_currentTime -= duration;
 }
 
 float EmitterRenderer::getFixedDeltaTime() const

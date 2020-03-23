@@ -16,7 +16,8 @@ class Emitter
 public:
 	Emitter();
 
-	void update(float deltaTime, float currentTime, std::shared_ptr<Shader> updateShader);
+	void update(float deltaTime, float currentTime, 
+		std::shared_ptr<Shader> updateShader, bool isLooping);
 
 	// Render to the active frame buffer.
 	void render(std::shared_ptr<Shader> renderShader);
