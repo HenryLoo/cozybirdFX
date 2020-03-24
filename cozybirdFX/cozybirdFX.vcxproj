@@ -168,7 +168,7 @@
     <ClInclude Include="ParticlesPanel.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="IRenderer.h" />
-    <ClInclude Include="RenderPanel.h" />
+    <ClInclude Include="RendererPanel.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="SpriteRenderer.h" />
@@ -215,7 +215,7 @@
     <ClCompile Include="NewState.cpp" />
     <ClCompile Include="ParticlesPanel.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="RenderPanel.cpp" />
+    <ClCompile Include="RendererPanel.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />

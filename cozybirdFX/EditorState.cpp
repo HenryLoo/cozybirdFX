@@ -3,6 +3,7 @@
 #include "Emitter.h"
 #include "EmitterRenderer.h"
 #include "Engine.h"
+#include "TextRenderer.h"
 #include "Texture.h"
 
 #include "TopLeftPanel.h"
@@ -12,13 +13,7 @@
 #include "VisualsPanel.h"
 #include "MovementPanel.h"
 #include "EmittersPanel.h"
-#include "RenderPanel.h"
-
-#include "UIContainer.h"
-#include "UIButton.h"
-#include "UISlider.h"
-#include "UITextField.h"
-#include "UIText.h"
+#include "RendererPanel.h"
 
 #include <GLFW/glfw3.h>
 
@@ -58,7 +53,7 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     m_movementPanel = std::make_shared<MovementPanel>(*m_tRenderer, *m_uRenderer);
     m_emittersPanel = std::make_shared<EmittersPanel>(*this, m_eRenderer,
         *m_tRenderer, *m_uRenderer);
-    m_renderPanel = std::make_shared<RenderPanel>(*this, m_eRenderer,
+    m_renderPanel = std::make_shared<RendererPanel>(*this, m_eRenderer,
         *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
     m_topRightPanel = std::make_shared<TopRightPanel>(*m_tRenderer, *m_uRenderer,
         *m_particlesPanel, *m_visualsPanel, *m_movementPanel, *m_emittersPanel,

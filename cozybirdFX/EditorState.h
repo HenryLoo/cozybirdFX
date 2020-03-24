@@ -21,7 +21,7 @@ class ParticlesPanel;
 class VisualsPanel;
 class MovementPanel;
 class EmittersPanel;
-class RenderPanel;
+class RendererPanel;
 
 class EditorState : public IState
 {
@@ -67,5 +67,5 @@ private:
 	std::shared_ptr<VisualsPanel> m_visualsPanel{ nullptr };
 	std::shared_ptr<MovementPanel> m_movementPanel{ nullptr };
 	std::shared_ptr<EmittersPanel> m_emittersPanel{ nullptr };
-	std::shared_ptr<RenderPanel> m_renderPanel{ nullptr };
+	std::shared_ptr<RendererPanel> m_renderPanel{ nullptr };
 };

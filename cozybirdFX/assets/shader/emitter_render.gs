@@ -17,7 +17,7 @@ uniform vec4 colour;
 uniform vec4 birthColour;
 uniform vec4 deathColour;
 uniform float duration;
-uniform vec3 additivity;
+uniform float additivity;
 
 // Two unit vectors, used as axes to span the quad.
 uniform vec3 axis1;
@@ -57,19 +57,18 @@ void main()
     {
         float amount = dur / birthThreshold;
         particleColour = mix(birthColour, colour, amount);
-        particleAdditivity = mix(additivity.x, additivity.y, amount);
     }
     else if (dur >= deathThreshold)
     {
         float amount = (dur - deathThreshold) / (1.0 - deathThreshold);
         particleColour = mix(colour, deathColour, amount);
-        particleAdditivity = mix(additivity.y, additivity.z, amount);
     }
     else
     {
         particleColour = colour;
-        particleAdditivity = additivity.y;
     }
+
+    particleAdditivity = additivity;
 
     // Define quad vertices.
     float size = vsRotationSizeLife[0].y;

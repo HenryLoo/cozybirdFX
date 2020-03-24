@@ -5,12 +5,12 @@
 #include "VisualsPanel.h"
 #include "MovementPanel.h"
 #include "EmittersPanel.h"
-#include "RenderPanel.h"
+#include "RendererPanel.h"
 
 TopRightPanel::TopRightPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     ParticlesPanel &particles, VisualsPanel &visuals,
     MovementPanel &movement, EmittersPanel &emitters,
-    RenderPanel &render)
+    RendererPanel &render)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, -1.f));

@@ -92,7 +92,7 @@ void EmitterRenderer::init(AssetLoader &assetLoader)
     m_clipSize = glm::ivec2(200.f, 200.f);
     m_exportFPS = 60;
     m_isLooping = true;
-    m_isPlaying = false;
+    m_isPlaying = true;
 }
 
 Emitter &EmitterRenderer::getEmitter(int index) const
@@ -116,7 +116,6 @@ float EmitterRenderer::getDuration() const
     // TODO: FIX THIS
     // Duration needs to bound the largest max particle life of all emitters,
     // while also being a multiple of timeToSpawn for that emitter.
-	//return m_duration;
     float duration{ 0.f };
     float timeToSpawn{ 0.f };
     for (int i = 0; i < m_emitters.size(); ++i)
@@ -165,11 +164,6 @@ void EmitterRenderer::setClipSize(glm::ivec2 size)
     if (size.y > 0)
         m_clipSize.y = size.y;
 }
-
-//void EmitterRenderer::setDuration(float duration)
-//{
-//    m_duration = duration;
-//}
 
 void EmitterRenderer::setExportFPS(int fps)
 {
@@ -386,8 +380,6 @@ void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
 {
     // Ensure that the animation ends at the proper duration if not looping.
     float duration{ getDuration() };
-    if (!m_isLooping && m_currentTime + deltaTime > duration)
-        deltaTime = duration - m_currentTime;
 
     // Render all emitters.
     for (int i = 0; i < m_emitters.size(); ++i)
@@ -402,13 +394,10 @@ void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
         if (!isOnlyUpdate && m_isEnabled[i])
             emitter->render(m_renderShader);
     }
+    
+    m_currentTime += deltaTime;
 
-    // Update the current time.
-    if (m_isLooping ||
-        (!m_isLooping && m_currentTime < duration))
-        m_currentTime += deltaTime;
-
-    if (m_isLooping && m_currentTime >= duration)
+    if (m_currentTime >= duration)
         m_currentTime -= duration;
 }
 

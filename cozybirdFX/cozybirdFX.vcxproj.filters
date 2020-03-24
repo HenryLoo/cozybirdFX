@@ -180,9 +180,6 @@
     <ClInclude Include="EmittersPanel.h">
       <Filter>Header Files\States\Editor Panels</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPanel.h">
-      <Filter>Header Files\States\Editor Panels</Filter>
-    </ClInclude>
     <ClInclude Include="FileState.h">
       <Filter>Header Files\States</Filter>
     </ClInclude>
@@ -194,6 +191,9 @@
     </ClInclude>
     <ClInclude Include="NewState.h">
       <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -269,9 +269,6 @@
     <ClCompile Include="UISlider.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="UITextField.cpp">
-      <Filter>Source Files\UI</Filter>
-    </ClCompile>
     <ClCompile Include="UIText.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
@@ -299,9 +296,6 @@
     <ClCompile Include="EmittersPanel.cpp">
       <Filter>Source Files\States\Editor Panels</Filter>
     </ClCompile>
-    <ClCompile Include="RenderPanel.cpp">
-      <Filter>Source Files\States\Editor Panels</Filter>
-    </ClCompile>
     <ClCompile Include="IEditorPanel.cpp">
       <Filter>Source Files\States\Editor Panels</Filter>
     </ClCompile>
@@ -325,6 +319,12 @@
     </ClCompile>
     <ClCompile Include="NewState.cpp">
       <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="UITextField.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

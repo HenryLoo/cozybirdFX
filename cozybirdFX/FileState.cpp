@@ -50,7 +50,6 @@ void FileState::initMenu()
 
 				try
 				{
-					//eRenderer.setDuration(j.at("duration").get<float>());
 					eRenderer.setClipSize(glm::ivec2(j.at("clipSize").at("x").get<int>(),
 						j.at("clipSize").at("y").get<int>()));
 					eRenderer.setExportFPS(j.at("exportFPS").get<int>());
@@ -83,18 +82,23 @@ void FileState::initMenu()
 						emitter.setSizeGrowth(e.at("sizeGrowth").get<float>());
 						emitter.setLifeMin(e.at("lifeMin").get<float>());
 						emitter.setLifeMax(e.at("lifeMax").get<float>());
-						emitter.setColour(glm::vec4(e.at("colour").at("r").get<float>(),
-							e.at("colour").at("g").get<float>(), e.at("colour").at("b").get<float>(),
-								e.at("colour").at("a").get<float>()));
-						emitter.setAdditivity(e.at("additivity").get<float>());
-						emitter.setBirthColour(glm::vec4(e.at("birthColour").at("r").get<float>(),
-							e.at("birthColour").at("g").get<float>(), e.at("birthColour").at("b").get<float>(),
-								e.at("birthColour").at("a").get<float>()));
-						emitter.setBirthAdditivity(e.at("birthAdditivity").get<float>());
-						emitter.setDeathColour(glm::vec4(e.at("deathColour").at("r").get<float>(),
-							e.at("deathColour").at("g").get<float>(), e.at("deathColour").at("b").get<float>(),
-								e.at("deathColour").at("a").get<float>()));
-						emitter.setDeathAdditivity(e.at("deathAdditivity").get<float>());
+						emitter.setBlendMode(e.at("isLinearBlend").get<bool>() ? 
+							Emitter::BlendMode::Linear : Emitter::BlendMode::Additive);
+						emitter.setColour(glm::vec4(
+							e.at("colour").at("r").get<float>(),
+							e.at("colour").at("g").get<float>(), 
+							e.at("colour").at("b").get<float>(),
+							e.at("colour").at("a").get<float>()));
+						emitter.setBirthColour(glm::vec4(
+							e.at("birthColour").at("r").get<float>(),
+							e.at("birthColour").at("g").get<float>(),
+							e.at("birthColour").at("b").get<float>(),
+							e.at("birthColour").at("a").get<float>()));
+						emitter.setDeathColour(glm::vec4(
+							e.at("deathColour").at("r").get<float>(),
+							e.at("deathColour").at("g").get<float>(), 
+							e.at("deathColour").at("b").get<float>(),
+							e.at("deathColour").at("a").get<float>()));
 						emitter.setDelayBeforeStart(e.at("delay").get<float>());
 						emitter.setEmitterDuration(e.at("duration").get<float>());
 						emitter.setHSineAmplitude(e.at("hSineAmplitude").get<float>());
@@ -132,8 +136,6 @@ void FileState::initMenu()
 			if (result == NFD_OKAY)
 			{
 				nlohmann::json j;
-
-				//j["duration"] = eRenderer.getDuration();
 
 				glm::ivec2 clipSize{ eRenderer.getClipSize() };
 				j["clipSize"] = { { "x", clipSize.x }, { "y", clipSize.y } };
@@ -185,23 +187,21 @@ void FileState::initMenu()
 					e["lifeMin"] = life.x;
 					e["lifeMax"] = life.y;
 
+					e["isLinearBlend"] = emitter.getBlendMode() == Emitter::BlendMode::Linear;
+
 					glm::vec4 colour{ emitter.getColour() };
 					e["colour"] = { { "r", colour.r }, { "g", colour.g }, 
 						{ "b", colour.b }, { "a", colour.a } };
 
-					e["additivity"] = emitter.getAdditivity();
 
 					glm::vec4 birthColour{ emitter.getBirthColour() };
 					e["birthColour"] = { { "r", birthColour.r }, { "g", birthColour.g }, 
 						{ "b", birthColour.b }, { "a", birthColour.a } };
 
-					e["birthAdditivity"] = emitter.getBirthAdditivity();
-
 					glm::vec4 deathColour{ emitter.getDeathColour() };
 					e["deathColour"] = { { "r", deathColour.r }, { "g", deathColour.g }, 
 						{ "b", deathColour.b }, { "a", deathColour.a } };
 
-					e["deathAdditivity"] = emitter.getDeathAdditivity();
 					e["delay"] = emitter.getDelayBeforeStart();
 					e["duration"] = emitter.getEmitterDuration();
 					e["hSineAmplitude"] = emitter.getHSineAmplitude();

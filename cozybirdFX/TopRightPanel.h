@@ -11,7 +11,7 @@ class ParticlesPanel;
 class VisualsPanel;
 class MovementPanel;
 class EmittersPanel;
-class RenderPanel;
+class RendererPanel;
 
 class TopRightPanel : public IEditorPanel
 {
@@ -19,7 +19,7 @@ public:
 	TopRightPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
 		ParticlesPanel &particles, VisualsPanel &visuals, 
 		MovementPanel &movement, EmittersPanel &emitters, 
-		RenderPanel &render);
+		RendererPanel &render);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

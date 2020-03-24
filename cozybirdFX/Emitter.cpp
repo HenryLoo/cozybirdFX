@@ -76,7 +76,6 @@ void Emitter::update(float deltaTime, float currentTime,
     // multiple frames.
     std::mt19937 generator(static_cast<unsigned int>(currentTime * MS_PER_SECOND));
     std::uniform_real_distribution<> distrib(-100, 100);
-    //std::cout << static_cast<unsigned int>(currentTime * MS_PER_SECOND) << ", " << static_cast<float>(distrib(generator)) << std::endl;
     updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
 
     // Update spawn timer and flag the emitter to spawn particles if necessary.
@@ -221,24 +220,14 @@ void Emitter::setLifeMax(float duration)
     m_life.y = duration;
 }
 
+void Emitter::setBlendMode(BlendMode mode)
+{
+    m_blendMode = mode;
+}
+
 void Emitter::setColour(glm::vec4 colour)
 {
     m_colour = colour;
-}
-
-void Emitter::setAdditivity(float additivity)
-{
-    m_additivity = additivity;
-}
-
-void Emitter::setBirthAdditivity(float additivity)
-{
-    m_birthAdditivity = additivity;
-}
-
-void Emitter::setDeathAdditivity(float additivity)
-{
-    m_deathAdditivity = additivity;
 }
 
 void Emitter::setBirthColour(glm::vec4 colour)
@@ -331,29 +320,19 @@ glm::vec3 Emitter::getSize() const
     return m_size;
 }
 
-glm::vec4 Emitter::getColour() const
-{
-    return m_colour;
-}
-
 glm::vec2 Emitter::getLife() const
 {
     return m_life;
 }
 
-float Emitter::getAdditivity() const
+glm::vec4 Emitter::getColour() const
 {
-    return m_additivity;
+    return m_colour;
 }
 
-float Emitter::getBirthAdditivity() const
+Emitter::BlendMode Emitter::getBlendMode() const
 {
-    return m_birthAdditivity;
-}
-
-float Emitter::getDeathAdditivity() const
-{
-    return m_deathAdditivity;
+    return m_blendMode;
 }
 
 glm::vec4 Emitter::getBirthColour() const
@@ -487,8 +466,7 @@ void Emitter::render(std::shared_ptr<Shader> renderShader)
     renderShader->setVec4("colour", m_colour);
     renderShader->setVec4("birthColour", m_birthColour);
     renderShader->setVec4("deathColour", m_deathColour);
-    renderShader->setVec3("additivity",
-        glm::vec3(m_birthAdditivity, m_additivity, m_deathAdditivity));
+    renderShader->setFloat("additivity", m_blendMode == BlendMode::Linear ? 0.f : 1.f);
 
     // Bind to the read buffer's vertex array object.
     glBindVertexArray(m_vao[m_currentReadBuffer]);

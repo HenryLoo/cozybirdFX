@@ -33,7 +33,6 @@ public:
 
 	// Setter functions.
 	void setClipSize(glm::ivec2 size);
-	//void setDuration(float duration);
 	void setExportFPS(int fps);
 	void setLooping(bool isLooping);
 
@@ -82,19 +81,18 @@ private:
 
 	// The duration of the animation.
 	float m_currentTime{ 0.f };
-	//float m_duration{ 3.f };
 
 	// The size of each clip in the animation.
-	glm::ivec2 m_clipSize{ 200.f, 200.f };
+	glm::ivec2 m_clipSize{ 0 };
 
 	// The frame rate to render the animation at when exporting.
-	int m_exportFPS{ 60 };
+	int m_exportFPS{ 0 };
 
 	// Flag for if the animation is looping.
-	bool m_isLooping{ true };
+	bool m_isLooping{ false };
 
 	// Flag for if the animation is playing.
-	bool m_isPlaying{ true };
+	bool m_isPlaying{ false };
 
 	// Buffers for rendering to texture.
 	unsigned int m_fbo{ 0 };

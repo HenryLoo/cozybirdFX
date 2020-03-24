@@ -14,6 +14,12 @@ class Texture;
 class Emitter
 {
 public:
+	enum class BlendMode
+	{
+		Linear,
+		Additive,
+	};
+
 	Emitter();
 
 	void update(float deltaTime, float currentTime, 
@@ -46,10 +52,8 @@ public:
 	void setSizeGrowth(float amount);
 	void setLifeMin(float duration);
 	void setLifeMax(float duration);
+	void setBlendMode(BlendMode mode);
 	void setColour(glm::vec4 colour);
-	void setAdditivity(float additivity);
-	void setBirthAdditivity(float additivity);
-	void setDeathAdditivity(float additivity);
 	void setBirthColour(glm::vec4 colour);
 	void setDeathColour(glm::vec4 colour);
 	void setDelayBeforeStart(float duration);
@@ -70,11 +74,9 @@ public:
 	glm::ivec3 getDirection() const;
 	glm::ivec3 getRotation() const;
 	glm::vec3 getSize() const;
-	glm::vec4 getColour() const;
 	glm::vec2 getLife() const;
-	float getAdditivity() const;
-	float getBirthAdditivity() const;
-	float getDeathAdditivity() const;
+	BlendMode getBlendMode() const;
+	glm::vec4 getColour() const;
 	glm::vec4 getBirthColour() const;
 	glm::vec4 getDeathColour() const;
 	float getDelayBeforeStart() const;
@@ -167,13 +169,15 @@ private:
 	// Defines minimum, maximum, and growth rate.
 	glm::vec3 m_size{ 16.f, 16.f, 0.f };
 
-	// The colour of the particle.
-	glm::vec4 m_colour{ 0.2f, 0.2f, 1.f, 1.f };
-	float m_additivity{ 0.f };
-
 	// The time to live for the particle.
 	// Defines minimum and maximum.
 	glm::vec2 m_life{ 2.f, 2.3f };
+
+	// The blend mode of particles.
+	BlendMode m_blendMode{ BlendMode::Linear };
+
+	// The colour of the particle.
+	glm::vec4 m_colour{ 0.2f, 0.2f, 1.f, 1.f };
 
 	// The colour of the particle when it is created.
 	glm::vec4 m_birthColour{ 0.2f, 0.2f, 1.f, 0.f };
