@@ -15,4 +15,5 @@ private:
 	std::shared_ptr<UIButton> m_defaultButton{ nullptr };
 	std::shared_ptr<UIButton> m_fireButton{ nullptr };
 	std::shared_ptr<UIButton> m_smokeButton{ nullptr };
+	std::shared_ptr<UIButton> m_explosionButton{ nullptr };
 };

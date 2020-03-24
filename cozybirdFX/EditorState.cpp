@@ -88,6 +88,7 @@ void EditorState::render(float deltaTime, const Camera &camera)
 
 void EditorState::enter()
 {
+    m_eRenderer->setPlaying(true);
     selectEmitter(m_emitter);
     updateClipBoxPos();
 }

@@ -113,11 +113,10 @@ float EmitterRenderer::getCurrentTime() const
 
 float EmitterRenderer::getDuration() const
 {
-    // TODO: FIX THIS
     // Duration needs to bound the largest max particle life of all emitters,
     // while also being a multiple of timeToSpawn for that emitter.
     float duration{ 0.f };
-    float timeToSpawn{ 0.f };
+    float timeToSpawn{ 1.f };
     for (int i = 0; i < m_emitters.size(); ++i)
     {
         if (!m_isEnabled[i])
@@ -380,6 +379,11 @@ void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
 {
     // Ensure that the animation ends at the proper duration if not looping.
     float duration{ getDuration() };
+    if (duration == 0.f)
+    {
+        m_currentTime = 0.f;
+        return;
+    }
 
     // Render all emitters.
     for (int i = 0; i < m_emitters.size(); ++i)
