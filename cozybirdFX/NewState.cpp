@@ -311,7 +311,7 @@ void NewState::initMenu()
 			// Fire ring.
 			Emitter &emitter2{ eRenderer.getEmitter(2) };
 			emitter2.setEmitterDuration(getRandomFloat(0.3f, 0.5f));
-			emitter2.setNumToGenerate(300);
+			emitter2.setNumToGenerate(50);
 			emitter2.setTimeToSpawn(1.f);
 
 			float speed{ getRandomFloat(80.f, 100.f) };

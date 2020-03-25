@@ -7,6 +7,7 @@ const glm::vec2 IEditorPanel::LABEL_SIZE{ 200.f, 16.f };
 const glm::vec2 IEditorPanel::BUTTON_SIZE{ 100.f, 32.f };
 const glm::vec2 IEditorPanel::ONE_BUTTON_SIZE{ ONE_VAL_SIZE.x, BUTTON_SIZE.y };
 const glm::vec2 IEditorPanel::TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
+const glm::ivec2 IEditorPanel::ANGLE_RANGE{ 0, 359 };
 
 void IEditorPanel::handleInput(InputManager &inputManager)
 {

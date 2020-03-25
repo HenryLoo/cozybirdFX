@@ -12,7 +12,7 @@
 
 namespace
 {
-    const int MAX_PARTICLES{ 1000 };
+    const int MAX_PARTICLES{ 100000 };
     const int MS_PER_SECOND{ 1000 };
 }
 
@@ -69,6 +69,7 @@ void Emitter::update(float deltaTime, float currentTime,
     updateShader->setVec3("emRotation", glm::radians(glm::vec3(m_rotation)));
     updateShader->setVec2("emLife", m_life);
     updateShader->setVec3("emSize", m_size);
+    updateShader->setVec2("emDistribution", m_distribution);
 
     // Set the seed.
     // Convert currentTime to ms to avoid precision loss when converting to
@@ -143,6 +144,11 @@ void Emitter::setNumToGenerate(int num)
 void Emitter::setPosition(glm::vec2 position)
 {
     m_origin = position;
+}
+
+void Emitter::setDistribution(glm::vec2 widthHeight)
+{
+    m_distribution = widthHeight;
 }
 
 void Emitter::setTimeToSpawn(float duration)
@@ -293,6 +299,11 @@ int Emitter::getNumToGenerate() const
 glm::vec2 Emitter::getPosition() const
 {
     return m_origin;
+}
+
+glm::vec2 Emitter::getDistribution() const
+{
+    return m_distribution;
 }
 
 float Emitter::getTimeToSpawn() const

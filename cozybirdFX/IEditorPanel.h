@@ -35,6 +35,7 @@ protected:
     static const glm::vec2 BUTTON_SIZE;
     static const glm::vec2 ONE_BUTTON_SIZE;
     static const glm::vec2 TWO_BUTTON_SIZE;
+    static const glm::ivec2 ANGLE_RANGE;
 
 	std::unique_ptr<UIContainer> m_panel;
 };

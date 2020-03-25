@@ -37,6 +37,7 @@ public:
 	void setTexture(AssetLoader &assetLoader, const std::string &filePath);
 	void setNumToGenerate(int num);
 	void setPosition(glm::vec2 position);
+	void setDistribution(glm::vec2 widthHeight);
 	void setTimeToSpawn(float duration);
 	void setSpeedMin(float speed);
 	void setSpeedMax(float speed);
@@ -69,6 +70,7 @@ public:
 	const std::string &getTextureName() const;
 	int getNumToGenerate() const;
 	glm::vec2 getPosition() const;
+	glm::vec2 getDistribution() const;
 	float getTimeToSpawn() const;
 	glm::vec3 getSpeed() const;
 	glm::ivec3 getDirection() const;
@@ -146,6 +148,11 @@ private:
 
 	// The final position of the emitter, after performing translations.
 	glm::vec2 m_position{ 0.f };
+
+	// The width and height of the box in which particles are randomly spawned 
+	// in. A distribution of width and height 0 means that particles will
+	// always spawn at the origin point.
+	glm::vec2 m_distribution{ 0.f };
 
 	// The time before spawning a new particle.
 	float m_timeToSpawn{ 0.5f };

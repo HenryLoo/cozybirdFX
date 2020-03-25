@@ -26,6 +26,7 @@ uniform vec3 emRotation; // Min, max, growth
 uniform vec2 emLife; // Min, max
 uniform vec3 emSize; // Min, max, growth
 uniform int emNumToGenerate;
+uniform vec2 emDistribution; // Width, height
 
 uniform float deltaTime;
 
@@ -64,7 +65,7 @@ void main()
     gsType = vsType[0];
 
     // If this is a particle, update its position and velocity.
-    if (vsType[0] != 0)
+    if (gsType != 0)
     {
         // Get direction unit vector from rotating by direction.
         vec2 unitVec = vec2(1, 0);
@@ -93,10 +94,16 @@ void main()
 
         // Update size.
         gsRotationSizeLife.y += emSize.z * deltaTime;
-    }
 
+        // Otherwise, this is a particle. So just emit it.
+        if (!isClearParticles && gsRotationSizeLife.z > 0.0)
+        {
+            EmitVertex();
+            EndPrimitive();
+        }
+    }
     // If this is an emitter, generate its particles.
-    if (gsType == 0)
+    else if (gsType == 0)
     {
         // Output the vertex corresponding to the emitter so we can begin
         // generating new points for its particles.
@@ -110,7 +117,8 @@ void main()
         for (int i = 0; i < emNumToGenerate; ++i)
         {
             // Set the new particle attributes from emitter properties.
-            gsPosition = emPos;
+            gsPosition.x = emPos.x - emDistribution.x + emDistribution.x * 2 * noise();
+            gsPosition.y = emPos.y - emDistribution.y + emDistribution.y * 2 * noise();
 
             float speedOffset = emSpeed.y - emSpeed.x;
             gsSpeedDirection.x = emSpeed.x + speedOffset * noise();
@@ -133,11 +141,5 @@ void main()
             EmitVertex();
             EndPrimitive();
         }
-    }
-    // Otherwise, this is a particle. So just emit it.
-    else if (!isClearParticles && gsRotationSizeLife.z > 0.0)
-    {
-        EmitVertex();
-        EndPrimitive();
     }
 }

@@ -3,6 +3,7 @@
 #include "IEditorPanel.h"
 
 class TextRenderer;
+class UIButton;
 class UIRenderer;
 class UISlider;
 class UITextField;
@@ -21,14 +22,11 @@ private:
 	std::shared_ptr<UITextField> m_duration{ nullptr };
 	std::shared_ptr<UITextField> m_xPosition{ nullptr };
 	std::shared_ptr<UITextField> m_yPosition{ nullptr };
-	std::shared_ptr<UITextField> m_numToGenerate{ nullptr };
 	std::shared_ptr<UITextField> m_spawnTime{ nullptr };
-	std::shared_ptr<UITextField> m_speedMin{ nullptr };
-	std::shared_ptr<UITextField> m_speedMax{ nullptr };
-	std::shared_ptr<UITextField> m_speedGrowth{ nullptr };
-	std::shared_ptr<UISlider> m_directionMin{ nullptr };
-	std::shared_ptr<UISlider> m_directionMax{ nullptr };
-	std::shared_ptr<UISlider> m_directionGrowth{ nullptr };
+	std::shared_ptr<UITextField> m_distWidth{ nullptr };
+	std::shared_ptr<UITextField> m_distHeight{ nullptr };
+	std::shared_ptr<UITextField> m_numToGenerate{ nullptr };
+	std::shared_ptr<UIButton> m_facingDir{ nullptr };
 	std::shared_ptr<UISlider> m_rotationMin{ nullptr };
 	std::shared_ptr<UISlider> m_rotationMax{ nullptr };
 	std::shared_ptr<UISlider> m_rotationGrowth{ nullptr };

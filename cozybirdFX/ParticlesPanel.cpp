@@ -1,13 +1,9 @@
 #include "ParticlesPanel.h"
 #include "Emitter.h"
+#include "UIButton.h"
 #include "UISlider.h"
 #include "UIText.h"
 #include "UITextField.h"
-
-namespace
-{
-    const glm::ivec2 ANGLE_RANGE{ 0, 359 };
-}
 
 ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 {
@@ -33,6 +29,17 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(m_yPosition);
 
     m_panel->addNewLine();
+    auto distLabel{ std::make_shared<UIText>("Distribution", LABEL_SIZE) };
+    m_panel->addElement(distLabel);
+
+    m_panel->addNewHalfLine();
+    m_distWidth = std::make_shared<UITextField>("Width", TWO_VAL_SIZE);
+    m_panel->addElement(m_distWidth);
+
+    m_distHeight = std::make_shared<UITextField>("Height", TWO_VAL_SIZE);
+    m_panel->addElement(m_distHeight);
+
+    m_panel->addNewLine();
     m_numToGenerate = std::make_shared<UITextField>("Particle Amount", ONE_VAL_SIZE);
     m_panel->addElement(m_numToGenerate);
 
@@ -52,48 +59,6 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(m_lifeMax);
 
     m_panel->addNewLine();
-    auto speedLabel{ std::make_shared<UIText>("Speed", LABEL_SIZE) };
-    m_panel->addElement(speedLabel);
-
-    m_panel->addNewHalfLine();
-    m_speedMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
-    m_panel->addElement(m_speedMin);
-
-    m_speedMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
-    m_panel->addElement(m_speedMax);
-
-    m_speedGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
-    m_panel->addElement(m_speedGrowth);
-
-    m_panel->addNewLine();
-    auto dirLabel{ std::make_shared<UIText>("Direction", LABEL_SIZE) };
-    m_panel->addElement(dirLabel);
-
-    m_panel->addNewHalfLine();
-    m_directionMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_panel->addElement(m_directionMin);
-
-    m_directionMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_panel->addElement(m_directionMax);
-
-    m_directionGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_panel->addElement(m_directionGrowth);
-
-    m_panel->addNewLine();
-    auto rotLabel{ std::make_shared<UIText>("Rotation", LABEL_SIZE) };
-    m_panel->addElement(rotLabel);
-
-    m_panel->addNewHalfLine();
-    m_rotationMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_panel->addElement(m_rotationMin);
-
-    m_rotationMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_panel->addElement(m_rotationMax);
-
-    m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_panel->addElement(m_rotationGrowth);
-
-    m_panel->addNewLine();
     auto sizeLabel{ std::make_shared<UIText>("Particle Size", LABEL_SIZE) };
     m_panel->addElement(sizeLabel);
 
@@ -106,6 +71,35 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 
     m_sizeGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
     m_panel->addElement(m_sizeGrowth);
+
+    m_panel->addNewLine();
+    auto rotLabel{ std::make_shared<UIText>("Rotation", LABEL_SIZE) };
+    m_panel->addElement(rotLabel);
+
+    m_rotationMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_rotationMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_facingDir = std::make_shared<UIButton>("Face Movement Direction",
+        ONE_BUTTON_SIZE, true);
+    std::shared_ptr<UIButton> facing{ m_facingDir };
+    std::shared_ptr<UISlider> rotMin{ m_rotationMin };
+    std::shared_ptr<UISlider> rotMax{ m_rotationMax };
+    std::shared_ptr<UISlider> rotGrowth{ m_rotationGrowth };
+    m_facingDir->setAction([facing, rotMin, rotMax, rotGrowth]()
+        {
+            bool isFacing{ facing->isToggled() };
+            rotMin->setEnabled(!isFacing);
+            rotMax->setEnabled(!isFacing);
+            rotGrowth->setEnabled(!isFacing);
+        });
+
+    m_panel->addNewHalfLine();
+    m_panel->addElement(m_facingDir);
+
+    m_panel->addNewHalfLine();
+    m_panel->addElement(m_rotationMin);
+    m_panel->addElement(m_rotationMax);
+    m_panel->addElement(m_rotationGrowth);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
 }
@@ -135,6 +129,15 @@ void ParticlesPanel::update(float deltaTime, Emitter &emitter)
         emitter.setPosition(pos);
     }
 
+    // Set distribution.
+    glm::vec2 distribution;
+    bool isDistWidth{ m_distWidth->getValue(distribution.x) };
+    bool isDistHeight{ m_distHeight->getValue(distribution.y) };
+    if (isDistWidth || isDistHeight)
+    {
+        emitter.setDistribution(distribution);
+    }
+
     // Set number of particles to generate.
     int numToGen;
     if (m_numToGenerate->getValue(numToGen))
@@ -148,39 +151,6 @@ void ParticlesPanel::update(float deltaTime, Emitter &emitter)
     {
         emitter.setTimeToSpawn(spawnTime);
     }
-
-    // Set minimum speed.
-    float speedMin;
-    if (m_speedMin->getValue(speedMin))
-    {
-        emitter.setSpeedMin(speedMin);
-    }
-
-    // Set maximum speed.
-    float speedMax;
-    if (m_speedMax->getValue(speedMax))
-    {
-        emitter.setSpeedMax(speedMax);
-    }
-
-    // Set speed growth rate.
-    float speedGrowth;
-    if (m_speedGrowth->getValue(speedGrowth))
-    {
-        emitter.setSpeedGrowth(speedGrowth);
-    }
-
-    // Set minimum direction.
-    int directionMin{ m_directionMin->getValue() };
-    emitter.setDirectionMin(directionMin);
-
-    // Set maximum direction.
-    int directionMax{ m_directionMax->getValue() };
-    emitter.setDirectionMax(directionMax);
-
-    // Set direction growth rate.
-    int directionGrowth{ m_directionGrowth->getValue() };
-    emitter.setDirectionGrowth(directionGrowth);
 
     // Set minimum rotation.
     int rotationMin{ m_rotationMin->getValue() };
@@ -239,23 +209,22 @@ void ParticlesPanel::updateUIFromEmitter(const Emitter &emitter)
     m_xPosition->setValue(pos.x);
     m_yPosition->setValue(pos.y);
 
+    glm::vec2 distribution{ emitter.getDistribution() };
+    m_distWidth->setValue(distribution.x);
+    m_distHeight->setValue(distribution.y);
+
     m_numToGenerate->setValue(emitter.getNumToGenerate());
     m_spawnTime->setValue(emitter.getTimeToSpawn());
-
-    glm::vec3 speed{ emitter.getSpeed() };
-    m_speedMin->setValue(speed.x);
-    m_speedMax->setValue(speed.y);
-    m_speedGrowth->setValue(speed.z);
-
-    glm::ivec3 direction{ emitter.getDirection() };
-    m_directionMin->setValue(direction.x);
-    m_directionMax->setValue(direction.y);
-    m_directionGrowth->setValue(direction.z);
 
     glm::ivec3 rotation{ emitter.getRotation() };
     m_rotationMin->setValue(rotation.x);
     m_rotationMax->setValue(rotation.y);
     m_rotationGrowth->setValue(rotation.z);
+
+    bool isFacing{ m_facingDir->isToggled() };
+    m_rotationMin->setEnabled(!isFacing);
+    m_rotationMax->setEnabled(!isFacing);
+    m_rotationGrowth->setEnabled(!isFacing);
 
     glm::vec3 size{ emitter.getSize() };
     m_sizeMin->setValue(size.x);
