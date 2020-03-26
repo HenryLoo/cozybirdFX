@@ -85,3 +85,8 @@ bool IUserInterface::hasBorder() const
 {
 	return m_hasBorder;
 }
+
+bool IUserInterface::isEnabled() const
+{
+	return m_isEnabled;
+}

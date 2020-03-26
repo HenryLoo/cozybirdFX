@@ -70,6 +70,7 @@ void Emitter::update(float deltaTime, float currentTime,
     updateShader->setVec2("emLife", m_life);
     updateShader->setVec3("emSize", m_size);
     updateShader->setVec2("emDistribution", m_distribution);
+    updateShader->setBool("emIsFacingDirection", m_isFacingDirection);
 
     // Set the seed.
     // Convert currentTime to ms to avoid precision loss when converting to
@@ -184,6 +185,11 @@ void Emitter::setDirectionMax(int degAngle)
 void Emitter::setDirectionGrowth(int degAngle)
 {
     m_direction.z = degAngle;
+}
+
+void Emitter::setIsFacingDirection(bool isFacing)
+{
+    m_isFacingDirection = isFacing;
 }
 
 void Emitter::setRotationMin(int degAngle)
@@ -319,6 +325,11 @@ glm::vec3 Emitter::getSpeed() const
 glm::ivec3 Emitter::getDirection() const
 {
     return m_direction;
+}
+
+bool Emitter::isFacingDirection() const
+{
+	return m_isFacingDirection;
 }
 
 glm::ivec3 Emitter::getRotation() const

@@ -5,6 +5,8 @@
 #include "UIText.h"
 #include "UITextField.h"
 
+#include <iostream>
+
 ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
@@ -76,29 +78,19 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     auto rotLabel{ std::make_shared<UIText>("Rotation", LABEL_SIZE) };
     m_panel->addElement(rotLabel);
 
-    m_rotationMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_rotationMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
-    m_facingDir = std::make_shared<UIButton>("Face Movement Direction",
-        ONE_BUTTON_SIZE, true);
-    std::shared_ptr<UIButton> facing{ m_facingDir };
-    std::shared_ptr<UISlider> rotMin{ m_rotationMin };
-    std::shared_ptr<UISlider> rotMax{ m_rotationMax };
-    std::shared_ptr<UISlider> rotGrowth{ m_rotationGrowth };
-    m_facingDir->setAction([facing, rotMin, rotMax, rotGrowth]()
-        {
-            bool isFacing{ facing->isToggled() };
-            rotMin->setEnabled(!isFacing);
-            rotMax->setEnabled(!isFacing);
-            rotGrowth->setEnabled(!isFacing);
-        });
-
     m_panel->addNewHalfLine();
+    m_facingDir = std::make_shared<UIButton>("Face Movement Direction",
+        ONE_BUTTON_SIZE, true, []() {});
     m_panel->addElement(m_facingDir);
 
     m_panel->addNewHalfLine();
+    m_rotationMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_rotationMin);
+
+    m_rotationMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_rotationMax);
+
+    m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
     m_panel->addElement(m_rotationGrowth);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
@@ -106,6 +98,12 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 
 void ParticlesPanel::update(float deltaTime, Emitter &emitter)
 {
+    // Show/hide rotation options depending on facing button toggle state.
+    bool isRotation{ m_panel->isEnabled() && !m_facingDir->isToggled() };
+    m_rotationMin->setEnabled(isRotation);
+    m_rotationMax->setEnabled(isRotation);
+    m_rotationGrowth->setEnabled(isRotation);
+
     // Set delay time.
     float delay;
     if (m_delay->getValue(delay))
@@ -151,6 +149,9 @@ void ParticlesPanel::update(float deltaTime, Emitter &emitter)
     {
         emitter.setTimeToSpawn(spawnTime);
     }
+    
+    // Set if facing direction of movement.
+    emitter.setIsFacingDirection(m_facingDir->isToggled());
 
     // Set minimum rotation.
     int rotationMin{ m_rotationMin->getValue() };
@@ -216,15 +217,12 @@ void ParticlesPanel::updateUIFromEmitter(const Emitter &emitter)
     m_numToGenerate->setValue(emitter.getNumToGenerate());
     m_spawnTime->setValue(emitter.getTimeToSpawn());
 
+    m_facingDir->setToggled(emitter.isFacingDirection());
+
     glm::ivec3 rotation{ emitter.getRotation() };
     m_rotationMin->setValue(rotation.x);
     m_rotationMax->setValue(rotation.y);
     m_rotationGrowth->setValue(rotation.z);
-
-    bool isFacing{ m_facingDir->isToggled() };
-    m_rotationMin->setEnabled(!isFacing);
-    m_rotationMax->setEnabled(!isFacing);
-    m_rotationGrowth->setEnabled(!isFacing);
 
     glm::vec3 size{ emitter.getSize() };
     m_sizeMin->setValue(size.x);

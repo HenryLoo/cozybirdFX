@@ -27,6 +27,7 @@ uniform vec2 emLife; // Min, max
 uniform vec3 emSize; // Min, max, growth
 uniform int emNumToGenerate;
 uniform vec2 emDistribution; // Width, height
+uniform bool emIsFacingDirection;
 
 uniform float deltaTime;
 
@@ -86,8 +87,17 @@ void main()
         // Update direction.
         gsSpeedDirection.y += emDirection.z * deltaTime;
 
-        // Update rotation.
-        gsRotationSizeLife.x += emRotation.z * deltaTime;
+        // Face the direction of movement.
+        // This overrides rotation settings.
+        if (emIsFacingDirection)
+        {
+            gsRotationSizeLife.x = gsSpeedDirection.y;
+        }
+        else
+        {
+            // Update rotation.
+            gsRotationSizeLife.x += emRotation.z * deltaTime;
+        }
 
         // Update current life.
         gsRotationSizeLife.z -= deltaTime;
@@ -126,8 +136,17 @@ void main()
             float directionOffset = emDirection.y - emDirection.x;
             gsSpeedDirection.y = emDirection.x + directionOffset * noise();
 
-            float rotationOffset = emRotation.y - emRotation.x;
-            gsRotationSizeLife.x = emRotation.x + rotationOffset * noise();
+            // Face the direction of movement.
+            // This overrides rotation settings.
+            if (emIsFacingDirection)
+            {
+                gsRotationSizeLife.x = gsSpeedDirection.y;
+            }
+            else
+            {
+                float rotationOffset = emRotation.y - emRotation.x;
+                gsRotationSizeLife.x = emRotation.x + rotationOffset * noise();
+            }
 
             float sizeOffset = emSize.y - emSize.x;
             gsRotationSizeLife.y = emSize.x + sizeOffset * noise();

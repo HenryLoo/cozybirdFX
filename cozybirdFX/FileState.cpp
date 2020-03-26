@@ -47,6 +47,7 @@ void FileState::initMenu()
 				input >> j;
 
 				eRenderer.init(assetLoader);
+				eRenderer.toggleEmitter(0, false);
 
 				try
 				{
@@ -65,8 +66,12 @@ void FileState::initMenu()
 
 						emitter.setTexture(assetLoader, e.at("textureName").get<std::string>());
 						emitter.setNumToGenerate(e.at("numToGenerate").get<int>());
-						emitter.setPosition(glm::vec2(e.at("position").at("x").get<float>(),
+						emitter.setPosition(
+							glm::vec2(e.at("position").at("x").get<float>(),
 							e.at("position").at("y").get<float>()));
+						emitter.setDistribution(
+							glm::vec2(e.at("distribution").at("x").get<float>(),
+								e.at("distribution").at("y").get<float>()));
 						emitter.setTimeToSpawn(e.at("timeToSpawn").get<float>());
 						emitter.setSpeedMin(e.at("speedMin").get<float>());
 						emitter.setSpeedMax(e.at("speedMax").get<float>());
@@ -74,6 +79,7 @@ void FileState::initMenu()
 						emitter.setDirectionMin(e.at("directionMin").get<int>());
 						emitter.setDirectionMax(e.at("directionMax").get<int>());
 						emitter.setDirectionGrowth(e.at("directionGrowth").get<int>());
+						emitter.setIsFacingDirection(e.at("isFacingDirection").get<bool>());
 						emitter.setRotationMin(e.at("rotationMin").get<int>());
 						emitter.setRotationMax(e.at("rotationMax").get<int>());
 						emitter.setRotationGrowth(e.at("rotationGrowth").get<int>());
@@ -161,6 +167,9 @@ void FileState::initMenu()
 					glm::vec2 pos{ emitter.getPosition() };
 					e["position"] = { { "x", pos.x }, { "y", pos.y } };
 
+					glm::vec2 distribution{ emitter.getDistribution() };
+					e["distribution"] = { { "x", distribution.x }, { "y", distribution.y } };
+
 					e["timeToSpawn"] = emitter.getTimeToSpawn();
 
 					glm::vec3 speed{ emitter.getSpeed() };
@@ -172,6 +181,8 @@ void FileState::initMenu()
 					e["directionMin"] = direction.x;
 					e["directionMax"] = direction.y;
 					e["directionGrowth"] = direction.z;
+
+					e["isFacingDirection"] = emitter.isFacingDirection();
 
 					glm::ivec3 rotation{ emitter.getRotation() };
 					e["rotationMin"] = rotation.x;

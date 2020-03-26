@@ -26,6 +26,7 @@ public:
 	glm::vec2 getSize() const;
 	glm::vec4 getColour() const;
 	bool hasBorder() const;
+	bool isEnabled() const;
 
 protected:
 	virtual void handleInput(InputManager &inputManager) = 0;

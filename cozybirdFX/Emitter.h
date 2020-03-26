@@ -45,6 +45,7 @@ public:
 	void setDirectionMin(int degAngle);
 	void setDirectionMax(int degAngle);
 	void setDirectionGrowth(int degAngle);
+	void setIsFacingDirection(bool isFacing);
 	void setRotationMin(int degAngle);
 	void setRotationMax(int degAngle);
 	void setRotationGrowth(int degAngle);
@@ -74,6 +75,7 @@ public:
 	float getTimeToSpawn() const;
 	glm::vec3 getSpeed() const;
 	glm::ivec3 getDirection() const;
+	bool isFacingDirection() const;
 	glm::ivec3 getRotation() const;
 	glm::vec3 getSize() const;
 	glm::vec2 getLife() const;
@@ -167,6 +169,9 @@ private:
 	// The direction that the particle moves toward.
 	// Defines minimum, maximum, and growth rate.
 	glm::ivec3 m_direction{ 0, 359, 0 };
+
+	// Flag for if the particle's rotation is facing its direction of movement.
+	bool m_isFacingDirection{ false };
 
 	// The rotation of the particle.
 	// Defines minimum, maximum, and growth rate.
