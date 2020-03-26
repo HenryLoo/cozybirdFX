@@ -44,13 +44,17 @@ void ExportState::initMenu()
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };
-			nfdresult_t result = NFD_SaveDialog("gif", nullptr, &path);
+			const std::string FILE_FORMAT{ ".gif" };
+			nfdresult_t result = NFD_SaveDialog(FILE_FORMAT.substr(1).c_str(), nullptr, &path);
 
 			// Save if path is valid.
 			if (result == NFD_OKAY)
 			{
 				glm::vec2 windowSize{ engine.getWindowSize() };
-				eRenderer.exportGif(windowSize, path);
+				std::string filePath(path);
+				free(path);
+				getFilePath(filePath, FILE_FORMAT);
+				eRenderer.exportGif(windowSize, filePath);
 				engine.popState();
 			}
 			else if (result != NFD_CANCEL)

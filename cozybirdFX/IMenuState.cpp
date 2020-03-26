@@ -64,6 +64,13 @@ void IMenuState::addButton(std::shared_ptr<UIButton> button)
 	m_buttons.push_back(button);
 }
 
+void IMenuState::getFilePath(std::string &path, const std::string &fileFormat)
+{
+	if (path.compare(path.length() - fileFormat.length(),
+		fileFormat.length(), fileFormat))
+		path += fileFormat;
+}
+
 void IMenuState::update(float deltaTime)
 {
 }

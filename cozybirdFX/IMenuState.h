@@ -28,7 +28,12 @@ public:
 	virtual void enter() override;
 
 protected:
+	// Add a UI button to the panel.
 	void addButton(std::shared_ptr<UIButton> button);
+
+	// Append the file format to the input path if it doesn't end with the
+	// file format.
+	static void getFilePath(std::string &path, const std::string &fileFormat);
 
 	static const glm::vec2 BUTTON_SIZE;
 

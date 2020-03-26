@@ -136,7 +136,8 @@ void FileState::initMenu()
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };
-			nfdresult_t result = NFD_SaveDialog("json", nullptr, &path);
+			const std::string FILE_FORMAT{ ".json" };
+			nfdresult_t result = NFD_SaveDialog(FILE_FORMAT.substr(1).c_str(), nullptr, &path);
 
 			// Save if path is valid.
 			if (result == NFD_OKAY)
@@ -228,10 +229,12 @@ void FileState::initMenu()
 				j["emitters"] = emitters;
 
 				// Output serialized JSON.
-				std::ofstream output(path);
+				std::string filePath(path);
+				free(path);
+				getFilePath(filePath, FILE_FORMAT);
+				std::ofstream output(filePath);
 				output << std::setw(4) << j << std::endl;
 				output.close();
-				free(path);
 
 				// Return to the previous state.
 				engine.popState();
