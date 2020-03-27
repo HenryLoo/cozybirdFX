@@ -1,4 +1,7 @@
 #include "IEditorPanel.h"
+#include "InputManager.h"
+
+#include <GLFW\glfw3.h>
 
 const glm::vec2 IEditorPanel::ONE_VAL_SIZE{ 356.f, 24.f };
 const glm::vec2 IEditorPanel::TWO_VAL_SIZE{ 170.f, ONE_VAL_SIZE.y };
@@ -9,9 +12,15 @@ const glm::vec2 IEditorPanel::ONE_BUTTON_SIZE{ ONE_VAL_SIZE.x, BUTTON_SIZE.y };
 const glm::vec2 IEditorPanel::TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
 const glm::ivec2 IEditorPanel::ANGLE_RANGE{ 0, 359 };
 
+const glm::vec2 IEditorPanel::NOT_CLICKED{ -1.f };
+
 void IEditorPanel::handleInput(InputManager &inputManager)
 {
 	m_panel->process(inputManager);
+
+	m_clickedPos = NOT_CLICKED;
+	if (inputManager.isMouseDown(GLFW_MOUSE_BUTTON_2))
+		m_clickedPos = inputManager.getMousePos();
 }
 
 void IEditorPanel::setPosition(glm::vec2 position)
@@ -37,4 +46,9 @@ glm::vec2 IEditorPanel::getPosition() const
 glm::vec2 IEditorPanel::getSize() const
 {
 	return m_panel->getSize();
+}
+
+bool IEditorPanel::hasClicked() const
+{
+	return m_clickedPos != NOT_CLICKED;
 }

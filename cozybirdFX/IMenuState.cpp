@@ -71,7 +71,7 @@ void IMenuState::getFilePath(std::string &path, const std::string &fileFormat)
 		path += fileFormat;
 }
 
-void IMenuState::update(float deltaTime)
+void IMenuState::update(float deltaTime, const Camera &camera)
 {
 }
 

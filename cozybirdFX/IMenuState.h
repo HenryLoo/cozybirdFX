@@ -46,7 +46,7 @@ protected:
 	std::shared_ptr<UIRenderer> m_uRenderer{ nullptr };
 
 private:
-	virtual void update(float deltaTime) override;
+	virtual void update(float deltaTime, const Camera &camera) override;
 	virtual void resize(Camera &camera) override;
 
 	virtual void initMenu() = 0;

@@ -1,4 +1,5 @@
 #include "ParticlesPanel.h"
+#include "EditorState.h"
 #include "Emitter.h"
 #include "UIButton.h"
 #include "UISlider.h"
@@ -6,9 +7,9 @@
 #include "UIIntField.h"
 #include "UIFloatField.h"
 
-#include <iostream>
-
-ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
+ParticlesPanel::ParticlesPanel(const EditorState &state, 
+    TextRenderer &tRenderer,  UIRenderer &uRenderer) :
+    m_state(state)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
@@ -99,6 +100,14 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 
 void ParticlesPanel::update(float deltaTime, Emitter &emitter)
 {
+    // Move emitter by right click.
+    if (IEditorPanel::hasClicked())
+    {
+        glm::vec2 clickedPos{ m_state.screenToClip(m_clickedPos) };
+        m_xPosition->setValue(clickedPos.x);
+        m_yPosition->setValue(clickedPos.y);
+    }
+
     // Show/hide rotation options depending on facing button toggle state.
     bool isRotation{ m_panel->isEnabled() && !m_facingDir->isToggled() };
     m_rotationMin->setEnabled(isRotation);

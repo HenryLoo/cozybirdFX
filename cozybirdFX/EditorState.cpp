@@ -35,7 +35,7 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     m_uRenderer = std::make_shared<UIRenderer>(assetLoader);
     m_eRenderer = std::make_shared<EmitterRenderer>(assetLoader);
 
-    const Camera &camera{ engine.getCamera() };
+    // Define the clip size box.
     UIRenderer::Properties clip;
     clip.size = m_eRenderer->getClipSize();
     clip.hasBorder = true;
@@ -43,10 +43,22 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     auto it{ m_uRenderer->addElement(clip) };
     m_clipSizeBox = &*it;
 
+    // Define the emitter position anchors.
+    for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
+    {
+        UIRenderer::Properties anchor;
+        anchor.size = glm::vec2(8.f);
+        anchor.hasBorder = true;
+        anchor.colour = glm::vec4(0.f, 0.f, 1.f, 1.f);
+        anchor.isEnabled = false;
+        auto it{ m_uRenderer->addElement(anchor) };
+        m_emitterAnchors.push_back(&*it);
+    }
+
     // Initialize UI panels.
     m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, assetLoader,
         m_eRenderer, *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
-    m_particlesPanel = std::make_shared<ParticlesPanel>(*m_tRenderer,
+    m_particlesPanel = std::make_shared<ParticlesPanel>(*this, *m_tRenderer,
         *m_uRenderer);
     m_visualsPanel = std::make_shared<VisualsPanel>(*m_tRenderer, *m_uRenderer,
         assetLoader);
@@ -98,15 +110,33 @@ void EditorState::selectEmitter(int index)
     m_emitter = index;
     const Emitter &emitter{ m_eRenderer->getEmitter(index) };
 
+    // Enable the emitter's position anchor.
+    for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
+    {
+        m_emitterAnchors[i]->isEnabled = i == index;
+    }
+
     // Update panels.
     for (auto &panel : m_panels)
         panel->updateUIFromEmitter(emitter);
 }
 
-void EditorState::update(float deltaTime)
+void EditorState::update(float deltaTime, const Camera &camera)
 {
     // Update emitter with UI values.
     Emitter &emitter{ m_eRenderer->getEmitter(m_emitter) };
+
+    // Update the position of the emitter's anchor.
+    glm::mat4 invProj{ glm::inverse(camera.getUIProjection()) };
+    glm::mat4 proj{ camera.getSceneProjection() };
+    glm::mat4 view{ camera.getView() };
+    glm::vec2 emPos{ emitter.getPosition() };
+    glm::vec2 halfSize{ m_emitterAnchors[m_emitter]->size / 2.f };
+    emPos.x -= halfSize.x;
+    emPos.y += halfSize.y;
+    glm::vec4 pos{ emPos.x, emPos.y, 0.f, 1.f };
+    pos = invProj * proj * view * pos;
+    m_emitterAnchors[m_emitter]->pos = pos;
 
     // Update panels.
     for (auto &panel : m_panels)
@@ -159,8 +189,10 @@ glm::ivec2 EditorState::getViewportSize() const
     glm::vec2 tlSize{ m_topLeftPanel->getSize() };
     glm::vec2 bottomSize{ m_bottomPanel->getSize() };
 
-    glm::ivec2 viewportSize{ (int)m_windowSize.x - sideSize.x,
-            (int)m_windowSize.y - tlSize.y - bottomSize.y };
+    glm::ivec2 viewportSize{ 
+        (int)m_windowSize.x - sideSize.x,
+        (int)m_windowSize.y - tlSize.y - bottomSize.y
+    };
     return viewportSize;
 }
 
@@ -175,4 +207,16 @@ void EditorState::updateClipBoxPos()
     m_clipSizeBox->pos = glm::round(glm::vec2(
     (viewportSize.x - clipSize.x) / 2.f,
         (viewportSize.y - clipSize.y) / 2.f + tlSize.y));
+}
+
+glm::vec2 EditorState::screenToClip(glm::vec2 screenPos) const
+{
+    glm::vec2 viewportSize{ getViewportSize() };
+    glm::vec2 tlSize{ m_topLeftPanel->getSize() };
+    glm::vec2 pos{
+        screenPos.x - viewportSize.x / 2.f,
+        -screenPos.y + viewportSize.y / 2.f + tlSize.y
+    };
+    
+    return pos;
 }

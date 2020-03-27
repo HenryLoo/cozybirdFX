@@ -39,12 +39,15 @@ public:
 	// Update the position of the clip box.
 	void updateClipBoxPos();
 
+	// Convert the screen space position to clip space.
+	glm::vec2 screenToClip(glm::vec2 screenPos) const;
+
 private:
-	virtual void update(float deltaTime) override;
+	virtual void update(float deltaTime, const Camera &camera) override;
 
 	virtual void resize(Camera &camera) override;
 
-	// Calculate the size of the viewport.
+	// Calculate the size and offset of the viewport.
 	glm::ivec2 getViewportSize() const;
 
 	// This state's renderers.
@@ -57,6 +60,9 @@ private:
 
 	// The clip size's visual representation.
 	UIRenderer::Properties *m_clipSizeBox;
+
+	// Position anchors for each emitter.
+	std::vector<UIRenderer::Properties *> m_emitterAnchors;
 
 	// UI Elements for editing emitters.
 	std::vector<std::shared_ptr<IEditorPanel>> m_panels;

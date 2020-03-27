@@ -28,7 +28,7 @@ protected:
 
 private:
 	// Update specific subclass values for this state.
-	virtual void update(float deltaTime) = 0;
+	virtual void update(float deltaTime, const Camera &camera) = 0;
 
 	// Handle changes when resizing the window.
 	virtual void resize(Camera &camera) = 0;

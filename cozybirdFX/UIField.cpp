@@ -132,6 +132,7 @@ void UIField::setEnabled(bool isEnabled)
 void UIField::setValue(const std::string &value)
 {
 	m_value = value;
+	m_isNewValue = true;
 	m_hasError = !formatValue();
 	updateFieldValue();
 }

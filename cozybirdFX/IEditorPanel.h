@@ -27,6 +27,9 @@ public:
     glm::vec2 getSize() const;
 
 protected:
+    // Check if the right mouse has clicked during this frame.
+    bool hasClicked() const;
+
     // Fixed UI element sizes.
     static const glm::vec2 ONE_VAL_SIZE;
     static const glm::vec2 TWO_VAL_SIZE;
@@ -38,4 +41,8 @@ protected:
     static const glm::ivec2 ANGLE_RANGE;
 
 	std::unique_ptr<UIContainer> m_panel;
+
+    // The screen position of the last right-click.
+    static const glm::vec2 NOT_CLICKED;
+    glm::vec2 m_clickedPos{ NOT_CLICKED };
 };

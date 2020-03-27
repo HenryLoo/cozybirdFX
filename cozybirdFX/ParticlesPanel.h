@@ -2,6 +2,7 @@
 
 #include "IEditorPanel.h"
 
+class EditorState;
 class TextRenderer;
 class UIButton;
 class UIRenderer;
@@ -12,13 +13,15 @@ class UIFloatField;
 class ParticlesPanel : public IEditorPanel
 {
 public:
-	ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer);
+	ParticlesPanel(const EditorState &state, TextRenderer &tRenderer, UIRenderer &uRenderer);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 
 	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 private:
+	const EditorState &m_state;
+
 	std::shared_ptr<UIFloatField> m_delay{ nullptr };
 	std::shared_ptr<UIFloatField> m_duration{ nullptr };
 	std::shared_ptr<UIFloatField> m_xPosition{ nullptr };
