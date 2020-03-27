@@ -22,13 +22,17 @@ void ExportState::initMenu()
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };
-			nfdresult_t result = NFD_SaveDialog("png", nullptr, &path);
+			const std::string FILE_FORMAT{ ".png" };
+			nfdresult_t result = NFD_SaveDialog(FILE_FORMAT.substr(1).c_str(), nullptr, &path);
 
 			// Save if path is valid.
 			if (result == NFD_OKAY)
 			{
 				glm::vec2 windowSize{ engine.getWindowSize() };
-				eRenderer.exportSpriteSheet(windowSize, path);
+				std::string filePath(path);
+				free(path);
+				getFilePath(filePath, FILE_FORMAT);
+				eRenderer.exportSpriteSheet(windowSize, filePath);
 				engine.popState();
 			}
 			else if (result != NFD_CANCEL)

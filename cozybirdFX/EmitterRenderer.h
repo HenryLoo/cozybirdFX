@@ -54,17 +54,20 @@ public:
 
 private:
 	// Create a frame buffer object for rendering to texture.
-	void createFramebuffer(glm::ivec2 textureSize);
+	void createFramebuffers(glm::ivec2 textureSize, bool hasLayers);
+	void createFramebuffer(glm::ivec2 textureSize, bool isClearBuffers);
 	void createFramebufferTexture(glm::ivec2 textureSize);
+	void clearFramebuffers();
 
 	// Reset the animation.
 	void reset();
 
 	// Prepare common export attributes.
-	void prepareExport(glm::ivec2 textureSize);
+	void prepareExport(glm::ivec2 textureSize, bool hasLayers);
 
 	// Common emitter render code.
-	void render(float deltaTime, bool isOnlyUpdate = false);
+	void render(float deltaTime, bool isOnlyUpdate = false, 
+		bool hasLayers = false);
 
 	// Calculate the deltaTime to use when exporting.
 	float getFixedDeltaTime() const;
@@ -95,6 +98,6 @@ private:
 	bool m_isPlaying{ false };
 
 	// Buffers for rendering to texture.
-	unsigned int m_fbo{ 0 };
-	std::shared_ptr<Texture> m_fboTexture{ nullptr };
+	std::vector<unsigned int> m_fbo;
+	std::vector<std::shared_ptr<Texture>> m_fboTexture;
 };

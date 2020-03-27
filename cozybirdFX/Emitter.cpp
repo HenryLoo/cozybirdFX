@@ -139,6 +139,9 @@ void Emitter::setTexture(AssetLoader &assetLoader, const std::string &filePath)
 
 void Emitter::setNumToGenerate(int num)
 {
+    if (num < 0)
+        return;
+
     m_numToGenerate = num;
 }
 
@@ -154,6 +157,9 @@ void Emitter::setDistribution(glm::vec2 widthHeight)
 
 void Emitter::setTimeToSpawn(float duration)
 {
+    if (duration <= 0.f)
+        return;
+
     m_timeToSpawn = duration;
 }
 

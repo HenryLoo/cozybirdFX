@@ -16,6 +16,7 @@ class Emitter
 public:
 	enum class BlendMode
 	{
+		None,
 		Linear,
 		Additive,
 	};

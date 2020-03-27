@@ -288,7 +288,7 @@ void NewState::initMenu()
 			emitter1.setLifeMin(life);
 			emitter1.setLifeMax(life);
 
-			emitter1.setBlendMode(Emitter::BlendMode::Linear);
+			emitter1.setBlendMode(Emitter::BlendMode::Additive);
 
 			emitter1.setBirthColour(glm::vec4(
 				1.f,

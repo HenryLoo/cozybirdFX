@@ -22,6 +22,8 @@ namespace
        "gsRotationSizeLife",
        "gsType",
     };
+
+    const std::string SHEET_FORMAT{ ".png" };
 }
 
 const int EmitterRenderer::NUM_EMITTERS{ 9 };
@@ -122,13 +124,23 @@ float EmitterRenderer::getDuration() const
         if (!m_isEnabled[i])
             continue;
 
-        duration = glm::max(duration, m_emitters[i]->getLife().y);
-        timeToSpawn = glm::max(timeToSpawn, m_emitters[i]->getTimeToSpawn());
+        float maxLife{ m_emitters[i]->getLife().y };
+        if (!m_isLooping)
+        {
+            float tts{ m_emitters[i]->getTimeToSpawn() };
+            float emDuration{ m_emitters[i]->getEmitterDuration() };
+            float maxDuration{ emDuration == 0.f ? maxLife * 2 : 
+                maxLife + tts * glm::floor(emDuration / tts) };
+            duration = glm::max(duration, maxDuration);
+        }
+        else
+        {
+            duration = glm::max(duration, maxLife);
+            timeToSpawn = glm::max(timeToSpawn, m_emitters[i]->getTimeToSpawn());
+        }
     }
 
-    if (!m_isLooping)
-        duration *= 2;
-    else
+    if (m_isLooping)
         duration = timeToSpawn * glm::ceil(duration / timeToSpawn);
 
     return duration;
@@ -199,10 +211,9 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
     int numCols{ static_cast<int>(glm::ceil(glm::sqrt(numFrames))) };
     int numRows{ static_cast<int>(glm::ceil(numFrames / numCols)) };
     glm::ivec2 textureSize{ numCols * m_clipSize.x, numRows * m_clipSize.y };
-    prepareExport(textureSize);
+    prepareExport(textureSize, true);
 
     // Render the emitters.
-    glClear(GL_COLOR_BUFFER_BIT);
     for (int j = 0; j < numRows; ++j)
     {
         for (int i = 0; i < numCols; ++i)
@@ -210,23 +221,30 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
             glViewport(i * m_clipSize.x, j * m_clipSize.y,
                 m_clipSize.x, m_clipSize.y);
 
-            render(fixedDeltaTime);
+            render(fixedDeltaTime, false, true);
         }
     }
 
     // Write image from the texture.
-    if (m_fboTexture != nullptr)
+    int textureIndex{ 0 };
+    for (auto texture : m_fboTexture)
     {
-        m_fboTexture->bind();
+        if (texture == nullptr)
+            continue;
 
-        glm::ivec2 size{ m_fboTexture->getWidth(), m_fboTexture->getHeight() };
-        int numChannels{ m_fboTexture->getNumChannels() };
+        texture->bind();
 
-        int dataSize{ size.x * size.y * numChannels };
+        int numChannels{ texture->getNumChannels() };
+        int dataSize{ textureSize.x * textureSize.y * numChannels };
         stbi_uc *data{ new stbi_uc[dataSize] };
         glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
-        stbi_write_png(outputPath.c_str(), size.x, size.y, numChannels, data, 0);
+        const std::string path{ m_fboTexture.size() > 1 ? 
+            outputPath.substr(0, outputPath.length() - SHEET_FORMAT.length()) + 
+            "_" + std::to_string(textureIndex) + SHEET_FORMAT :
+            outputPath };
+        stbi_write_png(path.c_str(), textureSize.x, textureSize.y, numChannels, data, 0);
+        ++textureIndex;
 
         delete[] data;
     }
@@ -240,7 +258,7 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
 void EmitterRenderer::exportGif(glm::ivec2 windowSize, 
     const std::string &outputPath)
 {
-    prepareExport(m_clipSize);
+    prepareExport(m_clipSize, false);
 
     // Initialize gif writer.
     const int DELAY{ static_cast<int>(round(1.f / m_exportFPS * 100)) };
@@ -254,14 +272,14 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
     for (int i = 0; i < numFrames; ++i)
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        render(fixedDeltaTime);
+        render(fixedDeltaTime, false);
 
         // Output this gif frame.
-        if (m_fboTexture != nullptr)
+        if (m_fboTexture[0] != nullptr)
         {
-            m_fboTexture->bind();
+            m_fboTexture[0]->bind();
 
-            int numChannels{ m_fboTexture->getNumChannels() };
+            int numChannels{ m_fboTexture[0]->getNumChannels() };
             int dataSize{ m_clipSize.x * m_clipSize.y * numChannels };
             stbi_uc *data{ new stbi_uc[dataSize] };
             glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -271,7 +289,11 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
 
             // Prepare the next frame's texture if this isn't the last frame.
             if (i < numFrames - 1)
+            {
+                // Only use the first texture.
+                m_fboTexture.clear();
                 createFramebufferTexture(m_clipSize);
+            }
         }
     }
 
@@ -282,14 +304,46 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
     m_currentTime = 0.f;
 }
 
-void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
+void EmitterRenderer::createFramebuffers(glm::ivec2 textureSize, bool hasLayers)
 {
-    // Delete any existing old buffers.
-    if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+    clearFramebuffers();
 
-    // Set up buffers for rendering to texture.
-    glGenFramebuffers(1, &m_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    Emitter::BlendMode lastMode{ Emitter::BlendMode::None };
+    for (int i = 0; i < m_emitters.size(); ++i)
+    {
+        auto &emitter{ m_emitters[i] };
+
+        // Hide the emitter if not enabled.
+        if (m_isEnabled[i])
+        {
+            // Create a new framebuffer if this emitter uses a different blend
+            // mode than the previous emitter.
+            Emitter::BlendMode thisMode{ emitter->getBlendMode() };
+            if (lastMode == thisMode)
+                continue;
+
+            lastMode = thisMode;
+
+            createFramebuffer(textureSize, false);
+
+            // Clear to black if additive blending.
+            if (thisMode == Emitter::BlendMode::Additive)
+                glClear(GL_COLOR_BUFFER_BIT);
+        }
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize, bool isClearBuffers)
+{
+    if (isClearBuffers)
+        clearFramebuffers();
+
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    m_fbo.push_back(fbo);
 
     createFramebufferTexture(textureSize);
 
@@ -298,15 +352,10 @@ void EmitterRenderer::createFramebuffer(glm::ivec2 textureSize)
     {
         std::cout << "EmitterRenderer::createFramebuffer: Framebuffer not complete." << std::endl;
     }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void EmitterRenderer::createFramebufferTexture(glm::ivec2 textureSize)
 {
-    if (!m_fbo)
-        return;
-
     unsigned int outputTexture;
     glGenTextures(1, &outputTexture);
     glBindTexture(GL_TEXTURE_2D, outputTexture);
@@ -315,7 +364,16 @@ void EmitterRenderer::createFramebufferTexture(glm::ivec2 textureSize)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, 0);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, outputTexture, 0);
-    m_fboTexture = std::make_shared<Texture>(outputTexture, textureSize.x, textureSize.y, 4);
+    m_fboTexture.push_back(std::make_shared<Texture>(outputTexture, textureSize.x, textureSize.y, 4));
+}
+
+void EmitterRenderer::clearFramebuffers()
+{
+    // Delete any existing old buffers.
+    for (unsigned int &fbo : m_fbo)
+        glDeleteFramebuffers(1, &fbo);
+    m_fbo.clear();
+    m_fboTexture.clear();
 }
 
 void EmitterRenderer::reset()
@@ -328,7 +386,7 @@ void EmitterRenderer::reset()
     }
 }
 
-void EmitterRenderer::prepareExport(glm::ivec2 textureSize)
+void EmitterRenderer::prepareExport(glm::ivec2 textureSize, bool hasLayers)
 {
     // Get projection matrix.
     glm::mat4 view{ glm::mat4(1.f) };
@@ -347,10 +405,10 @@ void EmitterRenderer::prepareExport(glm::ivec2 textureSize)
 
     // Prepare the framebuffer's texture.
     float fixedDeltaTime{ getFixedDeltaTime() };
-    createFramebuffer(textureSize);
-
-    // Bind to the framebuffer to draw to it.
-    glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+    if (hasLayers)
+        createFramebuffers(textureSize, hasLayers);
+    else
+        createFramebuffer(textureSize, true);
 
     // Clear all particles before starting to render.
     for (int i = 0; i < m_emitters.size(); ++i)
@@ -368,14 +426,15 @@ void EmitterRenderer::prepareExport(glm::ivec2 textureSize)
     {
         while (m_currentTime + fixedDeltaTime < getDuration())
         {
-            render(fixedDeltaTime, true);
+            render(fixedDeltaTime, true, hasLayers);
         }
 
         m_currentTime = 0.f;
     }
 }
 
-void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
+void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate, 
+    bool hasLayers)
 {
     // Ensure that the animation ends at the proper duration if not looping.
     float duration{ getDuration() };
@@ -386,6 +445,8 @@ void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
     }
 
     // Render all emitters.
+    int fboIndex{ hasLayers ? -1 : 0 };
+    Emitter::BlendMode lastMode{ Emitter::BlendMode::None };
     for (int i = 0; i < m_emitters.size(); ++i)
     {
         auto &emitter{ m_emitters[i] };
@@ -396,7 +457,23 @@ void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate)
 
         // Hide the emitter if not enabled.
         if (!isOnlyUpdate && m_isEnabled[i])
+        {
+            if (hasLayers)
+            {
+                // Bind to the next framebuffer if this emitter uses a different blend
+                // mode than the previous emitter.
+                Emitter::BlendMode thisMode{ emitter->getBlendMode() };
+                if (lastMode != thisMode)
+                {
+                    lastMode = thisMode;
+                    ++fboIndex;
+                }
+
+                glBindFramebuffer(GL_FRAMEBUFFER, m_fbo[fboIndex]);
+            }
+            
             emitter->render(m_renderShader);
+        }
     }
     
     m_currentTime += deltaTime;
