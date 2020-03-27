@@ -135,9 +135,6 @@
     <ClInclude Include="UISlider.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
-    <ClInclude Include="UITextField.h">
-      <Filter>Header Files\UI</Filter>
-    </ClInclude>
     <ClInclude Include="UIText.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
@@ -194,6 +191,15 @@
     </ClInclude>
     <ClInclude Include="RendererPanel.h">
       <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="UIField.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIIntField.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIFloatField.h">
+      <Filter>Header Files\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -323,7 +329,13 @@
     <ClCompile Include="RendererPanel.cpp">
       <Filter>Source Files\States\Editor Panels</Filter>
     </ClCompile>
-    <ClCompile Include="UITextField.cpp">
+    <ClCompile Include="UIField.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFloatField.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIIntField.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,7 +5,7 @@
 #include "UIButton.h"
 #include "UISlider.h"
 #include "UIText.h"
-#include "UITextField.h"
+#include "UIField.h"
 
 namespace
 {
@@ -99,7 +99,7 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     m_panel->addElement(textureLabel);
 
     m_panel->addNewHalfLine();
-    m_textureName = std::make_shared<UITextField>("", ONE_VAL_SIZE);
+    m_textureName = std::make_shared<UIField>("", ONE_VAL_SIZE);
     m_panel->addElement(m_textureName);
 
     m_panel->addNewHalfLine();

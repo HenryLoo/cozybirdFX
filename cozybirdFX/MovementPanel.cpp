@@ -3,7 +3,7 @@
 #include "UIButton.h"
 #include "UISlider.h"
 #include "UIText.h"
-#include "UITextField.h"
+#include "UIFloatField.h"
 
 MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
 {
@@ -15,13 +15,13 @@ MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(speedLabel);
 
     m_panel->addNewHalfLine();
-    m_speedMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_speedMin = std::make_shared<UIFloatField>("Min", THREE_VAL_SIZE);
     m_panel->addElement(m_speedMin);
 
-    m_speedMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_speedMax = std::make_shared<UIFloatField>("Max", THREE_VAL_SIZE);
     m_panel->addElement(m_speedMax);
 
-    m_speedGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_speedGrowth = std::make_shared<UIFloatField>("Growth", THREE_VAL_SIZE);
     m_panel->addElement(m_speedGrowth);
 
     m_panel->addNewLine();
@@ -63,10 +63,10 @@ MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(hSinLabel);
 
     m_panel->addNewHalfLine();
-    m_hSineAmplitude = std::make_shared<UITextField>("Amplitude", TWO_VAL_SIZE);
+    m_hSineAmplitude = std::make_shared<UIFloatField>("Amplitude", TWO_VAL_SIZE);
     m_panel->addElement(m_hSineAmplitude);
 
-    m_hSinePeriod = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
+    m_hSinePeriod = std::make_shared<UIFloatField>("Period", TWO_VAL_SIZE);
     m_panel->addElement(m_hSinePeriod);
 
     m_panel->addNewLine();
@@ -74,10 +74,10 @@ MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(vSinLabel);
 
     m_panel->addNewHalfLine();
-    m_vSineAmplitude = std::make_shared<UITextField>("Amplitude", TWO_VAL_SIZE);
+    m_vSineAmplitude = std::make_shared<UIFloatField>("Amplitude", TWO_VAL_SIZE);
     m_panel->addElement(m_vSineAmplitude);
 
-    m_vSinePeriod = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
+    m_vSinePeriod = std::make_shared<UIFloatField>("Period", TWO_VAL_SIZE);
     m_panel->addElement(m_vSinePeriod);
 
     m_panel->addNewLine();
@@ -85,10 +85,10 @@ MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(circleLabel);
 
     m_panel->addNewHalfLine();
-    m_circleRadius = std::make_shared<UITextField>("Radius", TWO_VAL_SIZE);
+    m_circleRadius = std::make_shared<UIFloatField>("Radius", TWO_VAL_SIZE);
     m_panel->addElement(m_circleRadius);
 
-    m_circlePeriod = std::make_shared<UITextField>("Period", TWO_VAL_SIZE);
+    m_circlePeriod = std::make_shared<UIFloatField>("Period", TWO_VAL_SIZE);
     m_panel->addElement(m_circlePeriod);
 
     m_panel->addToRenderer(uRenderer, tRenderer);

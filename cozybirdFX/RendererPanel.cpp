@@ -3,7 +3,7 @@
 #include "EmitterRenderer.h"
 #include "UIButton.h"
 #include "UIText.h"
-#include "UITextField.h"
+#include "UIIntField.h"
 
 RendererPanel::RendererPanel(EditorState &editor, 
     std::shared_ptr<EmitterRenderer> eRenderer,
@@ -18,10 +18,10 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_panel->addElement(clipLabel);
 
     m_panel->addNewHalfLine();
-    m_clipX = std::make_shared<UITextField>("x", TWO_VAL_SIZE);
+    m_clipX = std::make_shared<UIIntField>("x", TWO_VAL_SIZE);
     m_panel->addElement(m_clipX);
 
-    m_clipY = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
+    m_clipY = std::make_shared<UIIntField>("y", TWO_VAL_SIZE);
     m_panel->addElement(m_clipY);
 
     m_panel->addNewLine();
@@ -34,7 +34,7 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_panel->addElement(m_loop);
 
     m_panel->addNewLine();
-    m_fps = std::make_shared<UITextField>("Export FPS", ONE_VAL_SIZE);
+    m_fps = std::make_shared<UIIntField>("Export FPS", ONE_VAL_SIZE);
     m_panel->addElement(m_fps);
 
     m_panel->addToRenderer(uRenderer, tRenderer);

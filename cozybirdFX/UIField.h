@@ -9,10 +9,10 @@
 
 class InputManager;
 
-class UITextField : public IUserInterface
+class UIField : public IUserInterface
 {
 public:
-	UITextField(std::string label, glm::vec2 size,
+	UIField(std::string label, glm::vec2 size,
 		glm::vec2 position = { 0.f, 0.f });
 
 	virtual void addToRenderer(UIRenderer &uRenderer, 
@@ -23,34 +23,40 @@ public:
 
 	// Set the current value.
 	void setValue(const std::string &value);
-	void setValue(int value);
-	void setValue(float value, int precision = 1);
 
 	// Get the text field's current value.
 	// Return whether or not this is a new value.
 	bool getValue(std::string &output);
-	bool getValue(int &output);
-	bool getValue(float &output, int precision = 1);
 
 protected:
 	virtual void handleInput(InputManager &inputManager) override;
 
+	// The field's current value.
+	std::string m_value;
+
+	// Check if a new value was set and disable it.
+	bool isNewValue();
+
 private:
 	void setActivation(bool isActivated, InputManager &inputManager);
 
-	void updateUI();
+	// Update the field's text.
+	void updateFieldValue();
 
-	// The text field's label.
+	// Return true if value was succesfully formatted.
+	// Otherwise return  false.
+	virtual bool formatValue();
+
+	void updateColour();
+
+	// The field's label.
 	std::string m_label;
 
-	// Flag for if the text field is allowing text input.
+	// Flag for if the field is allowing input.
 	bool m_isActivated{ false };
 
-	// The text field's current value.
-	std::string m_value;
-
 	// Flag for if there is invalid input.
-	bool m_isError{ false };
+	bool m_hasError{ false };
 
 	// Flag for if there is a new value to get.
 	bool m_isNewValue{ true };

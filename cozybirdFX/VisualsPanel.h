@@ -9,7 +9,7 @@ class TextRenderer;
 class UIButton;
 class UIRenderer;
 class UISlider;
-class UITextField;
+class UIField;
 
 class VisualsPanel : public IEditorPanel
 {
@@ -39,7 +39,7 @@ private:
 	std::shared_ptr<UISlider> m_deathBlue{ nullptr };
 	std::shared_ptr<UISlider> m_deathOpacity{ nullptr };
 
-	std::shared_ptr<UITextField> m_textureName{ nullptr };
+	std::shared_ptr<UIField> m_textureName{ nullptr };
 	bool m_hasNewTexture{ true };
 	AssetLoader &m_assetLoader;
 

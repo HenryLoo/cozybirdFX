@@ -181,8 +181,10 @@
     <ClInclude Include="TopLeftPanel.h" />
     <ClInclude Include="TopRightPanel.h" />
     <ClInclude Include="UIButton.h" />
+    <ClInclude Include="UIFloatField.h" />
+    <ClInclude Include="UIIntField.h" />
     <ClInclude Include="UIText.h" />
-    <ClInclude Include="UITextField.h" />
+    <ClInclude Include="UIField.h" />
     <ClInclude Include="UIRenderer.h" />
     <ClInclude Include="UIContainer.h" />
     <ClInclude Include="UISlider.h" />
@@ -226,11 +228,13 @@
     <ClCompile Include="TopLeftPanel.cpp" />
     <ClCompile Include="TopRightPanel.cpp" />
     <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UIFloatField.cpp" />
+    <ClCompile Include="UIIntField.cpp" />
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="UIRenderer.cpp" />
     <ClCompile Include="UIContainer.cpp" />
     <ClCompile Include="UISlider.cpp" />
-    <ClCompile Include="UITextField.cpp" />
+    <ClCompile Include="UIField.cpp" />
     <ClCompile Include="VisualsPanel.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

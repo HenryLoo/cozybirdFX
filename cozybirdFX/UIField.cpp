@@ -1,11 +1,9 @@
-#include "UITextField.h"
+#include "UIField.h"
 #include "InputManager.h"
 #include "UIRenderer.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <iomanip>
-#include <sstream>
 
 namespace
 {
@@ -17,17 +15,18 @@ namespace
 	const glm::vec4 ERROR_ACTIVATED_COLOUR{ 0.9f, 0.1f, 0.1f, 1.f };
 }
 
-UITextField::UITextField(std::string label, glm::vec2 size, 
+UIField::UIField(std::string label, glm::vec2 size, 
 	glm::vec2 position) :
 	IUserInterface(position, size, DEACTIVATED_COLOUR, true),
 	m_label(label)
 {
 }
 
-void UITextField::handleInput(InputManager &inputManager)
+void UIField::handleInput(InputManager &inputManager)
 {
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
+	updateColour();
 
 	// Activate text field on left click, inside the field's bounds.
 	if (mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
@@ -60,6 +59,7 @@ void UITextField::handleInput(InputManager &inputManager)
 		{
 			setActivation(false, inputManager);
 			m_isNewValue = true;
+			m_hasError = !formatValue();
 		}
 		// Read text input and append onto the field's value.
 		else
@@ -69,11 +69,11 @@ void UITextField::handleInput(InputManager &inputManager)
 			m_value += str;
 		}
 
-		updateUI();
+		updateFieldValue();
 	}
 }
 
-void UITextField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
+void UIField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add the text field's bar to the renderer.
 	IUserInterface::addToRenderer(uRenderer, tRenderer);
@@ -100,10 +100,10 @@ void UITextField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
 	auto valIt{ tRenderer.addText(val) };
 	m_valProperties = &*valIt;
 
-	updateUI();
+	updateFieldValue();
 }
 
-void UITextField::setPosition(glm::vec2 position)
+void UIField::setPosition(glm::vec2 position)
 {
 	glm::vec2 oldPos{ m_position };
 	IUserInterface::setPosition(position);
@@ -118,7 +118,7 @@ void UITextField::setPosition(glm::vec2 position)
 		m_valProperties->pos += diff;
 }
 
-void UITextField::setEnabled(bool isEnabled)
+void UIField::setEnabled(bool isEnabled)
 {
 	IUserInterface::setEnabled(isEnabled);
 
@@ -129,87 +129,47 @@ void UITextField::setEnabled(bool isEnabled)
 		m_valProperties->isEnabled = isEnabled;
 }
 
-void UITextField::setValue(const std::string &value)
+void UIField::setValue(const std::string &value)
 {
 	m_value = value;
-	updateUI();
+	m_hasError = !formatValue();
+	updateFieldValue();
 }
 
-void UITextField::setValue(int value)
-{
-	m_value = std::to_string(value);
-	updateUI();
-}
-
-void UITextField::setValue(float value, int precision)
-{
-	std::stringstream ss;
-	ss << std::fixed << std::setprecision(precision) << value;
-	std::string valueStr = ss.str();
-	m_value = valueStr;
-	updateUI();
-}
-
-bool UITextField::getValue(std::string &output)
+bool UIField::getValue(std::string &output)
 {
 	output = m_value;
+	return isNewValue();
+}
+
+void UIField::updateFieldValue()
+{
+	if (m_valProperties != nullptr)
+		m_valProperties->text = m_value;
+}
+
+bool UIField::isNewValue()
+{
 	bool isNew = m_isNewValue;
 	m_isNewValue = false;
 	return isNew;
 }
 
-bool UITextField::getValue(int &output)
-{
-	try
-	{
-		output = std::stoi(m_value);
-		m_isError = false;
-		bool isNew = m_isNewValue;
-		m_isNewValue = false;
-		return isNew;
-	}
-	catch (std::exception &)
-	{
-		m_isError = true;
-		m_isNewValue = false;
-		return false;
-	}
-}
-
-bool UITextField::getValue(float &output, int precision)
-{
-	try
-	{
-		std::stringstream ss;
-		ss << std::fixed << std::setprecision(precision) << m_value;
-		output = std::stof(ss.str());
-		m_isError = false;
-		bool isNew = m_isNewValue;
-		m_isNewValue = false;
-		return isNew;
-	}
-	catch (std::exception &)
-	{
-		m_isError = true;
-		m_isNewValue = false;
-		return false;
-	}
-}
-
-void UITextField::setActivation(bool isActivated, InputManager &inputManager)
+void UIField::setActivation(bool isActivated, InputManager &inputManager)
 {
 	m_isActivated = isActivated;
-
-	if (m_isError)
-		m_uiProperties->colour = isActivated ? ERROR_ACTIVATED_COLOUR : ERROR_DEACTIVATED_COLOUR;
-	else
-		m_uiProperties->colour = isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
-
 	inputManager.toggleTextInput(isActivated);
 }
 
-void UITextField::updateUI()
+bool UIField::formatValue()
 {
-	if (m_valProperties != nullptr)
-		m_valProperties->text = m_value;
+	return true;
+}
+
+void UIField::updateColour()
+{
+	if (m_hasError)
+		m_uiProperties->colour = m_isActivated ? ERROR_ACTIVATED_COLOUR : ERROR_DEACTIVATED_COLOUR;
+	else
+		m_uiProperties->colour = m_isActivated ? ACTIVATED_COLOUR : DEACTIVATED_COLOUR;
 }

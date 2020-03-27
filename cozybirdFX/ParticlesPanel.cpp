@@ -3,7 +3,8 @@
 #include "UIButton.h"
 #include "UISlider.h"
 #include "UIText.h"
-#include "UITextField.h"
+#include "UIIntField.h"
+#include "UIFloatField.h"
 
 #include <iostream>
 
@@ -12,11 +13,11 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
 
-    m_delay = std::make_shared<UITextField>("Delay Before Start", ONE_VAL_SIZE);
+    m_delay = std::make_shared<UIFloatField>("Delay Before Start", ONE_VAL_SIZE);
     m_panel->addElement(m_delay);
 
     m_panel->addNewLine();
-    m_duration = std::make_shared<UITextField>("Emitter Duration", ONE_VAL_SIZE);
+    m_duration = std::make_shared<UIFloatField>("Emitter Duration", ONE_VAL_SIZE);
     m_panel->addElement(m_duration);
 
     m_panel->addNewLine();
@@ -24,10 +25,10 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(posLabel);
 
     m_panel->addNewHalfLine();
-    m_xPosition = std::make_shared<UITextField>("x", TWO_VAL_SIZE);
+    m_xPosition = std::make_shared<UIFloatField>("x", TWO_VAL_SIZE);
     m_panel->addElement(m_xPosition);
 
-    m_yPosition = std::make_shared<UITextField>("y", TWO_VAL_SIZE);
+    m_yPosition = std::make_shared<UIFloatField>("y", TWO_VAL_SIZE);
     m_panel->addElement(m_yPosition);
 
     m_panel->addNewLine();
@@ -35,18 +36,18 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(distLabel);
 
     m_panel->addNewHalfLine();
-    m_distWidth = std::make_shared<UITextField>("Width", TWO_VAL_SIZE);
+    m_distWidth = std::make_shared<UIFloatField>("Width", TWO_VAL_SIZE);
     m_panel->addElement(m_distWidth);
 
-    m_distHeight = std::make_shared<UITextField>("Height", TWO_VAL_SIZE);
+    m_distHeight = std::make_shared<UIFloatField>("Height", TWO_VAL_SIZE);
     m_panel->addElement(m_distHeight);
 
     m_panel->addNewLine();
-    m_numToGenerate = std::make_shared<UITextField>("Particle Amount", ONE_VAL_SIZE);
+    m_numToGenerate = std::make_shared<UIIntField>("Particle Amount", ONE_VAL_SIZE);
     m_panel->addElement(m_numToGenerate);
 
     m_panel->addNewLine();
-    m_spawnTime = std::make_shared<UITextField>("Spawn Interval", ONE_VAL_SIZE);
+    m_spawnTime = std::make_shared<UIFloatField>("Spawn Interval", ONE_VAL_SIZE);
     m_panel->addElement(m_spawnTime);
 
     m_panel->addNewLine();
@@ -54,10 +55,10 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(lifeLabel);
 
     m_panel->addNewHalfLine();
-    m_lifeMin = std::make_shared<UITextField>("Min", TWO_VAL_SIZE);
+    m_lifeMin = std::make_shared<UIFloatField>("Min", TWO_VAL_SIZE);
     m_panel->addElement(m_lifeMin);
 
-    m_lifeMax = std::make_shared<UITextField>("Max", TWO_VAL_SIZE);
+    m_lifeMax = std::make_shared<UIFloatField>("Max", TWO_VAL_SIZE);
     m_panel->addElement(m_lifeMax);
 
     m_panel->addNewLine();
@@ -65,13 +66,13 @@ ParticlesPanel::ParticlesPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_panel->addElement(sizeLabel);
 
     m_panel->addNewHalfLine();
-    m_sizeMin = std::make_shared<UITextField>("Min", THREE_VAL_SIZE);
+    m_sizeMin = std::make_shared<UIFloatField>("Min", THREE_VAL_SIZE);
     m_panel->addElement(m_sizeMin);
 
-    m_sizeMax = std::make_shared<UITextField>("Max", THREE_VAL_SIZE);
+    m_sizeMax = std::make_shared<UIFloatField>("Max", THREE_VAL_SIZE);
     m_panel->addElement(m_sizeMax);
 
-    m_sizeGrowth = std::make_shared<UITextField>("Growth", THREE_VAL_SIZE);
+    m_sizeGrowth = std::make_shared<UIFloatField>("Growth", THREE_VAL_SIZE);
     m_panel->addElement(m_sizeGrowth);
 
     m_panel->addNewLine();
