@@ -1,13 +1,14 @@
 #pragma once
 
 #include "IRenderer.h"
-#include "Shader.h"
 #include "Emitter.h"
 
 #include <vector>
 #include <memory>
 
 class AssetLoader;
+class Engine;
+class Shader;
 
 class EmitterRenderer : public IRenderer
 {
@@ -44,11 +45,11 @@ public:
 
 	// Prepare to export the current emitter effects as a sprite sheet.
 	// The window size is used to reset the viewport after rendering.
-	void exportSpriteSheet(glm::ivec2 windowSize, const std::string &outputPath);
+	void exportSpriteSheet(Engine &engine, const std::string &outputPath);
 
 	// Prepare to export the current emitter effects as an animated gif.
 	// The window size is used to reset the viewport after rendering.
-	void exportGif(glm::ivec2 windowSize, const std::string &outputPath);
+	void exportGif(Engine &engine, const std::string &outputPath);
 
 	static const int NUM_EMITTERS;
 
@@ -71,6 +72,9 @@ private:
 
 	// Calculate the deltaTime to use when exporting.
 	float getFixedDeltaTime() const;
+
+	// Update the window title based on current export progress.
+	void updateExportProgress(Engine &engine, int currentVal, int total = 1) const;
 
 	// The renderer's shader program.
 	std::shared_ptr<Shader> m_updateShader{ nullptr };

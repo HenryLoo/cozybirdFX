@@ -1,6 +1,8 @@
 #include "EmitterRenderer.h"
 #include "AssetLoader.h"
 #include "Camera.h"
+#include "Engine.h"
+#include "Shader.h"
 #include "Texture.h"
 
 #include <glad/glad.h>
@@ -24,6 +26,7 @@ namespace
     };
 
     const std::string SHEET_FORMAT{ ".png" };
+    const std::string EXPORT_STATUS{ "Exporting... " };
 }
 
 const int EmitterRenderer::NUM_EMITTERS{ 9 };
@@ -202,7 +205,7 @@ void EmitterRenderer::toggleEmitter(int index, bool isEnabled)
     m_isEnabled[index] = isEnabled;
 }
 
-void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize, 
+void EmitterRenderer::exportSpriteSheet(Engine &engine,
     const std::string &outputPath)
 {
     // Prepare the framebuffer's texture.
@@ -214,6 +217,10 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
     prepareExport(textureSize, true);
 
     // Render the emitters.
+    const int totalFrames{ numFrames * 
+        (static_cast<int>(m_fboTexture.size()) + 1) };
+    updateExportProgress(engine, 0);
+    int k{ 0 };
     for (int j = 0; j < numRows; ++j)
     {
         for (int i = 0; i < numCols; ++i)
@@ -222,7 +229,19 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
                 m_clipSize.x, m_clipSize.y);
 
             render(fixedDeltaTime, false, true);
+
+            // Update progress.
+            ++k;
+            updateExportProgress(engine, k, totalFrames);
+
+            // Break early in case the number of frames doesn't fit in the
+            // texture square.
+            if (k == numFrames)
+                break;
         }
+
+        if (k == numFrames)
+            break;
     }
 
     // Write image from the texture.
@@ -247,16 +266,20 @@ void EmitterRenderer::exportSpriteSheet(glm::ivec2 windowSize,
         ++textureIndex;
 
         delete[] data;
+
+        // Update progress.
+        k += numFrames;
+        updateExportProgress(engine, k, totalFrames);
     }
 
     // Reset configurations after rendering.
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, windowSize.x, windowSize.y);
     m_currentTime = 0.f;
+    engine.setWindowTitle();
+    engine.updateViewport();
 }
 
-void EmitterRenderer::exportGif(glm::ivec2 windowSize, 
-    const std::string &outputPath)
+void EmitterRenderer::exportGif(Engine &engine, const std::string &outputPath)
 {
     prepareExport(m_clipSize, false);
 
@@ -269,6 +292,7 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
     glViewport(0, 0, m_clipSize.x, m_clipSize.y);
     float fixedDeltaTime{ getFixedDeltaTime() };
     int numFrames{ static_cast<int>(glm::ceil(getDuration() / fixedDeltaTime)) };
+    updateExportProgress(engine, 0);
     for (int i = 0; i < numFrames; ++i)
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -294,14 +318,17 @@ void EmitterRenderer::exportGif(glm::ivec2 windowSize,
                 m_fboTexture.clear();
                 createFramebufferTexture(m_clipSize);
             }
+
+            updateExportProgress(engine, i, numFrames);
         }
     }
 
     // Reset configurations after rendering.
     GifEnd(&gif);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, windowSize.x, windowSize.y);
     m_currentTime = 0.f;
+    engine.setWindowTitle();
+    engine.updateViewport();
 }
 
 void EmitterRenderer::createFramebuffers(glm::ivec2 textureSize, bool hasLayers)
@@ -485,4 +512,15 @@ void EmitterRenderer::render(float deltaTime, bool isOnlyUpdate,
 float EmitterRenderer::getFixedDeltaTime() const
 {
     return 1.f / m_exportFPS;
+}
+
+void EmitterRenderer::updateExportProgress(Engine &engine, int currentVal, 
+    int total) const
+{
+    // Avoid divide by zero error.
+    if (total < 0)
+        total = 1;
+
+    engine.setWindowTitle(EXPORT_STATUS +
+        std::to_string(currentVal * 100 / total) + "%");
 }

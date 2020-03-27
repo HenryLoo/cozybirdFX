@@ -14,6 +14,11 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+namespace
+{
+    const std::string WINDOW_TITLE{ "cozybirdFX" };
+}
+
 Engine::Engine(GLFWwindow *window) :
     m_window(window)
 {
@@ -46,20 +51,12 @@ Engine::~Engine()
 
 void Engine::start()
 {
+    setWindowTitle();
     double lastFrame{ 0.f };
 
     // The main application loop.
     while (!glfwWindowShouldClose(m_window))
     {
-        // If the window size was changed, update the renderer.
-        if (m_hasNewWindowSize)
-        {
-            m_hasNewWindowSize = false;
-            glm::ivec2 windowSize{ getWindowSize() };
-            m_camera->setSize(windowSize);
-            glViewport(0, 0, windowSize.x, windowSize.y);
-        }
-
         double currentFrame{ glfwGetTime() };
         float deltaTime{ static_cast<float>(currentFrame - lastFrame) };
         lastFrame = currentFrame;
@@ -132,7 +129,9 @@ void Engine::render(float deltaTime)
 
 void Engine::updateNewWindowSize()
 {
-    m_hasNewWindowSize = true;
+    glm::ivec2 windowSize{ getWindowSize() };
+    m_camera->setSize(windowSize);
+    updateViewport();
 }
 
 Camera &Engine::getCamera() const
@@ -145,4 +144,17 @@ glm::ivec2 Engine::getWindowSize() const
     glm::ivec2 windowSize;
     glfwGetWindowSize(m_window, &windowSize.x, &windowSize.y);
     return windowSize;
+}
+
+void Engine::setWindowTitle(const std::string &title)
+{
+    std::string text{ title.empty() ? WINDOW_TITLE : 
+        WINDOW_TITLE + " - " + title };
+    glfwSetWindowTitle(m_window, text.c_str());
+}
+
+void Engine::updateViewport()
+{
+    glm::ivec2 windowSize{ getWindowSize() };
+    glViewport(0, 0, windowSize.x, windowSize.y);
 }

@@ -41,6 +41,12 @@ public:
 	// Get the window size.
 	glm::ivec2 getWindowSize() const;
 
+	// Set the window's title.
+	void setWindowTitle(const std::string &title = "");
+
+	// Set the viewport to the window size.
+	void updateViewport();
+
 private:
 	// Consult the input manager to read inputs.
 	void handleInput();
@@ -53,9 +59,6 @@ private:
 
 	// The application window.
 	GLFWwindow *m_window{ nullptr };
-
-	// Flag for if the window was resized.
-	bool m_hasNewWindowSize{ true };
 
 	// The application's states. The current state is at the top of the stack.
 	// This allows for easy unwinding of states.

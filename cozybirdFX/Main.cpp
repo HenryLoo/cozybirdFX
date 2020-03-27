@@ -9,8 +9,6 @@
 // Set the viewport to determine the size of the rendering window.
 void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
-    glViewport(0, 0, width, height);
-
     Engine *engine{ (Engine *)glfwGetWindowUserPointer(window) };
     if (engine != nullptr)
     {
@@ -34,7 +32,7 @@ int main()
     // Create the window and its OpenGL context.
     GLFWwindow* window;
     const int WINDOW_WIDTH{ 1280 }, WINDOW_HEIGHT{ 720 };
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "cozybirdFX", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "", NULL, NULL);
     if (!window)
     {
         std::cout << "Main: Failed to create window." << std::endl;

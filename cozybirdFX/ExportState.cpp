@@ -32,7 +32,7 @@ void ExportState::initMenu()
 				std::string filePath(path);
 				free(path);
 				getFilePath(filePath, FILE_FORMAT);
-				eRenderer.exportSpriteSheet(windowSize, filePath);
+				eRenderer.exportSpriteSheet(engine, filePath);
 				engine.popState();
 			}
 			else if (result != NFD_CANCEL)
@@ -58,7 +58,7 @@ void ExportState::initMenu()
 				std::string filePath(path);
 				free(path);
 				getFilePath(filePath, FILE_FORMAT);
-				eRenderer.exportGif(windowSize, filePath);
+				eRenderer.exportGif(engine, filePath);
 				engine.popState();
 			}
 			else if (result != NFD_CANCEL)
