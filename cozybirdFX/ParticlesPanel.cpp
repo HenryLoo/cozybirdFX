@@ -120,7 +120,7 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
 void ParticlesPanel::update(float deltaTime, Emitter &emitter)
 {
     // Move emitter by right click.
-    if (IEditorPanel::hasClicked())
+    if (m_panel->isEnabled() && IEditorPanel::hasClicked())
     {
         glm::vec2 clickedPos{ m_state.screenToClip(m_clickedPos) };
         m_xPosition->setValue(clickedPos.x);

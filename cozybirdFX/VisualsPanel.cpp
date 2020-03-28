@@ -30,15 +30,17 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     m_additiveBlend->setDescription("Switch to additive blending for this emitter's particles.");
     auto linearBlend{ m_linearBlend };
     auto additiveBlend{ m_additiveBlend };
-    m_linearBlend->setAction([this, additiveBlend]()
+    m_linearBlend->setAction([this, linearBlend, additiveBlend]()
         {
+            linearBlend->setToggled(true);
             additiveBlend->setToggled(false);
         });
     m_panel->addElement(m_linearBlend);
 
-    m_additiveBlend->setAction([this, linearBlend]()
+    m_additiveBlend->setAction([this, linearBlend, additiveBlend]()
         {
             linearBlend->setToggled(false);
+            additiveBlend->setToggled(true);
         });
     m_panel->addElement(m_additiveBlend);
 

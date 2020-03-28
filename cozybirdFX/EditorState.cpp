@@ -136,17 +136,25 @@ void EditorState::update(float deltaTime, const Camera &camera)
     // Update emitter with UI values.
     Emitter &emitter{ m_eRenderer->getEmitter(m_emitter) };
 
+    // Don't show the emitter's anchor if the particles panel is not active.
+    bool isParticlesPanel{ m_currentPanel == m_particlesPanel };
+    m_emitterAnchors[m_emitter]->isEnabled = isParticlesPanel;
+
     // Update the position of the emitter's anchor.
-    glm::mat4 invProj{ glm::inverse(camera.getUIProjection()) };
-    glm::mat4 proj{ camera.getSceneProjection() };
-    glm::mat4 view{ camera.getView() };
-    glm::vec2 emPos{ emitter.getPosition() };
-    glm::vec2 halfSize{ m_emitterAnchors[m_emitter]->size / 2.f };
-    emPos.x -= halfSize.x;
-    emPos.y += halfSize.y;
-    glm::vec4 pos{ emPos.x, emPos.y, 0.f, 1.f };
-    pos = invProj * proj * view * pos;
-    m_emitterAnchors[m_emitter]->pos = pos;
+    if (isParticlesPanel)
+    {
+        m_emitterAnchors[m_emitter]->isEnabled = true;
+        glm::mat4 invProj{ glm::inverse(camera.getUIProjection()) };
+        glm::mat4 proj{ camera.getSceneProjection() };
+        glm::mat4 view{ camera.getView() };
+        glm::vec2 emPos{ emitter.getPosition() };
+        glm::vec2 halfSize{ m_emitterAnchors[m_emitter]->size / 2.f };
+        emPos.x -= halfSize.x;
+        emPos.y += halfSize.y;
+        glm::vec4 pos{ emPos.x, emPos.y, 0.f, 1.f };
+        pos = invProj * proj * view * pos;
+        m_emitterAnchors[m_emitter]->pos = pos;
+    }
 
     // Update panels.
     for (auto &panel : m_panels)
