@@ -30,6 +30,9 @@ public:
 	virtual void setSize(glm::vec2 size) override;
 	virtual void setEnabled(bool isEnabled) override;
 
+	virtual void getDescription(InputManager &inputManager,
+		std::string &output) const override;
+
 protected:
 	virtual void handleInput(InputManager &inputManager) override;
 

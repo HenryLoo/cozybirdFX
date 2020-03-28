@@ -1,4 +1,5 @@
 #include "TopRightPanel.h"
+#include "EditorState.h"
 #include "UIButton.h"
 
 #include "ParticlesPanel.h"
@@ -6,114 +7,67 @@
 #include "MovementPanel.h"
 #include "EmittersPanel.h"
 #include "RendererPanel.h"
-
-TopRightPanel::TopRightPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
-    ParticlesPanel &particles, VisualsPanel &visuals,
-    MovementPanel &movement, EmittersPanel &emitters,
-    RendererPanel &render)
+#include <iostream>
+TopRightPanel::TopRightPanel(EditorState &state, TextRenderer &tRenderer, 
+    UIRenderer &uRenderer,
+    std::shared_ptr<ParticlesPanel> particles,
+    std::shared_ptr<VisualsPanel> visuals,
+    std::shared_ptr<MovementPanel> movement,
+    std::shared_ptr<EmittersPanel> emitters,
+    std::shared_ptr<RendererPanel> renderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, -1.f));
 
-    auto particlesButton{ std::make_shared<UIButton>("Particles",
-        BUTTON_SIZE, true) };
-    auto visualsButton{ std::make_shared<UIButton>("Visuals",
-        BUTTON_SIZE, true) };
-    auto movementButton{ std::make_shared<UIButton>("Movement",
-        BUTTON_SIZE, true) };
-    auto emittersButton{ std::make_shared<UIButton>("Emitters",
-        BUTTON_SIZE, true) };
-    auto renderButton{ std::make_shared<UIButton>("Renderer",
-        BUTTON_SIZE, true) };
+    m_particlesButton = std::make_shared<UIButton>("Particles",
+        BUTTON_SIZE, true);
+    m_visualsButton = std::make_shared<UIButton>("Visuals",
+        BUTTON_SIZE, true);
+    m_movementButton = std::make_shared<UIButton>("Movement",
+        BUTTON_SIZE, true);
+    m_emittersButton = std::make_shared<UIButton>("Emitters",
+        BUTTON_SIZE, true);
+    m_rendererButton = std::make_shared<UIButton>("Renderer",
+        BUTTON_SIZE, true);
 
-    particlesButton->setAction([&particles, &visuals, &movement, &emitters, &render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
+    m_particlesButton->setAction([&state, particles, this]()
         {
-            particles.setEnabled(true);
-            visuals.setEnabled(false);
-            movement.setEnabled(false);
-            emitters.setEnabled(false);
-            render.setEnabled(false);
-
-            particlesButton->setToggled(true);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(false);
+            state.setCurrentPanel(particles);
+            setCurrentButton(m_particlesButton);
         });
 
-    visualsButton->setAction([&particles, &visuals, &movement, &emitters, &render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
+    m_visualsButton->setAction([&state, visuals, this]()
         {
-            particles.setEnabled(false);
-            visuals.setEnabled(true);
-            movement.setEnabled(false);
-            emitters.setEnabled(false);
-            render.setEnabled(false);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(true);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(false);
+            state.setCurrentPanel(visuals);
+            setCurrentButton(m_visualsButton);
         });
 
-    movementButton->setAction([&particles, &visuals, &movement, &emitters, &render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
+    m_movementButton->setAction([&state, movement, this]()
         {
-            particles.setEnabled(false);
-            visuals.setEnabled(false);
-            movement.setEnabled(true);
-            emitters.setEnabled(false);
-            render.setEnabled(false);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(true);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(false);
+            state.setCurrentPanel(movement);
+            setCurrentButton(m_movementButton);
         });
 
-    emittersButton->setAction([&particles, &visuals, &movement, &emitters, &render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
+    m_emittersButton->setAction([&state, emitters, this]()
         {
-            particles.setEnabled(false);
-            visuals.setEnabled(false);
-            movement.setEnabled(false);
-            emitters.setEnabled(true);
-            render.setEnabled(false);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(true);
-            renderButton->setToggled(false);
+            state.setCurrentPanel(emitters);
+            setCurrentButton(m_emittersButton);
         });
 
-    renderButton->setAction([&particles, &visuals, &movement, &emitters, &render,
-        particlesButton, visualsButton, movementButton, emittersButton, renderButton]()
+    m_rendererButton->setAction([&state, renderer, this]()
         {
-            particles.setEnabled(false);
-            visuals.setEnabled(false);
-            movement.setEnabled(false);
-            emitters.setEnabled(false);
-            render.setEnabled(true);
-
-            particlesButton->setToggled(false);
-            visualsButton->setToggled(false);
-            movementButton->setToggled(false);
-            emittersButton->setToggled(false);
-            renderButton->setToggled(true);
+            state.setCurrentPanel(renderer);
+            setCurrentButton(m_rendererButton);
         });
 
-    m_panel->addElement(particlesButton);
-    m_panel->addElement(visualsButton);
-    m_panel->addElement(movementButton);;
-    m_panel->addElement(emittersButton);
-    m_panel->addElement(renderButton);
+    m_panel->addElement(m_particlesButton);
+    m_panel->addElement(m_visualsButton);
+    m_panel->addElement(m_movementButton);;
+    m_panel->addElement(m_emittersButton);
+    m_panel->addElement(m_rendererButton);
 
     m_panel->addToRenderer(uRenderer, tRenderer);
-    particlesButton->setToggled(true);
+    m_particlesButton->setToggled(true);
 }
 
 void TopRightPanel::update(float deltaTime, Emitter &emitter)
@@ -122,4 +76,15 @@ void TopRightPanel::update(float deltaTime, Emitter &emitter)
 
 void TopRightPanel::updateUIFromEmitter(const Emitter &emitter)
 {
+}
+
+void TopRightPanel::setCurrentButton(std::shared_ptr<UIButton> button)
+{
+    m_currentButton = button;
+
+    m_particlesButton->setToggled(m_particlesButton == m_currentButton);
+    m_visualsButton->setToggled(m_visualsButton == m_currentButton);
+    m_movementButton->setToggled(m_movementButton == m_currentButton);
+    m_emittersButton->setToggled(m_emittersButton == m_currentButton);
+    m_rendererButton->setToggled(m_rendererButton == m_currentButton);
 }

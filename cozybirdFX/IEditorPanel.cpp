@@ -38,6 +38,11 @@ void IEditorPanel::setEnabled(bool isEnabled)
 	m_panel->setEnabled(isEnabled);
 }
 
+void IEditorPanel::setDescription(const std::string &description)
+{
+	m_description = description;
+}
+
 glm::vec2 IEditorPanel::getPosition() const
 {
 	return m_panel->getPosition();
@@ -46,6 +51,16 @@ glm::vec2 IEditorPanel::getPosition() const
 glm::vec2 IEditorPanel::getSize() const
 {
 	return m_panel->getSize();
+}
+
+void IEditorPanel::getDescription(InputManager &inputManager, 
+	std::string &output) const
+{
+	m_panel->getDescription(inputManager, output);
+
+	// If no element is hovered, show the panel's description instead.
+	if (output.empty())
+		output = m_description;
 }
 
 bool IEditorPanel::hasClicked() const

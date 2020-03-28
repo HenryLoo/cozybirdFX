@@ -85,6 +85,18 @@ void UIContainer::setEnabled(bool isEnabled)
 
 }
 
+void UIContainer::getDescription(InputManager &inputManager, 
+	std::string &output) const
+{
+	// Get the description of the first element hovered.
+	for (auto &element : m_elements)
+	{
+		element->getDescription(inputManager, output);
+		if (!output.empty())
+			return;
+	}
+}
+
 void UIContainer::fitContents()
 {
 	if (m_isFittingWidth)

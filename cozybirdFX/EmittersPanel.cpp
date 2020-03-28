@@ -20,8 +20,10 @@ EmittersPanel::EmittersPanel(EditorState &editor,
     std::vector<std::shared_ptr<UIButton>> buttons;
     for (int i = 0; i < EmitterRenderer::NUM_EMITTERS; ++i)
     {
-        auto emSelectButton{ std::make_shared<UIButton>("Emitter " + std::to_string(i + 1),
+        const std::string emitterNum{ std::to_string(i + 1) };
+        auto emSelectButton{ std::make_shared<UIButton>("Emitter " + emitterNum,
             TWO_BUTTON_SIZE, true) };
+        emSelectButton->setDescription("Select emitter " + emitterNum + " as the current emitter.");
         buttons.push_back(emSelectButton);
     }
 
@@ -45,6 +47,7 @@ EmittersPanel::EmittersPanel(EditorState &editor,
             {
                 eRenderer->toggleEmitter(i, emToggleButton->isToggled());
             });
+        emToggleButton->setDescription("Show/hide emitter " + std::to_string(i + 1) + ".");
         m_panel->addElement(emToggleButton);
         m_toggleButtons.push_back(emToggleButton);
 

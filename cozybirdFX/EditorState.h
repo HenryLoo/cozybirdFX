@@ -42,6 +42,9 @@ public:
 	// Convert the screen space position to clip space.
 	glm::vec2 screenToClip(glm::vec2 screenPos) const;
 
+	void setCurrentPanel(std::shared_ptr<IEditorPanel> panel);
+	std::shared_ptr<IEditorPanel> getCurrentPanel() const;
+
 private:
 	virtual void update(float deltaTime, const Camera &camera) override;
 
@@ -65,6 +68,7 @@ private:
 	std::vector<UIRenderer::Properties *> m_emitterAnchors;
 
 	// UI Elements for editing emitters.
+	std::shared_ptr<IEditorPanel> m_currentPanel{ nullptr };
 	std::vector<std::shared_ptr<IEditorPanel>> m_panels;
 	std::shared_ptr<TopLeftPanel> m_topLeftPanel{ nullptr };
 	std::shared_ptr<TopRightPanel> m_topRightPanel{ nullptr };

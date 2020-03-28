@@ -25,12 +25,11 @@ void UISlider::handleInput(InputManager &inputManager)
 	// Activate slider if the mouse is inside the bar's bounds.
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
-	if ((!IUserInterface::m_isClicked || m_isClicked) &&
-		((mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
-		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y) || 
-		m_isClicked) && inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
+	bool isHovering{ IUserInterface::isHovering(inputManager) };
+	if (((!IUserInterface::m_isAnyClicked && isHovering) || m_isClicked) &&
+		inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
-		IUserInterface::m_isClicked = m_isClicked = true;
+		IUserInterface::m_isAnyClicked = m_isClicked = true;
 
 		float offset{ mousePos.x - pos.x };
 		int val{ static_cast<int>(offset / m_size.x * m_range.y) };
@@ -44,7 +43,7 @@ void UISlider::handleInput(InputManager &inputManager)
 	// Disable clicked flag on left click release.
 	if (m_isClicked && !inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 	{
-		IUserInterface::m_isClicked = m_isClicked = false;
+		IUserInterface::m_isAnyClicked = m_isClicked = false;
 	}
 }
 

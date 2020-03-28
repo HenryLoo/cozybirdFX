@@ -15,10 +15,12 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
         glm::vec2(-1.f, 0.f));
 
     m_delay = std::make_shared<UIFloatField>("Delay Before Start", ONE_VAL_SIZE);
+    m_delay->setDescription("The duration of time in seconds before emitting particles, from the start of each animation loop.");
     m_panel->addElement(m_delay);
 
     m_panel->addNewLine();
     m_duration = std::make_shared<UIFloatField>("Emitter Duration", ONE_VAL_SIZE);
+    m_duration->setDescription("The duration of time in seconds before this emitter stops emitting particles, from the start of each animation loop.");
     m_panel->addElement(m_duration);
 
     m_panel->addNewLine();
@@ -27,9 +29,11 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
 
     m_panel->addNewHalfLine();
     m_xPosition = std::make_shared<UIFloatField>("x", TWO_VAL_SIZE);
+    m_xPosition->setDescription("The x-coordinate of the emitter's origin position.");
     m_panel->addElement(m_xPosition);
 
     m_yPosition = std::make_shared<UIFloatField>("y", TWO_VAL_SIZE);
+    m_yPosition->setDescription("The y-coordinate of the emitter's origin position.");
     m_panel->addElement(m_yPosition);
 
     m_panel->addNewLine();
@@ -38,17 +42,21 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
 
     m_panel->addNewHalfLine();
     m_distWidth = std::make_shared<UIFloatField>("Width", TWO_VAL_SIZE);
+    m_distWidth->setDescription("The width of the box to distrbute the emitted particles in.");
     m_panel->addElement(m_distWidth);
 
     m_distHeight = std::make_shared<UIFloatField>("Height", TWO_VAL_SIZE);
+    m_distHeight->setDescription("The height of the box to distrbute the emitted particles in.");
     m_panel->addElement(m_distHeight);
 
     m_panel->addNewLine();
     m_numToGenerate = std::make_shared<UIIntField>("Particle Amount", ONE_VAL_SIZE);
+    m_numToGenerate->setDescription("The number of particles to generate per emission.");
     m_panel->addElement(m_numToGenerate);
 
     m_panel->addNewLine();
     m_spawnTime = std::make_shared<UIFloatField>("Spawn Interval", ONE_VAL_SIZE);
+    m_spawnTime->setDescription("The delay in seconds between each emission.");
     m_panel->addElement(m_spawnTime);
 
     m_panel->addNewLine();
@@ -57,9 +65,11 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
 
     m_panel->addNewHalfLine();
     m_lifeMin = std::make_shared<UIFloatField>("Min", TWO_VAL_SIZE);
+    m_lifeMin->setDescription("The minimum duration in seconds that a particle can live for.");
     m_panel->addElement(m_lifeMin);
 
     m_lifeMax = std::make_shared<UIFloatField>("Max", TWO_VAL_SIZE);
+    m_lifeMax->setDescription("The maximum duration in seconds that a particle can live for.");
     m_panel->addElement(m_lifeMax);
 
     m_panel->addNewLine();
@@ -68,12 +78,15 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
 
     m_panel->addNewHalfLine();
     m_sizeMin = std::make_shared<UIFloatField>("Min", THREE_VAL_SIZE);
+    m_sizeMin->setDescription("The minimum size that a particle can be created with.");
     m_panel->addElement(m_sizeMin);
 
     m_sizeMax = std::make_shared<UIFloatField>("Max", THREE_VAL_SIZE);
+    m_sizeMax->setDescription("The maximum size that a particle can be created with.");
     m_panel->addElement(m_sizeMax);
 
     m_sizeGrowth = std::make_shared<UIFloatField>("Growth", THREE_VAL_SIZE);
+    m_sizeGrowth->setDescription("The rate at which a particle's size will grow by.");
     m_panel->addElement(m_sizeGrowth);
 
     m_panel->addNewLine();
@@ -83,16 +96,20 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel->addNewHalfLine();
     m_facingDir = std::make_shared<UIButton>("Face Movement Direction",
         ONE_BUTTON_SIZE, true, []() {});
+    m_facingDir->setDescription("Specify whether the particle's rotation should face its direction of movement. Enabling this will disable rotation settings.");
     m_panel->addElement(m_facingDir);
 
     m_panel->addNewHalfLine();
     m_rotationMin = std::make_shared<UISlider>("Min", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_rotationMin->setDescription("The minimum rotation angle that a particle can be created with.");
     m_panel->addElement(m_rotationMin);
 
     m_rotationMax = std::make_shared<UISlider>("Max", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_rotationMax->setDescription("The maximum rotation angle that a particle can be created with.");
     m_panel->addElement(m_rotationMax);
 
     m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_rotationGrowth->setDescription("The rate at which a particle's rotation angle will grow by.");
     m_panel->addElement(m_rotationGrowth);
 
     m_panel->addToRenderer(uRenderer, tRenderer);

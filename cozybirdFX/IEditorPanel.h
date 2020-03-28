@@ -13,18 +13,20 @@ class IUserInterface;
 class IEditorPanel
 {
 public:
-	void handleInput(InputManager &inputManager);
+	virtual void handleInput(InputManager &inputManager);
 
 	virtual void update(float deltaTime, Emitter &emitter) = 0;
 
 	virtual void updateUIFromEmitter(const Emitter &emitter) = 0;
 
 	void setPosition(glm::vec2 position);
-    void setSize(glm::vec2 size);
+    virtual void setSize(glm::vec2 size);
     void setEnabled(bool isEnabled);
+    void setDescription(const std::string &description);
 
     glm::vec2 getPosition() const;
     glm::vec2 getSize() const;
+    void getDescription(InputManager &inputManager, std::string &output) const;
 
 protected:
     // Check if the right mouse has clicked during this frame.
@@ -45,4 +47,7 @@ protected:
     // The screen position of the last right-click.
     static const glm::vec2 NOT_CLICKED;
     glm::vec2 m_clickedPos{ NOT_CLICKED };
+
+    // This panel's description.
+    std::string m_description;
 };

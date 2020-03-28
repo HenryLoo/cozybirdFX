@@ -21,8 +21,8 @@ void UIButton::handleInput(InputManager &inputManager)
 	// Call the action if left clicked inside the button's bounds.
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
-	if (mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
-		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y &&
+	bool isHovering{ IUserInterface::isHovering(inputManager) };
+	if (isHovering && !IUserInterface::m_isAnyClicked &&
 		inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1, true))
 	{
 		if (m_isTogglable)

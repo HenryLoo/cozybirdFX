@@ -18,14 +18,17 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_panel->addElement(clipLabel);
 
     m_panel->addNewHalfLine();
-    m_clipX = std::make_shared<UIIntField>("x", TWO_VAL_SIZE);
+    m_clipX = std::make_shared<UIIntField>("Width", TWO_VAL_SIZE);
+    m_clipX->setDescription("The width of each frame in the animation. Only details inside the clip will be considered when exporting.");
     m_panel->addElement(m_clipX);
 
-    m_clipY = std::make_shared<UIIntField>("y", TWO_VAL_SIZE);
+    m_clipY = std::make_shared<UIIntField>("Height", TWO_VAL_SIZE);
+    m_clipY->setDescription("The height of each frame in the animation. Only details inside the clip will be considered when exporting.");
     m_panel->addElement(m_clipY);
 
     m_panel->addNewLine();
     m_loop = std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true);
+    m_loop->setDescription("Set whether the animation is looping or not.");
     const UIButton &loopButton{ *m_loop };
     m_loop->setAction([eRenderer, &loopButton]()
         {
@@ -35,6 +38,7 @@ RendererPanel::RendererPanel(EditorState &editor,
 
     m_panel->addNewLine();
     m_fps = std::make_shared<UIIntField>("Export FPS", ONE_VAL_SIZE);
+    m_fps->setDescription("The frame rate of the exported animation. Setting this too low may fail to capture some emitter details.");
     m_panel->addElement(m_fps);
 
     m_panel->addToRenderer(uRenderer, tRenderer);

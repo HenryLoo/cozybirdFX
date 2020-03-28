@@ -58,19 +58,30 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     // Initialize UI panels.
     m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, assetLoader,
         m_eRenderer, *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
+
     m_particlesPanel = std::make_shared<ParticlesPanel>(*this, *m_tRenderer,
         *m_uRenderer);
+    m_particlesPanel->setDescription("Right-click to move the current emitter.");
+    m_currentPanel = m_particlesPanel;
+
     m_visualsPanel = std::make_shared<VisualsPanel>(*m_tRenderer, *m_uRenderer,
         assetLoader);
+
     m_movementPanel = std::make_shared<MovementPanel>(*m_tRenderer, *m_uRenderer);
+
     m_emittersPanel = std::make_shared<EmittersPanel>(*this, m_eRenderer,
         *m_tRenderer, *m_uRenderer);
+
     m_renderPanel = std::make_shared<RendererPanel>(*this, m_eRenderer,
         *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
-    m_topRightPanel = std::make_shared<TopRightPanel>(*m_tRenderer, *m_uRenderer,
-        *m_particlesPanel, *m_visualsPanel, *m_movementPanel, *m_emittersPanel,
-        *m_renderPanel);
-    m_bottomPanel = std::make_shared<BottomPanel>(*m_tRenderer, *m_uRenderer);
+
+    m_topRightPanel = std::make_shared<TopRightPanel>(*this, *m_tRenderer, *m_uRenderer,
+        m_particlesPanel, m_visualsPanel, m_movementPanel, m_emittersPanel,
+        m_renderPanel);
+
+    m_bottomPanel = std::make_shared<BottomPanel>(*this, *m_tRenderer, *m_uRenderer,
+        m_particlesPanel, m_visualsPanel, m_movementPanel, m_emittersPanel,
+        m_renderPanel);
 
     m_panels.push_back(m_topLeftPanel);
     m_panels.push_back(m_topRightPanel);
@@ -219,4 +230,16 @@ glm::vec2 EditorState::screenToClip(glm::vec2 screenPos) const
     };
     
     return pos;
+}
+
+void EditorState::setCurrentPanel(std::shared_ptr<IEditorPanel> panel)
+{
+    m_currentPanel->setEnabled(false);
+    m_currentPanel = panel;
+    m_currentPanel->setEnabled(true);
+}
+
+std::shared_ptr<IEditorPanel> EditorState::getCurrentPanel() const
+{
+    return m_currentPanel;
 }

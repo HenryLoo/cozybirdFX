@@ -25,7 +25,9 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
 
     m_panel->addNewHalfLine();
     m_linearBlend = std::make_shared<UIButton>("Linear", TWO_BUTTON_SIZE, true);
+    m_linearBlend->setDescription("Switch to linear blending for this emitter's particles.");
     m_additiveBlend = std::make_shared<UIButton>("Additive", TWO_BUTTON_SIZE, true);
+    m_additiveBlend->setDescription("Switch to additive blending for this emitter's particles.");
     auto linearBlend{ m_linearBlend };
     auto additiveBlend{ m_additiveBlend };
     m_linearBlend->setAction([this, additiveBlend]()
@@ -46,16 +48,20 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
 
     m_panel->addNewHalfLine();
     m_birthRed = std::make_shared<UISlider>("R", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_birthRed->setDescription("Set the amount of red that a particle's colour will start with.");
     m_panel->addElement(m_birthRed);
 
     m_birthGreen = std::make_shared<UISlider>("G", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_birthGreen->setDescription("Set the amount of green that a particle's colour will start with.");
     m_panel->addElement(m_birthGreen);
 
     m_birthBlue = std::make_shared<UISlider>("B", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_birthBlue->setDescription("Set the amount of blue that a particle's colour will start with.");
     m_panel->addElement(m_birthBlue);
 
     m_panel->addNewHalfLine();
     m_birthOpacity = std::make_shared<UISlider>("Opacity", PERCENT_RANGE, ONE_VAL_SIZE);
+    m_birthOpacity->setDescription("Set the level of transparency that a particle will start with.");
     m_panel->addElement(m_birthOpacity);
 
     m_panel->addNewLine();
@@ -64,16 +70,20 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
 
     m_panel->addNewHalfLine();
     m_red = std::make_shared<UISlider>("R", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_red->setDescription("Set the amount of red that a particle's colour will have during its life.");
     m_panel->addElement(m_red);
 
     m_green = std::make_shared<UISlider>("G", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_green->setDescription("Set the amount of green that a particle's colour will have during its life.");
     m_panel->addElement(m_green);
 
     m_blue = std::make_shared<UISlider>("B", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_blue->setDescription("Set the amount of blue that a particle's colour will have during its life.");
     m_panel->addElement(m_blue);
 
     m_panel->addNewHalfLine();
     m_opacity = std::make_shared<UISlider>("Opacity", PERCENT_RANGE, ONE_VAL_SIZE);
+    m_opacity->setDescription("Set the level of transparency that a particle will have during its life.");
     m_panel->addElement(m_opacity);
 
     m_panel->addNewLine();
@@ -82,16 +92,20 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
 
     m_panel->addNewHalfLine();
     m_deathRed = std::make_shared<UISlider>("R", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_deathRed->setDescription("Set the amount of red that a particle's colour will end with.");
     m_panel->addElement(m_deathRed);
 
     m_deathGreen = std::make_shared<UISlider>("G", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_deathGreen->setDescription("Set the amount of green that a particle's colour will end with.");
     m_panel->addElement(m_deathGreen);
 
     m_deathBlue = std::make_shared<UISlider>("B", COLOUR_RANGE, THREE_VAL_SIZE);
+    m_deathBlue->setDescription("Set the amount of blue that a particle's colour will end with.");
     m_panel->addElement(m_deathBlue);
 
     m_panel->addNewHalfLine();
     m_deathOpacity = std::make_shared<UISlider>("Opacity", PERCENT_RANGE, ONE_VAL_SIZE);
+    m_deathOpacity->setDescription("Set the level of transparency that a particle will end with.");
     m_panel->addElement(m_deathOpacity);
 
     m_panel->addNewLine();
@@ -100,6 +114,7 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
 
     m_panel->addNewHalfLine();
     m_textureName = std::make_shared<UIField>("", ONE_VAL_SIZE);
+    m_textureName->setDescription("Specify the name of the texture image file that this emitter's particles will use. This file should be located in 'assets/texture/'.");
     m_panel->addElement(m_textureName);
 
     m_panel->addNewHalfLine();

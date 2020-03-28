@@ -29,10 +29,10 @@ void UIField::handleInput(InputManager &inputManager)
 	updateColour();
 
 	// Activate text field on left click, inside the field's bounds.
-	if (mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
-		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y)
+	bool isHovering{ IUserInterface::isHovering(inputManager) };
+	if (isHovering)
 	{
-		if (!IUserInterface::m_isClicked &&
+		if (!IUserInterface::m_isAnyClicked &&
 			inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 		{
 			setActivation(true, inputManager);

@@ -1,6 +1,7 @@
 #include "IUserInterface.h"
+#include "InputManager.h"
 
-bool IUserInterface::m_isClicked{ false };
+bool IUserInterface::m_isAnyClicked{ false };
 
 IUserInterface::IUserInterface(glm::vec2 position, glm::vec2 size,
 	glm::vec4 colour, bool hasBorder) : m_position(position),
@@ -66,6 +67,11 @@ void IUserInterface::setEnabled(bool isEnabled)
 		m_uiProperties->isEnabled = isEnabled;
 }
 
+void IUserInterface::setDescription(const std::string &description)
+{
+	m_description = description;
+}
+
 glm::vec2 IUserInterface::getPosition() const
 {
 	return m_position;
@@ -89,4 +95,19 @@ bool IUserInterface::hasBorder() const
 bool IUserInterface::isEnabled() const
 {
 	return m_isEnabled;
+}
+
+void IUserInterface::getDescription(InputManager &inputManager, 
+	std::string &output) const
+{
+	output = isHovering(inputManager) ? m_description : output = "";
+}
+
+bool IUserInterface::isHovering(InputManager &inputManager) const
+{
+	glm::vec2 mousePos{ inputManager.getMousePos() };
+	glm::vec2 pos{ m_position + m_offset };
+
+	return (mousePos.x >= pos.x && mousePos.x <= pos.x + m_size.x &&
+		mousePos.y >= pos.y && mousePos.y <= pos.y + m_size.y);
 }
