@@ -16,7 +16,7 @@ class RendererPanel;
 class BottomPanel : public IEditorPanel
 {
 public:
-	BottomPanel(EditorState &state, TextRenderer &tRenderer, 
+	BottomPanel(EditorState &editor, TextRenderer &tRenderer, 
 		UIRenderer &uRenderer,
 		std::shared_ptr<ParticlesPanel> particles,
 		std::shared_ptr<VisualsPanel> visuals,
@@ -31,6 +31,6 @@ public:
 	virtual void updateUIFromEmitter(const Emitter &emitter) override;
 
 public:
-	EditorState &m_state;
+	EditorState &m_editor;
 	std::shared_ptr<UIText> m_text{ nullptr };
 };

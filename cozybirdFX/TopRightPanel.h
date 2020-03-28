@@ -16,7 +16,7 @@ class RendererPanel;
 class TopRightPanel : public IEditorPanel
 {
 public:
-	TopRightPanel(EditorState &state, TextRenderer &tRenderer, 
+	TopRightPanel(EditorState &editor, TextRenderer &tRenderer, 
 		UIRenderer &uRenderer, 
 		std::shared_ptr<ParticlesPanel> particles, 
 		std::shared_ptr<VisualsPanel> visuals, 

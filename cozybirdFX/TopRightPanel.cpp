@@ -8,7 +8,7 @@
 #include "EmittersPanel.h"
 #include "RendererPanel.h"
 #include <iostream>
-TopRightPanel::TopRightPanel(EditorState &state, TextRenderer &tRenderer, 
+TopRightPanel::TopRightPanel(EditorState &editor, TextRenderer &tRenderer, 
     UIRenderer &uRenderer,
     std::shared_ptr<ParticlesPanel> particles,
     std::shared_ptr<VisualsPanel> visuals,
@@ -30,33 +30,33 @@ TopRightPanel::TopRightPanel(EditorState &state, TextRenderer &tRenderer,
     m_rendererButton = std::make_shared<UIButton>("Renderer",
         BUTTON_SIZE, true);
 
-    m_particlesButton->setAction([&state, particles, this]()
+    m_particlesButton->setAction([&editor, particles, this]()
         {
-            state.setCurrentPanel(particles);
+            editor.setCurrentPanel(particles);
             setCurrentButton(m_particlesButton);
         });
 
-    m_visualsButton->setAction([&state, visuals, this]()
+    m_visualsButton->setAction([&editor, visuals, this]()
         {
-            state.setCurrentPanel(visuals);
+            editor.setCurrentPanel(visuals);
             setCurrentButton(m_visualsButton);
         });
 
-    m_movementButton->setAction([&state, movement, this]()
+    m_movementButton->setAction([&editor, movement, this]()
         {
-            state.setCurrentPanel(movement);
+            editor.setCurrentPanel(movement);
             setCurrentButton(m_movementButton);
         });
 
-    m_emittersButton->setAction([&state, emitters, this]()
+    m_emittersButton->setAction([&editor, emitters, this]()
         {
-            state.setCurrentPanel(emitters);
+            editor.setCurrentPanel(emitters);
             setCurrentButton(m_emittersButton);
         });
 
-    m_rendererButton->setAction([&state, renderer, this]()
+    m_rendererButton->setAction([&editor, renderer, this]()
         {
-            state.setCurrentPanel(renderer);
+            editor.setCurrentPanel(renderer);
             setCurrentButton(m_rendererButton);
         });
 

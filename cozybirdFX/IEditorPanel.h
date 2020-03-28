@@ -22,7 +22,6 @@ public:
 	void setPosition(glm::vec2 position);
     virtual void setSize(glm::vec2 size);
     void setEnabled(bool isEnabled);
-    void setDescription(const std::string &description);
 
     glm::vec2 getPosition() const;
     glm::vec2 getSize() const;

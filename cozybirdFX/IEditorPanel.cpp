@@ -38,11 +38,6 @@ void IEditorPanel::setEnabled(bool isEnabled)
 	m_panel->setEnabled(isEnabled);
 }
 
-void IEditorPanel::setDescription(const std::string &description)
-{
-	m_description = description;
-}
-
 glm::vec2 IEditorPanel::getPosition() const
 {
 	return m_panel->getPosition();

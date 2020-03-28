@@ -61,7 +61,6 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
 
     m_particlesPanel = std::make_shared<ParticlesPanel>(*this, *m_tRenderer,
         *m_uRenderer);
-    m_particlesPanel->setDescription("Right-click to move the current emitter.");
     m_currentPanel = m_particlesPanel;
 
     m_visualsPanel = std::make_shared<VisualsPanel>(*m_tRenderer, *m_uRenderer,

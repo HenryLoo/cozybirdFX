@@ -11,6 +11,8 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     TextRenderer &tRenderer,  UIRenderer &uRenderer) :
     m_state(state)
 {
+    m_description = "Right-click to move the current emitter.";
+
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
 
