@@ -1,20 +1,32 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
 #include <array>
-#include <unordered_map>
+#include <vector>
 
 struct GLFWwindow;
 
 class InputManager
 {
 public:
+	struct State
+	{
+		int currentState;
+		int previousState;
+		int mods;
+	};
+
 	InputManager(GLFWwindow *window);
 
+	void update();
+
 	// Check input states.
-	bool isMouseDown(int button, bool isReleaseOnCheck = false) const;
-	bool isKeyDown(int key, bool isReleaseOnCheck = false) const;
+	bool isMouseDown(int button, int mods = 0) const;
+	bool isMousePressed(int button, int mods = 0) const;
 	glm::vec2 getMousePos() const;
+	bool isKeyDown(int key, int mods = 0) const;
+	bool isKeyPressed(int key, int mods = 0) const;
 
 	// Get the string result of the text callback so far, and then reset it.
 	void flushText(std::string &output);
@@ -34,15 +46,20 @@ public:
 
 	static void TextCallback(GLFWwindow *window, unsigned int character);
 
-private:
+private:	
+	bool isInputDown(const std::vector<State> &states, int input, 
+		int mods = 0) const;
+	bool isInputPressed(const std::vector<State> &states, int input, 
+		int mods = 0) const;
+
 	// The mouse cursor's current position.
 	static glm::vec2 m_mousePos;
 
 	// Hold the current state for left/right mouse buttons.
-	static std::array<bool, 2> m_mouseStates;
+	static std::vector<State> m_mouseStates;
 
 	// Hold the current state for all key inputs.
-	static std::unordered_map<int, bool> m_keyStates;
+	static std::vector<State> m_keyStates;
 
 	// Hold the string of character read by the text callback.
 	static std::string m_textString;

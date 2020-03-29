@@ -26,7 +26,7 @@ public:
 	int getValue() const;
 
 protected:
-	virtual void handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager) override;
 
 private:
 	// Update the bar's value label and width.

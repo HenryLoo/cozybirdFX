@@ -6,8 +6,8 @@
 #include <iostream>
 
 glm::vec2 InputManager::m_mousePos;
-std::array<bool, 2> InputManager::m_mouseStates;
-std::unordered_map<int, bool> InputManager::m_keyStates;
+std::vector<InputManager::State> InputManager::m_mouseStates;
+std::vector<InputManager::State> InputManager::m_keyStates;
 std::string InputManager::m_textString;
 bool InputManager::m_isTextInput;
 
@@ -17,39 +17,47 @@ InputManager::InputManager(GLFWwindow *window)
 	glfwSetMouseButtonCallback(window, MouseButtonCallback);
 	glfwSetKeyCallback(window, KeyCallback);
 	glfwSetCharCallback(window, TextCallback);
+
+	m_mouseStates.resize(2);
+	m_keyStates.resize(GLFW_KEY_LAST);
 }
 
-bool InputManager::isMouseDown(int button, bool isReleaseOnCheck) const
+void InputManager::update()
 {
-	if (button < 0 || button >= m_mouseStates.size())
-		return false;
-
-	bool isDown{ m_mouseStates[button] != GLFW_RELEASE };
-	if (isReleaseOnCheck)
-		m_mouseStates[button] = GLFW_RELEASE;
-	return isDown;
-}
-
-bool InputManager::isKeyDown(int key, bool isReleaseOnCheck) const
-{
-	auto it{ m_keyStates.find(key) };
-
-	// State for this key was not found, so just return false.
-	if (it == m_keyStates.end())
+	for (InputManager::State &state : m_mouseStates)
 	{
-		return false;
+		state.previousState = state.currentState;
 	}
 
-	// Otherwise, return the state.
-	bool isDown{ it->second };
-	if (isReleaseOnCheck)
-		it->second = GLFW_RELEASE;
-	return isDown;
+	for (InputManager::State &state : m_keyStates)
+	{
+		state.previousState = state.currentState;
+	}
+}
+
+bool InputManager::isMouseDown(int button, int mods) const
+{
+	return isInputDown(m_mouseStates, button, mods);
+}
+
+bool InputManager::isMousePressed(int button, int mods) const
+{
+	return isInputPressed(m_mouseStates, button, mods);
 }
 
 glm::vec2 InputManager::getMousePos() const
 {
 	return m_mousePos;
+}
+
+bool InputManager::isKeyDown(int key, int mods) const
+{
+	return isInputDown(m_keyStates, key, mods);
+}
+
+bool InputManager::isKeyPressed(int key, int mods) const
+{
+	return isInputPressed(m_keyStates, key, mods);
 }
 
 void InputManager::flushText(std::string &output)
@@ -79,7 +87,9 @@ void InputManager::MouseButtonCallback(GLFWwindow *window,
 	/*std::cout << "Mouse button: " << button << ", Action: " << action << 
 		", x: " << m_mousePos.x << ", y: " << m_mousePos.y << std::endl;*/
 
-	m_mouseStates[button] = (action != GLFW_RELEASE);
+	m_mouseStates[button].previousState = m_mouseStates[button].currentState;
+	m_mouseStates[button].currentState = action;
+	m_mouseStates[button].mods = mods;
 }
 
 void InputManager::KeyCallback(GLFWwindow *window, int key, 
@@ -89,20 +99,14 @@ void InputManager::KeyCallback(GLFWwindow *window, int key,
 	if (m_isTextInput && key != GLFW_KEY_BACKSPACE && key != GLFW_KEY_ENTER)
 		return;
 
-	bool state{ action != GLFW_RELEASE };
-	auto it{ m_keyStates.find(key) };
+	if (key < 0 || key >= m_keyStates.size())
+		return;
 
 	//std::cout << "Key: " << key << ", Action: " << action << std::endl;
 
-	// State for this key was not found, so insert it.
-	if (it == m_keyStates.end())
-	{
-		m_keyStates.insert({ key, state });
-		return;
-	}
-
-	// Otherwise, just update the state.
-	it->second = state;
+	m_keyStates[key].previousState = m_keyStates[key].currentState;
+	m_keyStates[key].currentState = action;
+	m_keyStates[key].mods = mods;
 }
 
 void InputManager::TextCallback(GLFWwindow *window, unsigned int codepoint)
@@ -117,4 +121,21 @@ void InputManager::TextCallback(GLFWwindow *window, unsigned int codepoint)
 	std::string character;
 	uniStr.toUTF8String(character);
 	m_textString += character;
+}
+
+bool InputManager::isInputDown(const std::vector<State> &states, int input,
+	int mods) const
+{
+	const auto &state{ states[input] };
+	return state.currentState == GLFW_PRESS &&
+		((state.mods & mods) || mods == 0);
+}
+
+bool InputManager::isInputPressed(const std::vector<State> &states, int input, 
+	int mods) const
+{
+	const auto &state{ states[input] };
+	return state.currentState == GLFW_PRESS &&
+		state.previousState == GLFW_RELEASE &&
+		((state.mods & mods) || mods == 0);
 }

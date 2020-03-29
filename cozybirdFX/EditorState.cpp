@@ -97,8 +97,16 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
 
 void EditorState::handleInput(InputManager &inputManager)
 {
+    if (inputManager.isKeyPressed(GLFW_KEY_Z, GLFW_MOD_CONTROL))
+    {
+        std::cout << "UNDO" << std::endl;
+    }
+
     for (auto &panel : m_panels)
-        panel->handleInput(inputManager);
+    {
+        if (panel->handleInput(inputManager))
+            break;
+    }
 }
 
 void EditorState::render(float deltaTime, const Camera &camera)

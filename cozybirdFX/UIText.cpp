@@ -6,9 +6,10 @@ UIText::UIText(std::string text, glm::vec2 size, glm::vec2 position) :
 
 }
 
-void UIText::handleInput(InputManager &inputManager)
+bool UIText::handleInput(InputManager &inputManager)
 {
 	// Do nothing.
+	return false;
 }
 
 void UIText::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)

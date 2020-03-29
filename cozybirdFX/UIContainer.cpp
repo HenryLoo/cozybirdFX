@@ -10,12 +10,16 @@ UIContainer::UIContainer(glm::vec2 position, glm::vec2 size, glm::vec4 colour,
 	m_isFittingHeight = (size.y == -1.f);
 }
 
-void UIContainer::handleInput(InputManager &inputManager)
+bool UIContainer::handleInput(InputManager &inputManager)
 {
+	bool hasChange{ false };
+
 	for (const auto &element : m_elements)
 	{
-		element->process(inputManager);
+		hasChange = hasChange || element->process(inputManager);
 	}
+
+	return hasChange;
 }
 
 void UIContainer::addElement(std::shared_ptr<IUserInterface> element)

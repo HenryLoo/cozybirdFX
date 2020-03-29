@@ -14,13 +14,13 @@ const glm::ivec2 IEditorPanel::ANGLE_RANGE{ 0, 359 };
 
 const glm::vec2 IEditorPanel::NOT_CLICKED{ -1.f };
 
-void IEditorPanel::handleInput(InputManager &inputManager)
+bool IEditorPanel::handleInput(InputManager &inputManager)
 {
-	m_panel->process(inputManager);
-
 	m_clickedPos = NOT_CLICKED;
 	if (inputManager.isMouseDown(GLFW_MOUSE_BUTTON_2))
 		m_clickedPos = inputManager.getMousePos();
+	
+	return m_panel->process(inputManager);
 }
 
 void IEditorPanel::setPosition(glm::vec2 position)

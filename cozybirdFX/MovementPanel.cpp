@@ -44,21 +44,21 @@ MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_directionGrowth->setDescription("The rate at which a particle's direction angle will grow by.");
     m_panel->addElement(m_directionGrowth);
 
-    m_panel->addNewLine();
-    auto pathLabel{ std::make_shared<UIText>("Particle Path", LABEL_SIZE) };
-    m_panel->addElement(pathLabel);
+    //m_panel->addNewLine();
+    //auto pathLabel{ std::make_shared<UIText>("Particle Path", LABEL_SIZE) };
+    //m_panel->addElement(pathLabel);
 
-    m_panel->addNewHalfLine();
-    auto leftPtLabel{ std::make_shared<UIText>("> Left click to move spline point.", LABEL_SIZE) };
-    m_panel->addElement(leftPtLabel);
+    //m_panel->addNewHalfLine();
+    //auto leftPtLabel{ std::make_shared<UIText>("> Left click to move spline point.", LABEL_SIZE) };
+    //m_panel->addElement(leftPtLabel);
 
-    m_panel->addNewHalfLine();
-    auto rightPtLabel{ std::make_shared<UIText>("> Right click to add spline point.", LABEL_SIZE) };
-    m_panel->addElement(rightPtLabel);
+    //m_panel->addNewHalfLine();
+    //auto rightPtLabel{ std::make_shared<UIText>("> Right click to add spline point.", LABEL_SIZE) };
+    //m_panel->addElement(rightPtLabel);
 
-    m_panel->addNewHalfLine();
-    auto deletePathButton{ std::make_shared<UIButton>("Delete Path", ONE_BUTTON_SIZE) };
-    m_panel->addElement(deletePathButton);
+    //m_panel->addNewHalfLine();
+    //auto deletePathButton{ std::make_shared<UIButton>("Delete Path", ONE_BUTTON_SIZE) };
+    //m_panel->addElement(deletePathButton);
 
     m_panel->addNewLine();
     auto oscillateLabel{ std::make_shared<UIText>("Emitter Movement", LABEL_SIZE) };

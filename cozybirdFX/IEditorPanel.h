@@ -13,7 +13,7 @@ class IUserInterface;
 class IEditorPanel
 {
 public:
-	virtual void handleInput(InputManager &inputManager);
+	virtual bool handleInput(InputManager &inputManager);
 
 	virtual void update(float deltaTime, Emitter &emitter) = 0;
 
@@ -31,6 +31,8 @@ protected:
     // Check if the right mouse has clicked during this frame.
     bool hasClicked() const;
 
+    std::unique_ptr<UIContainer> m_panel;
+
     // Fixed UI element sizes.
     static const glm::vec2 ONE_VAL_SIZE;
     static const glm::vec2 TWO_VAL_SIZE;
@@ -40,8 +42,6 @@ protected:
     static const glm::vec2 ONE_BUTTON_SIZE;
     static const glm::vec2 TWO_BUTTON_SIZE;
     static const glm::ivec2 ANGLE_RANGE;
-
-	std::unique_ptr<UIContainer> m_panel;
 
     // The screen position of the last right-click.
     static const glm::vec2 NOT_CLICKED;

@@ -22,7 +22,7 @@ UIField::UIField(std::string label, glm::vec2 size,
 {
 }
 
-void UIField::handleInput(InputManager &inputManager)
+bool UIField::handleInput(InputManager &inputManager)
 {
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
@@ -33,13 +33,13 @@ void UIField::handleInput(InputManager &inputManager)
 	if (isHovering)
 	{
 		if (!IUserInterface::m_isAnyClicked &&
-			inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
+			inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 		{
 			setActivation(true, inputManager);
 		}
 	}
 	// Deactivate text field when clicking outside the field's bounds.
-	else if (m_isActivated && inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
+	else if (m_isActivated && inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 	{
 		setActivation(false, inputManager);
 		m_isNewValue = true;
@@ -49,13 +49,13 @@ void UIField::handleInput(InputManager &inputManager)
 	if (m_isActivated)
 	{
 		// Erase the last character from the field.
-		if (inputManager.isKeyDown(GLFW_KEY_BACKSPACE, true))
+		if (inputManager.isKeyPressed(GLFW_KEY_BACKSPACE))
 		{
 			if (!m_value.empty())
 				m_value.erase(m_value.end() - 1);
 		}
 		// Deactivate on enter.
-		else if (inputManager.isKeyDown(GLFW_KEY_ENTER))
+		else if (inputManager.isKeyPressed(GLFW_KEY_ENTER))
 		{
 			setActivation(false, inputManager);
 			m_isNewValue = true;
@@ -71,6 +71,8 @@ void UIField::handleInput(InputManager &inputManager)
 
 		updateFieldValue();
 	}
+
+	return m_isNewValue;
 }
 
 void UIField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)

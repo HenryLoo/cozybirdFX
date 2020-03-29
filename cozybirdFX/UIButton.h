@@ -24,7 +24,7 @@ public:
 	bool isToggled() const;
 
 protected:
-	virtual void handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager) override;
 
 private:
 	// Call this function when the button is clicked.

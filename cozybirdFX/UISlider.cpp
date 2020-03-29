@@ -20,7 +20,7 @@ UISlider::UISlider(std::string label, glm::ivec2 range,
 {
 }
 
-void UISlider::handleInput(InputManager &inputManager)
+bool UISlider::handleInput(InputManager &inputManager)
 {
 	// Activate slider if the mouse is inside the bar's bounds.
 	glm::vec2 mousePos{ inputManager.getMousePos() };
@@ -41,10 +41,13 @@ void UISlider::handleInput(InputManager &inputManager)
 	}
 
 	// Disable clicked flag on left click release.
-	if (m_isClicked && !inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
+	bool isReleased{ m_isClicked && !inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1) };
+	if (isReleased)
 	{
 		IUserInterface::m_isAnyClicked = m_isClicked = false;
 	}
+
+	return isReleased;
 }
 
 void UISlider::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)

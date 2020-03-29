@@ -24,7 +24,7 @@ public:
 		std::shared_ptr<EmittersPanel> emitters,
 		std::shared_ptr<RendererPanel> renderer);
 
-	virtual void handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager) override;
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

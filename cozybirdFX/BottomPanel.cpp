@@ -25,13 +25,15 @@ BottomPanel::BottomPanel(EditorState &editor, TextRenderer &tRenderer,
     m_panel->addToRenderer(uRenderer, tRenderer);
 }
 
-void BottomPanel::handleInput(InputManager &inputManager)
+bool BottomPanel::handleInput(InputManager &inputManager)
 {
-    IEditorPanel::handleInput(inputManager);
+    bool hasChange{ IEditorPanel::handleInput(inputManager) };
 
     std::string description;
     m_editor.getCurrentPanel()->getDescription(inputManager, description);
     m_text->setText(description);
+
+    return hasChange;
 }
 
 void BottomPanel::update(float deltaTime, Emitter &emitter)

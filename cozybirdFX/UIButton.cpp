@@ -16,22 +16,26 @@ UIButton::UIButton(std::string label, glm::vec2 size, bool isTogglable,
 {
 }
 
-void UIButton::handleInput(InputManager &inputManager)
+bool UIButton::handleInput(InputManager &inputManager)
 {
 	// Call the action if left clicked inside the button's bounds.
+	bool hasChange{ false };
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 	bool isHovering{ IUserInterface::isHovering(inputManager) };
 	if (isHovering && !IUserInterface::m_isAnyClicked &&
-		inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1, true))
+		inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 	{
 		if (m_isTogglable)
 		{
 			setToggled(!m_isToggled);
+			hasChange = true;
 		}
 
 		m_action();
 	}
+
+	return hasChange;
 }
 
 void UIButton::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)

@@ -72,18 +72,20 @@ EmittersPanel::EmittersPanel(EditorState &editor,
     m_panel->setEnabled(false);
 }
 
-void EmittersPanel::handleInput(InputManager &inputManager)
+bool EmittersPanel::handleInput(InputManager &inputManager)
 {
-    IEditorPanel::handleInput(inputManager);
+    bool hasChange{ IEditorPanel::handleInput(inputManager) };
 
     for (int i = 0; i < EMITTER_HOTKEYS.size(); ++i)
     {
-        if (inputManager.isKeyDown(EMITTER_HOTKEYS[i]))
+        if (inputManager.isKeyPressed(EMITTER_HOTKEYS[i]))
         {
             selectEmitter(i);
-            return;
+            return true;
         }
     }
+
+    return hasChange;
 }
 
 void EmittersPanel::update(float deltaTime, Emitter &emitter)

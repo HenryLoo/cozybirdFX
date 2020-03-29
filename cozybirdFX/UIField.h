@@ -29,7 +29,7 @@ public:
 	bool getValue(std::string &output);
 
 protected:
-	virtual void handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager) override;
 
 	// The field's current value.
 	std::string m_value;

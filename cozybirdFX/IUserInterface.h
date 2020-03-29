@@ -12,7 +12,9 @@ public:
 	IUserInterface(glm::vec2 position, glm::vec2 size, glm::vec4 colour, 
 		bool hasBorder);
 
-	void process(InputManager &inputManager);
+	// Return true if there was a change, else return false.
+	bool process(InputManager &inputManager);
+
 	virtual void addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer);
 
 	// Setter functions.
@@ -34,7 +36,8 @@ public:
 		std::string &output) const;
 
 protected:
-	virtual void handleInput(InputManager &inputManager) = 0;
+	// Return true if there was a change, else return false.
+	virtual bool handleInput(InputManager &inputManager) = 0;
 
 	// Check if the mouse is hovering over this element.
 	bool isHovering(InputManager &inputManager) const;

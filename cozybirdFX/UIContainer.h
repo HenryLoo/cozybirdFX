@@ -34,7 +34,7 @@ public:
 		std::string &output) const override;
 
 protected:
-	virtual void handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager) override;
 
 private:
 	// Adjust the size of this container based on the size of its contents.

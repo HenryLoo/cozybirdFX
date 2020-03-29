@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include <memory>
+#include <stack>
 #include <vector>
 
 class Camera;

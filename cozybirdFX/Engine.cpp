@@ -100,6 +100,8 @@ void Engine::handleInput()
     IState *state{ getState() };
     if (state != nullptr)
         state->handleInput(*m_inputManager);
+
+    m_inputManager->update();
 }
 
 void Engine::update(float deltaTime)
