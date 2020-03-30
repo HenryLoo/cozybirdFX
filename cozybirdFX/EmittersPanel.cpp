@@ -72,9 +72,10 @@ EmittersPanel::EmittersPanel(EditorState &editor,
     m_panel->setEnabled(false);
 }
 
-bool EmittersPanel::handleInput(InputManager &inputManager)
+bool EmittersPanel::handleInput(InputManager &inputManager,
+    UndoableAction &action)
 {
-    bool hasChange{ IEditorPanel::handleInput(inputManager) };
+    bool hasChange{ IEditorPanel::handleInput(inputManager, action) };
 
     for (int i = 0; i < EMITTER_HOTKEYS.size(); ++i)
     {

@@ -27,6 +27,8 @@ namespace
     const glm::vec2 BUTTON_SIZE{ 100.f, 32.f };
     const glm::vec2 ONE_BUTTON_SIZE{ ONE_VAL_SIZE.x, BUTTON_SIZE.y };
     const glm::vec2 TWO_BUTTON_SIZE{ TWO_VAL_SIZE.x, BUTTON_SIZE.y };
+
+    const int MAX_UNDO_ACTIONS{ 3 };
 }
 
 EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
@@ -97,15 +99,26 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
 
 void EditorState::handleInput(InputManager &inputManager)
 {
+    // Check input for undo/redo key combination.
     if (inputManager.isKeyPressed(GLFW_KEY_Z, GLFW_MOD_CONTROL))
-    {
-        std::cout << "UNDO" << std::endl;
-    }
+        undo();
+    else if (inputManager.isKeyPressed(GLFW_KEY_Y, GLFW_MOD_CONTROL))
+        redo();
 
+    UndoableAction action;
     for (auto &panel : m_panels)
     {
-        if (panel->handleInput(inputManager))
+        if (panel->handleInput(inputManager, action))
+        {
+            // Remove the oldest undo action if full.
+            if (m_undoActions.size() == MAX_UNDO_ACTIONS)
+                m_undoActions.pop_front();
+
+            m_undoActions.push_back(action);
+            m_redoActions.clear();
+
             break;
+        }
     }
 }
 
@@ -207,6 +220,30 @@ void EditorState::resize(Camera &camera)
 
     // Reposition the clip size box.
     updateClipBoxPos();
+}
+
+void EditorState::undo()
+{
+    if (m_undoActions.empty())
+        return;
+
+    auto &action{ m_undoActions.back() };
+    action.undo();
+
+    m_redoActions.push_back(action);
+    m_undoActions.pop_back();
+}
+
+void EditorState::redo()
+{
+    if (m_redoActions.empty())
+        return;
+
+    auto &action{ m_redoActions.back() };
+    action.redo();
+
+    m_undoActions.push_back(action);
+    m_redoActions.pop_back();
 }
 
 glm::ivec2 EditorState::getViewportSize() const

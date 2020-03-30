@@ -1,7 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include "UIRenderer.h"
+#include "UndoableAction.h"
+
+#include <glm/glm.hpp>
 
 class InputManager;
 class TextRenderer;
@@ -13,7 +15,7 @@ public:
 		bool hasBorder);
 
 	// Return true if there was a change, else return false.
-	bool process(InputManager &inputManager);
+	bool process(InputManager &inputManager, UndoableAction &action);
 
 	virtual void addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer);
 
@@ -37,7 +39,8 @@ public:
 
 protected:
 	// Return true if there was a change, else return false.
-	virtual bool handleInput(InputManager &inputManager) = 0;
+	virtual bool handleInput(InputManager &inputManager,
+		UndoableAction &action) = 0;
 
 	// Check if the mouse is hovering over this element.
 	bool isHovering(InputManager &inputManager) const;

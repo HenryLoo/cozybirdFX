@@ -26,7 +26,8 @@ public:
 	int getValue() const;
 
 protected:
-	virtual bool handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager,
+		UndoableAction &action) override;
 
 private:
 	// Update the bar's value label and width.
@@ -41,6 +42,7 @@ private:
 	// The current value for this slider.
 	// This must be within the range.
 	int m_value{ 0 };
+	int m_oldValue{ 0 };
 
 	// Flag for if the left click is held down.
 	// This allows for dragging the slider even if the cursor is not inside the

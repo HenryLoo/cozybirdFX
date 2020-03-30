@@ -15,7 +15,8 @@ public:
 	EmittersPanel(EditorState &editor, std::shared_ptr<EmitterRenderer> eRenderer, 
 		TextRenderer &tRenderer, UIRenderer &uRenderer);
 
-	virtual bool handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager,
+		UndoableAction &action) override;
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

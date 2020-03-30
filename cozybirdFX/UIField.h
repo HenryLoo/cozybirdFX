@@ -29,10 +29,12 @@ public:
 	bool getValue(std::string &output);
 
 protected:
-	virtual bool handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager,
+		UndoableAction &action) override;
 
 	// The field's current value.
 	std::string m_value;
+	std::string m_oldValue;
 
 	// Check if a new value was set and disable it.
 	bool isNewValue();

@@ -23,8 +23,11 @@ public:
 	void setToggled(bool isToggled);
 	bool isToggled() const;
 
+	void setUndoAction(const std::function<void()> &undo);
+
 protected:
-	virtual bool handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager, 
+		UndoableAction &action) override;
 
 private:
 	// Call this function when the button is clicked.
@@ -42,4 +45,7 @@ private:
 	// Pointer to the label's text property.
 	// This allows for dynamic changes.
 	TextRenderer::Properties *m_tProperties{ nullptr };
+
+	// Each button may have a different undoable action.
+	UndoableAction m_undoableAction;
 };

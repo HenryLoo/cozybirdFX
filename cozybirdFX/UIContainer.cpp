@@ -10,13 +10,14 @@ UIContainer::UIContainer(glm::vec2 position, glm::vec2 size, glm::vec4 colour,
 	m_isFittingHeight = (size.y == -1.f);
 }
 
-bool UIContainer::handleInput(InputManager &inputManager)
+bool UIContainer::handleInput(InputManager &inputManager, 
+	UndoableAction &action)
 {
 	bool hasChange{ false };
 
 	for (const auto &element : m_elements)
 	{
-		hasChange = hasChange || element->process(inputManager);
+		hasChange = hasChange || element->process(inputManager, action);
 	}
 
 	return hasChange;

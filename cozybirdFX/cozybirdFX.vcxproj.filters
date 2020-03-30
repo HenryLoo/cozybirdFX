@@ -201,6 +201,9 @@
     <ClInclude Include="UIFloatField.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
+    <ClInclude Include="UndoableAction.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">

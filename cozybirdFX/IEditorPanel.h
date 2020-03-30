@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIContainer.h"
+#include "UndoableAction.h"
 
 #include <glm/glm.hpp>
 
@@ -13,7 +14,8 @@ class IUserInterface;
 class IEditorPanel
 {
 public:
-	virtual bool handleInput(InputManager &inputManager);
+	virtual bool handleInput(InputManager &inputManager, 
+        UndoableAction &action);
 
 	virtual void update(float deltaTime, Emitter &emitter) = 0;
 

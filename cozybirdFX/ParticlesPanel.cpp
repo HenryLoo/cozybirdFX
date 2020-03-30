@@ -7,6 +7,8 @@
 #include "UIIntField.h"
 #include "UIFloatField.h"
 
+#include <iostream>
+
 ParticlesPanel::ParticlesPanel(const EditorState &state, 
     TextRenderer &tRenderer,  UIRenderer &uRenderer) :
     m_state(state)
@@ -98,6 +100,7 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel->addNewHalfLine();
     m_facingDir = std::make_shared<UIButton>("Face Movement Direction",
         ONE_BUTTON_SIZE, true, []() {});
+    m_facingDir->setUndoAction([]() {});
     m_facingDir->setDescription("Specify whether the particle's rotation should face its direction of movement. Enabling this will disable rotation settings.");
     m_panel->addElement(m_facingDir);
 

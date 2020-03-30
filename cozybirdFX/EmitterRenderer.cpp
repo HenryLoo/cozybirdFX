@@ -186,6 +186,10 @@ void EmitterRenderer::setExportFPS(int fps)
 
 void EmitterRenderer::setLooping(bool isLooping)
 {
+    // Don't reset if there is no change.
+    if (m_isLooping == isLooping)
+        return;
+
     m_isLooping = isLooping;
     reset();
 }

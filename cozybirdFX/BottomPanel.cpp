@@ -25,9 +25,10 @@ BottomPanel::BottomPanel(EditorState &editor, TextRenderer &tRenderer,
     m_panel->addToRenderer(uRenderer, tRenderer);
 }
 
-bool BottomPanel::handleInput(InputManager &inputManager)
+bool BottomPanel::handleInput(InputManager &inputManager,
+    UndoableAction &action)
 {
-    bool hasChange{ IEditorPanel::handleInput(inputManager) };
+    bool hasChange{ IEditorPanel::handleInput(inputManager, action) };
 
     std::string description;
     m_editor.getCurrentPanel()->getDescription(inputManager, description);

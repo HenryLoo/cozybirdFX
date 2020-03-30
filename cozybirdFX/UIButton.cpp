@@ -16,26 +16,35 @@ UIButton::UIButton(std::string label, glm::vec2 size, bool isTogglable,
 {
 }
 
-bool UIButton::handleInput(InputManager &inputManager)
+bool UIButton::handleInput(InputManager &inputManager,
+	UndoableAction &action)
 {
 	// Call the action if left clicked inside the button's bounds.
-	bool hasChange{ false };
+	bool oldToggleState{ m_isToggled };
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 	bool isHovering{ IUserInterface::isHovering(inputManager) };
 	if (isHovering && !IUserInterface::m_isAnyClicked &&
 		inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 	{
+		bool wasToggled{ m_isToggled };
 		if (m_isTogglable)
 		{
 			setToggled(!m_isToggled);
-			hasChange = true;
 		}
 
 		m_action();
+
+		// If there was no change in toggle, then there is nothing to undo.
+		if (((m_isTogglable && wasToggled != m_isToggled) || !m_isTogglable) && 
+			m_undoableAction.undo != nullptr)
+		{
+			action = m_undoableAction;
+			return true;
+		}
 	}
 
-	return hasChange;
+	return false;
 }
 
 void UIButton::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
@@ -90,4 +99,19 @@ void UIButton::setToggled(bool isToggled)
 bool UIButton::isToggled() const
 {
 	return m_isToggled;
+}
+
+void UIButton::setUndoAction(const std::function<void()> &undo)
+{
+	// Toggle the button (if applicable), before performing undo/redo.
+	m_undoableAction.undo = [this, undo]()
+	{
+		setToggled(!isToggled());
+		undo();
+	};
+	m_undoableAction.redo = [this]()
+	{
+		setToggled(!isToggled());
+		m_action();
+	};;
 }

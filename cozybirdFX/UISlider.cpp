@@ -20,31 +20,51 @@ UISlider::UISlider(std::string label, glm::ivec2 range,
 {
 }
 
-bool UISlider::handleInput(InputManager &inputManager)
+bool UISlider::handleInput(InputManager &inputManager,
+	UndoableAction &action)
 {
 	// Activate slider if the mouse is inside the bar's bounds.
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 	bool isHovering{ IUserInterface::isHovering(inputManager) };
-	if (((!IUserInterface::m_isAnyClicked && isHovering) || m_isClicked) &&
-		inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
+	if ((!IUserInterface::m_isAnyClicked && isHovering) || m_isClicked)
 	{
-		IUserInterface::m_isAnyClicked = m_isClicked = true;
+		// Remember the old value when first clicked.
+		if (inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
+			m_oldValue = m_value;
 
-		float offset{ mousePos.x - pos.x };
-		int val{ static_cast<int>(offset / m_size.x * m_range.y) };
-		if (m_value != val)
+		// Adjust value when clicked and dragging.
+		if (inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1))
 		{
-			setValue(val);
-			updateBar();
+			IUserInterface::m_isAnyClicked = m_isClicked = true;
+
+			float offset{ mousePos.x - pos.x };
+			int val{ static_cast<int>(offset / m_size.x * m_range.y) };
+			if (m_value != val)
+			{
+				setValue(val);
+				updateBar();
+			}
 		}
 	}
 
 	// Disable clicked flag on left click release.
-	bool isReleased{ m_isClicked && !inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1) };
+	bool isReleased{ m_isClicked && 
+		!inputManager.isMouseDown(GLFW_MOUSE_BUTTON_1) };
 	if (isReleased)
 	{
 		IUserInterface::m_isAnyClicked = m_isClicked = false;
+		int oldValue{ m_oldValue };
+		action.undo = [this, oldValue]()
+		{
+			setValue(oldValue);
+		};
+
+		int value{ m_value };
+		action.redo = [this, value]()
+		{
+			setValue(value);
+		};
 	}
 
 	return isReleased;

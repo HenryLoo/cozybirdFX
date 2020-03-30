@@ -22,13 +22,15 @@ UIField::UIField(std::string label, glm::vec2 size,
 {
 }
 
-bool UIField::handleInput(InputManager &inputManager)
+bool UIField::handleInput(InputManager &inputManager, 
+	UndoableAction &action)
 {
 	glm::vec2 mousePos{ inputManager.getMousePos() };
 	glm::vec2 pos{ m_position + m_offset };
 	updateColour();
 
 	// Activate text field on left click, inside the field's bounds.
+	bool hasChange{ false };
 	bool isHovering{ IUserInterface::isHovering(inputManager) };
 	if (isHovering)
 	{
@@ -36,13 +38,16 @@ bool UIField::handleInput(InputManager &inputManager)
 			inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 		{
 			setActivation(true, inputManager);
+
+			// Remember the old value on activation.
+			m_oldValue = m_value;
 		}
 	}
 	// Deactivate text field when clicking outside the field's bounds.
 	else if (m_isActivated && inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 	{
 		setActivation(false, inputManager);
-		m_isNewValue = true;
+		m_isNewValue = hasChange = true;
 	}
 
 	// Handle text input if field is activated.
@@ -58,7 +63,7 @@ bool UIField::handleInput(InputManager &inputManager)
 		else if (inputManager.isKeyPressed(GLFW_KEY_ENTER))
 		{
 			setActivation(false, inputManager);
-			m_isNewValue = true;
+			m_isNewValue = hasChange = true;
 			m_hasError = !formatValue();
 		}
 		// Read text input and append onto the field's value.
@@ -72,7 +77,22 @@ bool UIField::handleInput(InputManager &inputManager)
 		updateFieldValue();
 	}
 
-	return m_isNewValue;
+	if (m_isNewValue)
+	{
+		const std::string oldValue{ m_oldValue };
+		action.undo = [this, oldValue]()
+		{
+			setValue(oldValue);
+		};
+
+		const std::string value{ m_value };
+		action.redo = [this, value]()
+		{
+			setValue(value);
+		};
+	}
+
+	return hasChange;
 }
 
 void UIField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)

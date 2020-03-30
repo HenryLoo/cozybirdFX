@@ -28,19 +28,27 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     m_linearBlend->setDescription("Switch to linear blending for this emitter's particles.");
     m_additiveBlend = std::make_shared<UIButton>("Additive", TWO_BUTTON_SIZE, true);
     m_additiveBlend->setDescription("Switch to additive blending for this emitter's particles.");
-    auto linearBlend{ m_linearBlend };
-    auto additiveBlend{ m_additiveBlend };
-    m_linearBlend->setAction([this, linearBlend, additiveBlend]()
+    m_linearBlend->setAction([this]()
         {
-            linearBlend->setToggled(true);
-            additiveBlend->setToggled(false);
+            m_linearBlend->setToggled(true);
+            m_additiveBlend->setToggled(false);
+        });
+    m_linearBlend->setUndoAction([this]()
+        {
+            m_linearBlend->setToggled(false);
+            m_additiveBlend->setToggled(true);
         });
     m_panel->addElement(m_linearBlend);
 
-    m_additiveBlend->setAction([this, linearBlend, additiveBlend]()
+    m_additiveBlend->setAction([this]()
         {
-            linearBlend->setToggled(false);
-            additiveBlend->setToggled(true);
+            m_linearBlend->setToggled(false);
+            m_additiveBlend->setToggled(true);
+        });
+    m_additiveBlend->setUndoAction([this]()
+        {
+            m_linearBlend->setToggled(true);
+            m_additiveBlend->setToggled(false);
         });
     m_panel->addElement(m_additiveBlend);
 

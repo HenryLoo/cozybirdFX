@@ -2,11 +2,12 @@
 
 #include "IState.h"
 #include "UIRenderer.h"
+#include "UndoableAction.h"
 
 #include <glm/glm.hpp>
 
+#include <list>
 #include <memory>
-#include <stack>
 #include <vector>
 
 class Camera;
@@ -51,6 +52,9 @@ private:
 
 	virtual void resize(Camera &camera) override;
 
+	void undo();
+	void redo();
+
 	// Calculate the size and offset of the viewport.
 	glm::ivec2 getViewportSize() const;
 
@@ -79,4 +83,7 @@ private:
 	std::shared_ptr<MovementPanel> m_movementPanel{ nullptr };
 	std::shared_ptr<EmittersPanel> m_emittersPanel{ nullptr };
 	std::shared_ptr<RendererPanel> m_renderPanel{ nullptr };
+
+	std::list<UndoableAction> m_undoActions;
+	std::list<UndoableAction> m_redoActions;
 };

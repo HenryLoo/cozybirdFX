@@ -9,13 +9,14 @@ IUserInterface::IUserInterface(glm::vec2 position, glm::vec2 size,
 {
 }
 
-bool IUserInterface::process(InputManager &inputManager)
+bool IUserInterface::process(InputManager &inputManager, 
+	UndoableAction &action)
 {
 	// Skip disabled elements.
 	if (!m_isEnabled)
 		return false;
 
-	return handleInput(inputManager);
+	return handleInput(inputManager, action);
 }
 
 void IUserInterface::addToRenderer(UIRenderer &uRenderer,

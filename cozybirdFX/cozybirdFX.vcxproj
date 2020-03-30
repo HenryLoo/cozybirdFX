@@ -188,6 +188,7 @@
     <ClInclude Include="UIRenderer.h" />
     <ClInclude Include="UIContainer.h" />
     <ClInclude Include="UISlider.h" />
+    <ClInclude Include="UndoableAction.h" />
     <ClInclude Include="VisualsPanel.h" />
   </ItemGroup>
   <ItemGroup>

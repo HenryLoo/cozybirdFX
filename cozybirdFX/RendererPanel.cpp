@@ -27,13 +27,9 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_panel->addElement(m_clipY);
 
     m_panel->addNewLine();
-    m_loop = std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true);
+    m_loop = std::make_shared<UIButton>("Animation is Looping", ONE_BUTTON_SIZE, true, []() {});
     m_loop->setDescription("Set whether the animation is looping or not.");
-    const UIButton &loopButton{ *m_loop };
-    m_loop->setAction([eRenderer, &loopButton]()
-        {
-            eRenderer->setLooping(loopButton.isToggled());
-        });
+    m_loop->setUndoAction([]() {});
     m_panel->addElement(m_loop);
 
     m_panel->addNewLine();
@@ -64,6 +60,9 @@ void RendererPanel::update(float deltaTime, Emitter &emitter)
     {
         m_eRenderer->setExportFPS(fps);
     }
+
+    // Set if the animation is looping.
+    m_eRenderer->setLooping(m_loop->isToggled());
 }
 
 void RendererPanel::updateUIFromEmitter(const Emitter &emitter)

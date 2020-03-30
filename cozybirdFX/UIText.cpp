@@ -6,7 +6,8 @@ UIText::UIText(std::string text, glm::vec2 size, glm::vec2 position) :
 
 }
 
-bool UIText::handleInput(InputManager &inputManager)
+bool UIText::handleInput(InputManager &inputManager,
+	UndoableAction &action)
 {
 	// Do nothing.
 	return false;

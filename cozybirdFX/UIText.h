@@ -22,7 +22,8 @@ public:
 	void setAlign(TextRenderer::TextAlign align);
 
 protected:
-	virtual bool handleInput(InputManager &inputManager) override;
+	virtual bool handleInput(InputManager &inputManager,
+		UndoableAction &action) override;
 
 private:
 	// The label's text.

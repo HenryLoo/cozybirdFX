@@ -24,7 +24,8 @@ IMenuState::IMenuState(Engine &engine, AssetLoader &assetLoader,
 
 void IMenuState::handleInput(InputManager &inputManager)
 {
-	m_panel->process(inputManager);
+	UndoableAction tmp;
+	m_panel->process(inputManager, tmp);
 }
 
 void IMenuState::render(float deltaTime, const Camera &camera)
