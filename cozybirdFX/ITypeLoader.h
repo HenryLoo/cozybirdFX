@@ -12,6 +12,8 @@ class ITypeLoader
 public:
 	ITypeLoader(const std::string &typePath);
 
+	void update(float deltaTime);
+
 	// Load an asset into a byte array, given its file path.
 	// After loading, try to interpret the asset using the
 	// specific loader's interpretAsset implementation.
@@ -27,6 +29,12 @@ protected:
 		int length;
 	};
 
+	struct CachedAsset
+	{
+		std::shared_ptr<IAsset> asset;
+		float elapsedTime;
+	};
+
 	// Interpret the loaded byte array into a specific asset type.
 	// The specific loader subclass should implement this.
 	virtual std::shared_ptr<IAsset> interpretAsset(
@@ -40,7 +48,7 @@ private:
 	void cache(const std::string &fileName, std::shared_ptr<IAsset> asset);
 
 	// Hold all cached assets.
-	std::unordered_map<std::string, std::shared_ptr<IAsset>> m_cachedAssets;
+	std::unordered_map<std::string, CachedAsset> m_cachedAssets;
 
 	// The specific asset type's folder name.
 	std::string m_typePath;

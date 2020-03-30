@@ -110,6 +110,9 @@ void Engine::update(float deltaTime)
     //if (m_entityManager != nullptr)
     //    m_entityManager->update(deltaTime);
 
+    // Update the asset loader.
+    m_assetLoader->update(deltaTime);
+
     // Update the current state.
     IState *state{ getState() };
     if (state != nullptr)

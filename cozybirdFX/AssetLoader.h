@@ -13,6 +13,9 @@ class IAsset;
 class AssetLoader
 {
 public:
+	// Update the registered loaders.
+	void update(float deltaTime);
+
 	// Load an asset through its specific TypeLoader, given its type as 
 	// the template.
 	template<typename T>
