@@ -128,7 +128,7 @@ VisualsPanel::VisualsPanel(SpriteRenderer &sRenderer, TextRenderer &tRenderer,
     m_panel->addElement(m_textureSprite);
 
     m_panel->addNewHalfLine();
-    m_textureName = std::make_shared<UIField>("", ONE_VAL_SIZE);
+    m_textureName = std::make_shared<UIField>("", UIField::BIG_MAX_CHARS, ONE_VAL_SIZE);
     m_textureName->setDescription("Specify the name of the texture image file that this emitter's particles will use. This file should be located in 'assets/texture/'.");
     m_panel->addElement(m_textureName);
 

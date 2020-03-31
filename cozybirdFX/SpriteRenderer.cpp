@@ -74,7 +74,7 @@ void SpriteRenderer::render(float deltaTime, const Camera &camera)
         it->texture->bind();
         glm::mat4 model{ glm::mat4(1.0f) };
         model = glm::translate(model, glm::vec3(it->pos.x, it->pos.y, 0.f));
-        model = glm::scale(model, glm::vec3(it->size.x, it->size.y, 1.f));
+        model = glm::scale(model, glm::vec3(it->size.x, -it->size.y, 1.f));
         glm::mat4 mvp{ proj * view * model };
         m_shader->setMat4("mvp", mvp);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -5,7 +5,7 @@
 class UIIntField : public UIField
 {
 public:
-	UIIntField(std::string label, glm::vec2 size,
+	UIIntField(std::string label, int maxChars, glm::vec2 size,
 		glm::vec2 position = { 0.f, 0.f });
 
 	// Set the current value.

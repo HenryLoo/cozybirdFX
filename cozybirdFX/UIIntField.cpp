@@ -1,7 +1,8 @@
 #include "UIIntField.h"
 
-UIIntField::UIIntField(std::string label, glm::vec2 size, glm::vec2 position) :
-	UIField(label, size, position)
+UIIntField::UIIntField(std::string label, int maxChars, glm::vec2 size, 
+	glm::vec2 position) :
+	UIField(label, maxChars, size, position)
 {
 }
 

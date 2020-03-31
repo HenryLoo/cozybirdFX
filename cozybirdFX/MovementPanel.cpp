@@ -16,15 +16,18 @@ MovementPanel::MovementPanel(SpriteRenderer &sRenderer,
     m_panel->addElement(speedLabel);
 
     m_panel->addNewHalfLine();
-    m_speedMin = std::make_shared<UIFloatField>("Min", THREE_VAL_SIZE);
+    m_speedMin = std::make_shared<UIFloatField>("Min", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_speedMin->setDescription("The minimum speed that a particle can move at.");
     m_panel->addElement(m_speedMin);
 
-    m_speedMax = std::make_shared<UIFloatField>("Max", THREE_VAL_SIZE);
+    m_speedMax = std::make_shared<UIFloatField>("Max", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_speedMax->setDescription("The maximum speed that a particle can move at.");
     m_panel->addElement(m_speedMax);
 
-    m_speedGrowth = std::make_shared<UIFloatField>("Growth", THREE_VAL_SIZE);
+    m_speedGrowth = std::make_shared<UIFloatField>("Growth", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_speedGrowth->setDescription("The rate at which a particle's speed will grow by.");
     m_panel->addElement(m_speedGrowth);
 
@@ -70,11 +73,13 @@ MovementPanel::MovementPanel(SpriteRenderer &sRenderer,
     m_panel->addElement(hSinLabel);
 
     m_panel->addNewHalfLine();
-    m_hSineAmplitude = std::make_shared<UIFloatField>("Amplitude", TWO_VAL_SIZE);
+    m_hSineAmplitude = std::make_shared<UIFloatField>("Amplitude", 
+        UIField::SMALL_MAX_CHARS, TWO_VAL_SIZE);
     m_hSineAmplitude->setDescription("The maximum horizontal distance that the emitter will oscillate to.");
     m_panel->addElement(m_hSineAmplitude);
 
-    m_hSinePeriod = std::make_shared<UIFloatField>("Period", TWO_VAL_SIZE);
+    m_hSinePeriod = std::make_shared<UIFloatField>("Period", 
+        UIField::SMALL_MAX_CHARS, TWO_VAL_SIZE);
     m_hSinePeriod->setDescription("The duration of time in seconds that is required to oscillate the emitter to the horizontal amplitude.");
     m_panel->addElement(m_hSinePeriod);
 
@@ -83,11 +88,13 @@ MovementPanel::MovementPanel(SpriteRenderer &sRenderer,
     m_panel->addElement(vSinLabel);
 
     m_panel->addNewHalfLine();
-    m_vSineAmplitude = std::make_shared<UIFloatField>("Amplitude", TWO_VAL_SIZE);
+    m_vSineAmplitude = std::make_shared<UIFloatField>("Amplitude", 
+        UIField::SMALL_MAX_CHARS, TWO_VAL_SIZE);
     m_vSineAmplitude->setDescription("The maximum vertical distance that the emitter will oscillate to.");
     m_panel->addElement(m_vSineAmplitude);
 
-    m_vSinePeriod = std::make_shared<UIFloatField>("Period", TWO_VAL_SIZE);
+    m_vSinePeriod = std::make_shared<UIFloatField>("Period", 
+        UIField::SMALL_MAX_CHARS, TWO_VAL_SIZE);
     m_vSinePeriod->setDescription("The duration of time in seconds that is required to oscillate the emitter to the vertical amplitude.");
     m_panel->addElement(m_vSinePeriod);
 
@@ -96,11 +103,13 @@ MovementPanel::MovementPanel(SpriteRenderer &sRenderer,
     m_panel->addElement(circleLabel);
 
     m_panel->addNewHalfLine();
-    m_circleRadius = std::make_shared<UIFloatField>("Radius", TWO_VAL_SIZE);
+    m_circleRadius = std::make_shared<UIFloatField>("Radius", 
+        UIField::SMALL_MAX_CHARS, TWO_VAL_SIZE);
     m_circleRadius->setDescription("The radius of the circle that the emitter will rotate around.");
     m_panel->addElement(m_circleRadius);
 
-    m_circlePeriod = std::make_shared<UIFloatField>("Period", TWO_VAL_SIZE);
+    m_circlePeriod = std::make_shared<UIFloatField>("Period", 
+        UIField::SMALL_MAX_CHARS, TWO_VAL_SIZE);
     m_circlePeriod->setDescription("The duration of time in seconds that is required to perform one rotation around the circle.");
     m_panel->addElement(m_circlePeriod);
 

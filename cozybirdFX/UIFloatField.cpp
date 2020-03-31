@@ -4,9 +4,9 @@
 #include <sstream>
 #include <iostream>
 
-UIFloatField::UIFloatField(std::string label, glm::vec2 size, 
+UIFloatField::UIFloatField(std::string label, int maxChars, glm::vec2 size,
 	int precision, glm::vec2 position) :
-	UIField(label, size, position), m_precision(precision)
+	UIField(label, maxChars, size, position), m_precision(precision)
 {
 }
 

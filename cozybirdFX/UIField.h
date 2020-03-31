@@ -12,7 +12,7 @@ class InputManager;
 class UIField : public IUserInterface
 {
 public:
-	UIField(std::string label, glm::vec2 size,
+	UIField(std::string label, int maxChars, glm::vec2 size,
 		glm::vec2 position = { 0.f, 0.f });
 
 	virtual void addToRenderer(SpriteRenderer &sRenderer, 
@@ -27,6 +27,10 @@ public:
 	// Get the text field's current value.
 	// Return whether or not this is a new value.
 	bool getValue(std::string &output);
+
+	static const int BIG_MAX_CHARS;
+	static const int MID_MAX_CHARS;
+	static const int SMALL_MAX_CHARS;
 
 protected:
 	virtual bool handleInput(InputManager &inputManager,
@@ -62,6 +66,9 @@ private:
 
 	// Flag for if there is a new value to get.
 	bool m_isNewValue{ true };
+
+	// The maximum number of characters this field can hold.
+	int m_maxChars{ 0 };
 
 	// Hold pointers to its rendering items, so that their values can be
 	// dynamically updated.

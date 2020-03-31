@@ -5,6 +5,10 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+const int UIField::BIG_MAX_CHARS{ 25 };
+const int UIField::MID_MAX_CHARS{ 10 };
+const int UIField::SMALL_MAX_CHARS{ 5 };
+
 namespace
 {
 	const float TEXT_OFFSET{ 4.f };
@@ -15,10 +19,10 @@ namespace
 	const glm::vec4 ERROR_ACTIVATED_COLOUR{ 0.9f, 0.1f, 0.1f, 1.f };
 }
 
-UIField::UIField(std::string label, glm::vec2 size, 
+UIField::UIField(std::string label, int maxChars, glm::vec2 size, 
 	glm::vec2 position) :
 	IUserInterface(position, size, DEACTIVATED_COLOUR, true),
-	m_label(label)
+	m_label(label), m_maxChars(maxChars)
 {
 }
 
@@ -72,6 +76,7 @@ bool UIField::handleInput(InputManager &inputManager,
 			std::string str;
 			inputManager.flushText(str);
 			m_value += str;
+			m_value = m_value.substr(0, m_maxChars);
 		}
 
 		updateFieldValue();

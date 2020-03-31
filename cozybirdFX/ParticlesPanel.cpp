@@ -19,12 +19,14 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
 
-    m_delay = std::make_shared<UIFloatField>("Delay Before Start", ONE_VAL_SIZE);
+    m_delay = std::make_shared<UIFloatField>("Delay Before Start", 
+        UIField::MID_MAX_CHARS, ONE_VAL_SIZE);
     m_delay->setDescription("The duration of time in seconds before emitting particles, from the start of each animation loop.");
     m_panel->addElement(m_delay);
 
     m_panel->addNewLine();
-    m_duration = std::make_shared<UIFloatField>("Emitter Duration", ONE_VAL_SIZE);
+    m_duration = std::make_shared<UIFloatField>("Emitter Duration", 
+        UIField::MID_MAX_CHARS, ONE_VAL_SIZE);
     m_duration->setDescription("The duration of time in seconds before this emitter stops emitting particles, from the start of each animation loop.");
     m_panel->addElement(m_duration);
 
@@ -33,11 +35,13 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel->addElement(posLabel);
 
     m_panel->addNewHalfLine();
-    m_xPosition = std::make_shared<UIFloatField>("x", TWO_VAL_SIZE);
+    m_xPosition = std::make_shared<UIFloatField>("x", UIField::MID_MAX_CHARS,
+        TWO_VAL_SIZE);
     m_xPosition->setDescription("The x-coordinate of the emitter's origin position.");
     m_panel->addElement(m_xPosition);
 
-    m_yPosition = std::make_shared<UIFloatField>("y", TWO_VAL_SIZE);
+    m_yPosition = std::make_shared<UIFloatField>("y", UIField::MID_MAX_CHARS,
+        TWO_VAL_SIZE);
     m_yPosition->setDescription("The y-coordinate of the emitter's origin position.");
     m_panel->addElement(m_yPosition);
 
@@ -46,21 +50,25 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel->addElement(distLabel);
 
     m_panel->addNewHalfLine();
-    m_distWidth = std::make_shared<UIFloatField>("Width", TWO_VAL_SIZE);
+    m_distWidth = std::make_shared<UIFloatField>("Width", UIField::MID_MAX_CHARS, 
+        TWO_VAL_SIZE);
     m_distWidth->setDescription("The width of the box to distrbute the emitted particles in.");
     m_panel->addElement(m_distWidth);
 
-    m_distHeight = std::make_shared<UIFloatField>("Height", TWO_VAL_SIZE);
+    m_distHeight = std::make_shared<UIFloatField>("Height", UIField::MID_MAX_CHARS, 
+        TWO_VAL_SIZE);
     m_distHeight->setDescription("The height of the box to distrbute the emitted particles in.");
     m_panel->addElement(m_distHeight);
 
     m_panel->addNewLine();
-    m_numToGenerate = std::make_shared<UIIntField>("Particle Amount", ONE_VAL_SIZE);
+    m_numToGenerate = std::make_shared<UIIntField>("Particle Amount", UIField::MID_MAX_CHARS,
+        ONE_VAL_SIZE);
     m_numToGenerate->setDescription("The number of particles to generate per emission.");
     m_panel->addElement(m_numToGenerate);
 
     m_panel->addNewLine();
-    m_spawnTime = std::make_shared<UIFloatField>("Spawn Interval", ONE_VAL_SIZE);
+    m_spawnTime = std::make_shared<UIFloatField>("Spawn Interval", UIField::MID_MAX_CHARS,
+        ONE_VAL_SIZE);
     m_spawnTime->setDescription("The delay in seconds between each emission.");
     m_panel->addElement(m_spawnTime);
 
@@ -69,11 +77,13 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel->addElement(lifeLabel);
 
     m_panel->addNewHalfLine();
-    m_lifeMin = std::make_shared<UIFloatField>("Min", TWO_VAL_SIZE);
+    m_lifeMin = std::make_shared<UIFloatField>("Min", UIField::MID_MAX_CHARS, 
+        TWO_VAL_SIZE);
     m_lifeMin->setDescription("The minimum duration in seconds that a particle can live for.");
     m_panel->addElement(m_lifeMin);
 
-    m_lifeMax = std::make_shared<UIFloatField>("Max", TWO_VAL_SIZE);
+    m_lifeMax = std::make_shared<UIFloatField>("Max", UIField::MID_MAX_CHARS, 
+        TWO_VAL_SIZE);
     m_lifeMax->setDescription("The maximum duration in seconds that a particle can live for.");
     m_panel->addElement(m_lifeMax);
 
@@ -82,15 +92,18 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_panel->addElement(sizeLabel);
 
     m_panel->addNewHalfLine();
-    m_sizeMin = std::make_shared<UIFloatField>("Min", THREE_VAL_SIZE);
+    m_sizeMin = std::make_shared<UIFloatField>("Min", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_sizeMin->setDescription("The minimum size that a particle can be created with.");
     m_panel->addElement(m_sizeMin);
 
-    m_sizeMax = std::make_shared<UIFloatField>("Max", THREE_VAL_SIZE);
+    m_sizeMax = std::make_shared<UIFloatField>("Max", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_sizeMax->setDescription("The maximum size that a particle can be created with.");
     m_panel->addElement(m_sizeMax);
 
-    m_sizeGrowth = std::make_shared<UIFloatField>("Growth", THREE_VAL_SIZE);
+    m_sizeGrowth = std::make_shared<UIFloatField>("Growth", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_sizeGrowth->setDescription("The rate at which a particle's size will grow by.");
     m_panel->addElement(m_sizeGrowth);
 

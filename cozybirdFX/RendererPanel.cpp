@@ -18,11 +18,13 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_panel->addElement(clipLabel);
 
     m_panel->addNewHalfLine();
-    m_clipX = std::make_shared<UIIntField>("Width", TWO_VAL_SIZE);
+    m_clipX = std::make_shared<UIIntField>("Width", UIField::MID_MAX_CHARS, 
+        TWO_VAL_SIZE);
     m_clipX->setDescription("The width of each frame in the animation. Only details inside the clip will be considered when exporting.");
     m_panel->addElement(m_clipX);
 
-    m_clipY = std::make_shared<UIIntField>("Height", TWO_VAL_SIZE);
+    m_clipY = std::make_shared<UIIntField>("Height", UIField::MID_MAX_CHARS, 
+        TWO_VAL_SIZE);
     m_clipY->setDescription("The height of each frame in the animation. Only details inside the clip will be considered when exporting.");
     m_panel->addElement(m_clipY);
 
@@ -33,7 +35,8 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_panel->addElement(m_loop);
 
     m_panel->addNewLine();
-    m_fps = std::make_shared<UIIntField>("Export FPS", ONE_VAL_SIZE);
+    m_fps = std::make_shared<UIIntField>("Export FPS", UIField::SMALL_MAX_CHARS, 
+        ONE_VAL_SIZE);
     m_fps->setDescription("The frame rate of the exported animation. Setting this too low may fail to capture some emitter details.");
     m_panel->addElement(m_fps);
 
