@@ -10,7 +10,8 @@
 #include <iostream>
 
 ParticlesPanel::ParticlesPanel(const EditorState &state, 
-    TextRenderer &tRenderer,  UIRenderer &uRenderer) :
+    SpriteRenderer &sRenderer, TextRenderer &tRenderer,  
+    UIRenderer &uRenderer) :
     m_state(state)
 {
     m_description = "Right-click to move the current emitter.";
@@ -117,7 +118,7 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_rotationGrowth->setDescription("The rate at which a particle's rotation angle will grow by.");
     m_panel->addElement(m_rotationGrowth);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
 }
 
 void ParticlesPanel::update(float deltaTime, Emitter &emitter)

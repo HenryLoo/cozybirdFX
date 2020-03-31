@@ -7,8 +7,8 @@ namespace
     const glm::vec2 DESCRIPTION_SIZE{ -1.f, 32.f };
 }
 
-BottomPanel::BottomPanel(EditorState &editor, TextRenderer &tRenderer, 
-    UIRenderer &uRenderer,
+BottomPanel::BottomPanel(EditorState &editor, SpriteRenderer &sRenderer,
+    TextRenderer &tRenderer,  UIRenderer &uRenderer,
     std::shared_ptr<ParticlesPanel> particles,
     std::shared_ptr<VisualsPanel> visuals,
     std::shared_ptr<MovementPanel> movement,
@@ -22,7 +22,7 @@ BottomPanel::BottomPanel(EditorState &editor, TextRenderer &tRenderer,
     m_text = std::make_shared<UIText>("", DESCRIPTION_SIZE);
     m_panel->addElement(m_text);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
 }
 
 bool BottomPanel::handleInput(InputManager &inputManager,

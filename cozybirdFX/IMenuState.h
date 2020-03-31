@@ -10,6 +10,7 @@ class Camera;
 class EmitterRenderer;
 class Engine;
 class InputManager;
+class SpriteRenderer;
 class TextRenderer;
 class UIRenderer;
 class UIButton;
@@ -44,6 +45,7 @@ protected:
 	// This state's renderers.
 	std::shared_ptr<TextRenderer> m_tRenderer{ nullptr };
 	std::shared_ptr<UIRenderer> m_uRenderer{ nullptr };
+	std::shared_ptr<SpriteRenderer> m_sRenderer{ nullptr };
 
 private:
 	virtual void update(float deltaTime, const Camera &camera) override;

@@ -5,7 +5,8 @@
 #include "UIText.h"
 #include "UIFloatField.h"
 
-MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
+MovementPanel::MovementPanel(SpriteRenderer &sRenderer, 
+    TextRenderer &tRenderer, UIRenderer &uRenderer)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, 0.f));
@@ -103,7 +104,7 @@ MovementPanel::MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer)
     m_circlePeriod->setDescription("The duration of time in seconds that is required to perform one rotation around the circle.");
     m_panel->addElement(m_circlePeriod);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
     m_panel->setEnabled(false);
 }
 

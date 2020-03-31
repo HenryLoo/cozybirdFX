@@ -1,5 +1,6 @@
 #include "IMenuState.h"
 #include "Engine.h"
+#include "SpriteRenderer.h"
 #include "UIButton.h"
 #include "UIText.h"
 
@@ -11,6 +12,7 @@ IMenuState::IMenuState(Engine &engine, AssetLoader &assetLoader,
 {
 	m_tRenderer = std::make_shared<TextRenderer>(assetLoader);
 	m_uRenderer = std::make_shared<UIRenderer>(assetLoader);
+	m_sRenderer = std::make_shared<SpriteRenderer>(assetLoader);
 
 	glm::vec2 windowSize{ engine.getWindowSize() };
 	m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
@@ -31,6 +33,7 @@ void IMenuState::handleInput(InputManager &inputManager)
 void IMenuState::render(float deltaTime, const Camera &camera)
 {
 	m_uRenderer->render(deltaTime, camera);
+	m_sRenderer->render(deltaTime, camera);
 	m_tRenderer->render(deltaTime, camera);
 }
 
@@ -54,7 +57,7 @@ void IMenuState::enter()
 		});
 	m_panel->addElement(m_closeButton);
 
-	m_panel->addToRenderer(*m_uRenderer, *m_tRenderer);
+	m_panel->addToRenderer(*m_sRenderer, *m_uRenderer, *m_tRenderer);
 	m_title->setAlign(TextRenderer::TextAlign::CENTER);
 }
 

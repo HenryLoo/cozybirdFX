@@ -187,6 +187,7 @@
     <ClInclude Include="UIButton.h" />
     <ClInclude Include="UIFloatField.h" />
     <ClInclude Include="UIIntField.h" />
+    <ClInclude Include="UISprite.h" />
     <ClInclude Include="UIText.h" />
     <ClInclude Include="UIField.h" />
     <ClInclude Include="UIRenderer.h" />
@@ -236,6 +237,7 @@
     <ClCompile Include="UIButton.cpp" />
     <ClCompile Include="UIFloatField.cpp" />
     <ClCompile Include="UIIntField.cpp" />
+    <ClCompile Include="UISprite.cpp" />
     <ClCompile Include="UIText.cpp" />
     <ClCompile Include="UIRenderer.cpp" />
     <ClCompile Include="UIContainer.cpp" />

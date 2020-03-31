@@ -36,6 +36,7 @@ public:
 
 	// Setter functions.
 	void setTexture(AssetLoader &assetLoader, const std::string &filePath);
+	void setTexture(std::shared_ptr<Texture> texture, const std::string &filePath);
 	void setNumToGenerate(int num);
 	void setPosition(glm::vec2 position);
 	void setDistribution(glm::vec2 widthHeight);

@@ -47,10 +47,11 @@ bool UIButton::handleInput(InputManager &inputManager,
 	return false;
 }
 
-void UIButton::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
+void UIButton::addToRenderer(SpriteRenderer &sRenderer, 
+	UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add this button to the renderer.
-	IUserInterface::addToRenderer(uRenderer, tRenderer);
+	IUserInterface::addToRenderer(sRenderer, uRenderer, tRenderer);
 
 	// Add this button's text to the renderer.
 	TextRenderer::Properties prop;

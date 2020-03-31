@@ -95,10 +95,11 @@ bool UIField::handleInput(InputManager &inputManager,
 	return hasChange;
 }
 
-void UIField::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
+void UIField::addToRenderer(SpriteRenderer &sRenderer, UIRenderer &uRenderer,
+	TextRenderer &tRenderer)
 {
 	// Add the text field's bar to the renderer.
-	IUserInterface::addToRenderer(uRenderer, tRenderer);
+	IUserInterface::addToRenderer(sRenderer, uRenderer, tRenderer);
 
 	glm::vec2 textPos{ m_position + m_offset };
 	textPos.x += TEXT_OFFSET;

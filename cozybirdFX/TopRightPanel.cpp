@@ -8,8 +8,8 @@
 #include "EmittersPanel.h"
 #include "RendererPanel.h"
 #include <iostream>
-TopRightPanel::TopRightPanel(EditorState &editor, TextRenderer &tRenderer, 
-    UIRenderer &uRenderer,
+TopRightPanel::TopRightPanel(EditorState &editor, SpriteRenderer &sRenderer, 
+    TextRenderer &tRenderer, UIRenderer &uRenderer,
     std::shared_ptr<ParticlesPanel> particles,
     std::shared_ptr<VisualsPanel> visuals,
     std::shared_ptr<MovementPanel> movement,
@@ -66,7 +66,7 @@ TopRightPanel::TopRightPanel(EditorState &editor, TextRenderer &tRenderer,
     m_panel->addElement(m_emittersButton);
     m_panel->addElement(m_rendererButton);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
     m_particlesButton->setToggled(true);
 }
 

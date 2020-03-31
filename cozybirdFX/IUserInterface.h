@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 class InputManager;
+class SpriteRenderer;
 class TextRenderer;
 
 class IUserInterface
@@ -17,7 +18,8 @@ public:
 	// Return true if there was a change, else return false.
 	bool process(InputManager &inputManager, UndoableAction &action);
 
-	virtual void addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer);
+	virtual void addToRenderer(SpriteRenderer &sRenderer, 
+		UIRenderer &uRenderer, TextRenderer &tRenderer);
 
 	// Setter functions.
 	virtual void setPosition(glm::vec2 position);

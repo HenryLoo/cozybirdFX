@@ -70,10 +70,11 @@ bool UISlider::handleInput(InputManager &inputManager,
 	return isReleased;
 }
 
-void UISlider::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
+void UISlider::addToRenderer(SpriteRenderer &sRenderer, 
+	UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add the slider's bar to the renderer.
-	IUserInterface::addToRenderer(uRenderer, tRenderer);
+	IUserInterface::addToRenderer(sRenderer, uRenderer, tRenderer);
 
 	// Add the slider's fill to the renderer.
 	UIRenderer::Properties fill;

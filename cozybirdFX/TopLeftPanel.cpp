@@ -12,7 +12,7 @@
 
 TopLeftPanel::TopLeftPanel(Engine &engine, AssetLoader &assetLoader, 
     std::shared_ptr<EmitterRenderer> eRenderer, 
-    TextRenderer &tRenderer, UIRenderer &uRenderer,
+    SpriteRenderer &sRenderer, TextRenderer &tRenderer, UIRenderer &uRenderer,
     UIRenderer::Properties &clipSizeBox) :
     m_eRenderer(eRenderer)
 {
@@ -52,7 +52,7 @@ TopLeftPanel::TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
     m_playbackTimer = std::make_shared<UIText>("", BUTTON_SIZE);
     m_panel->addElement(m_playbackTimer);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
     clipButton->setToggled(true);
 }
 

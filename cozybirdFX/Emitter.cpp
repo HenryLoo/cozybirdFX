@@ -131,6 +131,12 @@ void Emitter::setTexture(AssetLoader &assetLoader, const std::string &filePath)
 {
     std::shared_ptr<Texture> texture{ assetLoader.load<Texture>(filePath) };
     if (texture != nullptr)
+        setTexture(texture, filePath);
+}
+
+void Emitter::setTexture(std::shared_ptr<Texture> texture, const std::string &filePath)
+{
+    if (texture != nullptr)
     {
         m_texture = texture;
         m_textureName = filePath;

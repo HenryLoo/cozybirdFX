@@ -3,9 +3,10 @@
 #include "Emitter.h"
 #include "Texture.h"
 #include "UIButton.h"
-#include "UISlider.h"
-#include "UIText.h"
 #include "UIField.h"
+#include "UISlider.h"
+#include "UISprite.h"
+#include "UIText.h"
 
 namespace
 {
@@ -13,8 +14,8 @@ namespace
     const glm::vec2 PERCENT_RANGE{ 0.f, 100.f };
 }
 
-VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer, 
-    AssetLoader &assetLoader) :
+VisualsPanel::VisualsPanel(SpriteRenderer &sRenderer, TextRenderer &tRenderer,
+    UIRenderer &uRenderer, AssetLoader &assetLoader) :
     m_assetLoader(assetLoader)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
@@ -123,20 +124,26 @@ VisualsPanel::VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer,
     m_panel->addElement(textureLabel);
 
     m_panel->addNewHalfLine();
+    m_textureSprite = std::make_shared<UISprite>(glm::vec2(100.f));
+    m_panel->addElement(m_textureSprite);
+
+    m_panel->addNewHalfLine();
     m_textureName = std::make_shared<UIField>("", ONE_VAL_SIZE);
     m_textureName->setDescription("Specify the name of the texture image file that this emitter's particles will use. This file should be located in 'assets/texture/'.");
     m_panel->addElement(m_textureName);
 
     m_panel->addNewHalfLine();
     auto textureButton{ std::make_shared<UIButton>("Load",
-        BUTTON_SIZE, false, [this]()
+        ONE_BUTTON_SIZE, false, [this]()
         {
             prepareToLoadTexture();
         }
     ) };
     m_panel->addElement(textureButton);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addNewLine();
+
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
     m_panel->setEnabled(false);
 }
 
@@ -174,7 +181,9 @@ void VisualsPanel::update(float deltaTime, Emitter &emitter)
 
         std::string textureName;
         m_textureName->getValue(textureName);
-        emitter.setTexture(m_assetLoader, textureName);
+        std::shared_ptr<Texture> texture{ m_assetLoader.load<Texture>(textureName) };
+        emitter.setTexture(texture, textureName);
+        m_textureSprite->setSprite(texture);
     }
 }
 
@@ -204,6 +213,7 @@ void VisualsPanel::updateUIFromEmitter(const Emitter &emitter)
 
     const std::string &textureName{ emitter.getTextureName() };
     m_textureName->setValue(textureName);
+    m_hasNewTexture = true;
 }
 
 void VisualsPanel::prepareToLoadTexture()

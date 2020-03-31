@@ -7,7 +7,7 @@
 
 RendererPanel::RendererPanel(EditorState &editor, 
     std::shared_ptr<EmitterRenderer> eRenderer,
-    TextRenderer &tRenderer, UIRenderer &uRenderer,
+    SpriteRenderer &sRenderer, TextRenderer &tRenderer, UIRenderer &uRenderer,
     UIRenderer::Properties &clipSizeBox) :
     m_editor(editor), m_eRenderer(eRenderer), m_clipSizeBox(clipSizeBox)
 {
@@ -37,7 +37,7 @@ RendererPanel::RendererPanel(EditorState &editor,
     m_fps->setDescription("The frame rate of the exported animation. Setting this too low may fail to capture some emitter details.");
     m_panel->addElement(m_fps);
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
     m_panel->setEnabled(false);
 }
 

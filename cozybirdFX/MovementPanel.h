@@ -2,6 +2,7 @@
 
 #include "IEditorPanel.h"
 
+class SpriteRenderer;
 class TextRenderer;
 class UIRenderer;
 class UISlider;
@@ -10,7 +11,8 @@ class UIFloatField;
 class MovementPanel : public IEditorPanel
 {
 public:
-	MovementPanel(TextRenderer &tRenderer, UIRenderer &uRenderer);
+	MovementPanel(SpriteRenderer &sRenderer, TextRenderer &tRenderer, 
+		UIRenderer &uRenderer);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

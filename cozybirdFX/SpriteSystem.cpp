@@ -26,12 +26,12 @@ SpriteSystem::SpriteSystem(EntityManager &manager,
 
 void SpriteSystem::updateEntity(int entityId, float deltaTime)
 {
-	glm::mat4 model{ 1.f };
-	model = glm::translate(model, m_positions[entityId].xyz);
-	model = glm::scale(model, m_transforms[entityId].scale);
-	model = glm::rotate(model, m_transforms[entityId].rotation.x, glm::vec3(1.f, 0.f, 0.f));
-	model = glm::rotate(model, m_transforms[entityId].rotation.y, glm::vec3(0.f, 1.f, 0.f));
-	model = glm::rotate(model, m_transforms[entityId].rotation.z, glm::vec3(0.f, 0.f, 1.f));
+	//glm::mat4 model{ 1.f };
+	//model = glm::translate(model, m_positions[entityId].xyz);
+	//model = glm::scale(model, m_transforms[entityId].scale);
+	//model = glm::rotate(model, m_transforms[entityId].rotation.x, glm::vec3(1.f, 0.f, 0.f));
+	//model = glm::rotate(model, m_transforms[entityId].rotation.y, glm::vec3(0.f, 1.f, 0.f));
+	//model = glm::rotate(model, m_transforms[entityId].rotation.z, glm::vec3(0.f, 0.f, 1.f));
 
-	m_sRenderer->addSprite(model);
+	//m_sRenderer->addSprite(model);
 }

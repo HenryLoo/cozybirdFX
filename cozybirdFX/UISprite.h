@@ -1,16 +1,16 @@
 #pragma once
 
 #include "IUserInterface.h"
-#include "TextRenderer.h"
+#include "SpriteRenderer.h"
 
 #include <glm/glm.hpp>
 
-#include <string>
+class Texture;
 
-class UIText : public IUserInterface
+class UISprite : public IUserInterface
 {
 public:
-	UIText(std::string text, glm::vec2 size, glm::vec2 position = { 0.f, 0.f });
+	UISprite(glm::vec2 size, glm::vec2 position = { 0.f, 0.f });
 
 	virtual void addToRenderer(SpriteRenderer &sRenderer, 
 		UIRenderer &uRenderer, TextRenderer &tRenderer) override;
@@ -18,18 +18,16 @@ public:
 	virtual void setPosition(glm::vec2 position) override;
 	virtual void setEnabled(bool isEnabled) override;
 
-	void setText(const std::string &text);
-	void setAlign(TextRenderer::TextAlign align);
+	void setSprite(std::shared_ptr<Texture> texture);
 
 protected:
 	virtual bool handleInput(InputManager &inputManager,
 		UndoableAction &action) override;
 
 private:
-	// The label's text.
-	std::string m_text;
+	std::shared_ptr<Texture> m_texture{ nullptr };
 
-	// Pointer to the label's text property.
+	// Pointer to the sprite.
 	// This allows for dynamic changes.
-	TextRenderer::Properties *m_tProperties{ nullptr };
+	SpriteRenderer::Properties *m_sProperties{ nullptr };
 };

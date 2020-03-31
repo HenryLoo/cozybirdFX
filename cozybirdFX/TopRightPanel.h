@@ -3,6 +3,7 @@
 #include "IEditorPanel.h"
 
 class EditorState;
+class SpriteRenderer;
 class TextRenderer;
 class UIButton;
 class UIRenderer;
@@ -16,8 +17,8 @@ class RendererPanel;
 class TopRightPanel : public IEditorPanel
 {
 public:
-	TopRightPanel(EditorState &editor, TextRenderer &tRenderer, 
-		UIRenderer &uRenderer, 
+	TopRightPanel(EditorState &editor, SpriteRenderer &sRenderer, 
+		TextRenderer &tRenderer, UIRenderer &uRenderer, 
 		std::shared_ptr<ParticlesPanel> particles, 
 		std::shared_ptr<VisualsPanel> visuals, 
 		std::shared_ptr<MovementPanel> movement,

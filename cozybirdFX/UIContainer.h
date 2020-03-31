@@ -23,8 +23,8 @@ public:
 	void addNewLine();
 	void addNewHalfLine();
 
-	virtual void addToRenderer(UIRenderer &uRenderer, 
-		TextRenderer &tRenderer) override;
+	virtual void addToRenderer(SpriteRenderer &sRenderer, 
+		UIRenderer &uRenderer, TextRenderer &tRenderer) override;
 
 	virtual void setPosition(glm::vec2 position) override;
 	virtual void setSize(glm::vec2 size) override;

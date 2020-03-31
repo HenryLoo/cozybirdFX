@@ -5,6 +5,7 @@
 class EditorState;
 
 class EmitterRenderer;
+class SpriteRenderer;
 class TextRenderer;
 class UIButton;
 class UIRenderer;
@@ -12,8 +13,10 @@ class UIRenderer;
 class EmittersPanel : public IEditorPanel
 {
 public:
-	EmittersPanel(EditorState &editor, std::shared_ptr<EmitterRenderer> eRenderer, 
-		TextRenderer &tRenderer, UIRenderer &uRenderer);
+	EmittersPanel(EditorState &editor, 
+		std::shared_ptr<EmitterRenderer> eRenderer, 
+		SpriteRenderer &sRenderer, TextRenderer &tRenderer, 
+		UIRenderer &uRenderer);
 
 	virtual bool handleInput(InputManager &inputManager,
 		UndoableAction &action) override;

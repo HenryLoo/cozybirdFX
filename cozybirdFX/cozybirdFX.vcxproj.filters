@@ -204,6 +204,9 @@
     <ClInclude Include="UndoableAction.h">
       <Filter>Header Files\States</Filter>
     </ClInclude>
+    <ClInclude Include="UISprite.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -343,6 +346,9 @@
     </ClCompile>
     <ClCompile Include="AssetLoader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UISprite.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

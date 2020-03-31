@@ -12,11 +12,29 @@ class AssetLoader;
 class SpriteRenderer : public IRenderer
 {
 public:
+	struct Properties
+	{
+		// The sprite texture.
+		Texture *texture{ nullptr };
+
+		// Top-left position.
+		glm::vec2 pos{ 0.f };
+
+		// Width and height.
+		glm::vec2 size{ 0.f };
+
+		// Flag for if this element should be rendered.
+		bool isEnabled{ true };
+	};
+
 	SpriteRenderer(AssetLoader &assetLoader);
 
 	virtual void render(float deltaTime, const Camera &camera) override;
 
-	void addSprite(glm::mat4 model);
+	typedef std::list<Properties>::iterator PropertiesIterator;
+	PropertiesIterator addSprite(const Properties &properties);
+
+	void clearSprites();
 
 private:
 	// The renderer's shader program.
@@ -31,9 +49,6 @@ private:
 	// Element buffer object.
 	unsigned int m_EBO;
 
-	// TODO: Remove this later.
-	std::shared_ptr<Texture> m_texture;
-
-	// Hold model matrices for all sprites to render.
-	std::list<glm::mat4> m_models;
+	// Sprites to render.
+	std::list<Properties> m_sprites;
 };

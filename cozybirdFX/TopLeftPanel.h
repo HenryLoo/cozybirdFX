@@ -5,6 +5,7 @@
 class AssetLoader;
 class Engine;
 class EmitterRenderer;
+class SpriteRenderer;
 class TextRenderer;
 class UIButton;
 class UIText;
@@ -15,8 +16,8 @@ class TopLeftPanel : public IEditorPanel
 public:
 	TopLeftPanel(Engine &engine, AssetLoader &assetLoader,
 		std::shared_ptr<EmitterRenderer> eRenderer,
-		TextRenderer &tRenderer, UIRenderer &uRenderer,
-		UIRenderer::Properties &clipSizeBox);
+		SpriteRenderer &sRenderer, TextRenderer &tRenderer,
+		UIRenderer &uRenderer, UIRenderer::Properties &clipSizeBox);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

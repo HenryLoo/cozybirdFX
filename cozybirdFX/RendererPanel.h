@@ -5,6 +5,7 @@
 
 class EditorState;
 class EmitterRenderer;
+class SpriteRenderer;
 class TextRenderer;
 class UIButton;
 class UIIntField;
@@ -14,8 +15,8 @@ class RendererPanel : public IEditorPanel
 public:
 	RendererPanel(EditorState &editor,
 		std::shared_ptr<EmitterRenderer> eRenderer,
-		TextRenderer &tRenderer, UIRenderer &uRenderer,
-		UIRenderer::Properties &clipSizeBox);
+		SpriteRenderer &sRenderer, TextRenderer &tRenderer, 
+		UIRenderer &uRenderer, UIRenderer::Properties &clipSizeBox);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

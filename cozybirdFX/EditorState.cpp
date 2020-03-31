@@ -3,6 +3,7 @@
 #include "Emitter.h"
 #include "EmitterRenderer.h"
 #include "Engine.h"
+#include "SpriteRenderer.h"
 #include "TextRenderer.h"
 #include "Texture.h"
 
@@ -36,6 +37,7 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
     m_tRenderer = std::make_shared<TextRenderer>(assetLoader);
     m_uRenderer = std::make_shared<UIRenderer>(assetLoader);
     m_eRenderer = std::make_shared<EmitterRenderer>(assetLoader);
+    m_sRenderer = std::make_shared<SpriteRenderer>(assetLoader);
 
     // Define the clip size box.
     UIRenderer::Properties clip;
@@ -59,30 +61,31 @@ EditorState::EditorState(Engine &engine, AssetLoader &assetLoader)
 
     // Initialize UI panels.
     m_topLeftPanel = std::make_shared<TopLeftPanel>(engine, assetLoader,
-        m_eRenderer, *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
+        m_eRenderer, *m_sRenderer, *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
 
-    m_particlesPanel = std::make_shared<ParticlesPanel>(*this, *m_tRenderer,
-        *m_uRenderer);
+    m_particlesPanel = std::make_shared<ParticlesPanel>(*this, *m_sRenderer, 
+        *m_tRenderer, *m_uRenderer);
     m_currentPanel = m_particlesPanel;
 
-    m_visualsPanel = std::make_shared<VisualsPanel>(*m_tRenderer, *m_uRenderer,
-        assetLoader);
+    m_visualsPanel = std::make_shared<VisualsPanel>(*m_sRenderer, *m_tRenderer,
+        *m_uRenderer, assetLoader);
 
-    m_movementPanel = std::make_shared<MovementPanel>(*m_tRenderer, *m_uRenderer);
-
-    m_emittersPanel = std::make_shared<EmittersPanel>(*this, m_eRenderer,
+    m_movementPanel = std::make_shared<MovementPanel>(*m_sRenderer, 
         *m_tRenderer, *m_uRenderer);
 
+    m_emittersPanel = std::make_shared<EmittersPanel>(*this, m_eRenderer,
+        *m_sRenderer, *m_tRenderer, *m_uRenderer);
+
     m_renderPanel = std::make_shared<RendererPanel>(*this, m_eRenderer,
-        *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
+        *m_sRenderer, *m_tRenderer, *m_uRenderer, *m_clipSizeBox);
 
-    m_topRightPanel = std::make_shared<TopRightPanel>(*this, *m_tRenderer, *m_uRenderer,
-        m_particlesPanel, m_visualsPanel, m_movementPanel, m_emittersPanel,
-        m_renderPanel);
+    m_topRightPanel = std::make_shared<TopRightPanel>(*this, *m_sRenderer, 
+        *m_tRenderer, *m_uRenderer, m_particlesPanel, m_visualsPanel, 
+        m_movementPanel, m_emittersPanel, m_renderPanel);
 
-    m_bottomPanel = std::make_shared<BottomPanel>(*this, *m_tRenderer, *m_uRenderer,
-        m_particlesPanel, m_visualsPanel, m_movementPanel, m_emittersPanel,
-        m_renderPanel);
+    m_bottomPanel = std::make_shared<BottomPanel>(*this, *m_sRenderer, 
+        *m_tRenderer, *m_uRenderer, m_particlesPanel, m_visualsPanel, 
+        m_movementPanel, m_emittersPanel, m_renderPanel);
 
     m_panels.push_back(m_topLeftPanel);
     m_panels.push_back(m_topRightPanel);
@@ -126,6 +129,7 @@ void EditorState::render(float deltaTime, const Camera &camera)
 {
     m_eRenderer->render(deltaTime, camera);
     m_uRenderer->render(deltaTime, camera);
+    m_sRenderer->render(deltaTime, camera);
     m_tRenderer->render(deltaTime, camera);
 }
 

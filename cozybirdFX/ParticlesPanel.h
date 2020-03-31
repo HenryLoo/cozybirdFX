@@ -3,6 +3,7 @@
 #include "IEditorPanel.h"
 
 class EditorState;
+class SpriteRenderer;
 class TextRenderer;
 class UIButton;
 class UIRenderer;
@@ -13,7 +14,8 @@ class UIFloatField;
 class ParticlesPanel : public IEditorPanel
 {
 public:
-	ParticlesPanel(const EditorState &state, TextRenderer &tRenderer, UIRenderer &uRenderer);
+	ParticlesPanel(const EditorState &state, SpriteRenderer &sRenderer, 
+		TextRenderer &tRenderer, UIRenderer &uRenderer);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 

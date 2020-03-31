@@ -19,8 +19,8 @@ bool IUserInterface::process(InputManager &inputManager,
 	return handleInput(inputManager, action);
 }
 
-void IUserInterface::addToRenderer(UIRenderer &uRenderer,
-	TextRenderer &tRenderer)
+void IUserInterface::addToRenderer(SpriteRenderer &sRenderer, 
+	UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	UIRenderer::Properties prop;
 	prop.pos = m_position + m_offset;

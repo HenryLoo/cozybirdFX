@@ -4,18 +4,20 @@
 #include "Emitter.h"
 
 class AssetLoader;
+class SpriteRenderer;
 class Texture;
 class TextRenderer;
 class UIButton;
+class UIField;
 class UIRenderer;
 class UISlider;
-class UIField;
+class UISprite;
 
 class VisualsPanel : public IEditorPanel
 {
 public:
-	VisualsPanel(TextRenderer &tRenderer, UIRenderer &uRenderer, 
-		AssetLoader &assetLoader);
+	VisualsPanel(SpriteRenderer &sRenderer, TextRenderer &tRenderer, 
+		UIRenderer &uRenderer, AssetLoader &assetLoader);
 
 	virtual void update(float deltaTime, Emitter &emitter) override;
 
@@ -42,6 +44,8 @@ private:
 	std::shared_ptr<UIField> m_textureName{ nullptr };
 	bool m_hasNewTexture{ true };
 	AssetLoader &m_assetLoader;
+
+	std::shared_ptr<UISprite> m_textureSprite{ nullptr };
 
 	Emitter::BlendMode m_blendMode{ Emitter::BlendMode::Linear };
 };

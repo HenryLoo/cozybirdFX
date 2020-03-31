@@ -23,8 +23,8 @@ namespace
 }
 
 EmittersPanel::EmittersPanel(EditorState &editor, 
-    std::shared_ptr<EmitterRenderer> eRenderer, TextRenderer &tRenderer,
-    UIRenderer &uRenderer) :
+    std::shared_ptr<EmitterRenderer> eRenderer, SpriteRenderer &sRenderer, 
+    TextRenderer &tRenderer, UIRenderer &uRenderer) :
     m_editor(editor), m_eRenderer(eRenderer)
 {
     m_description = "Press F1 ~ F9 at any panel to quickly select emitters 1 ~ 9 respectively.";
@@ -67,7 +67,7 @@ EmittersPanel::EmittersPanel(EditorState &editor,
             m_panel->addNewLine();
     }
 
-    m_panel->addToRenderer(uRenderer, tRenderer);
+    m_panel->addToRenderer(sRenderer, uRenderer, tRenderer);
     m_selectButtons[0]->setToggled(true);
     m_panel->setEnabled(false);
 }

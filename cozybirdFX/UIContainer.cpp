@@ -47,15 +47,16 @@ void UIContainer::addNewHalfLine()
 	addNewLine(SPACE / 2.f);
 }
 
-void UIContainer::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
+void UIContainer::addToRenderer(SpriteRenderer &sRenderer, 
+	UIRenderer &uRenderer, TextRenderer &tRenderer)
 {
 	// Add this container to the renderer.
-	IUserInterface::addToRenderer(uRenderer, tRenderer);
+	IUserInterface::addToRenderer(sRenderer, uRenderer, tRenderer);
 
 	// Add each element to the renderer.
 	for (const auto &element : m_elements)
 	{
-		element->addToRenderer(uRenderer, tRenderer);
+		element->addToRenderer(sRenderer, uRenderer, tRenderer);
 	}
 }
 

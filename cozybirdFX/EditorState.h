@@ -14,6 +14,7 @@ class Camera;
 class Engine;
 class EmitterRenderer;
 class TextRenderer;
+class SpriteRenderer;
 
 class IEditorPanel;
 class TopLeftPanel;
@@ -62,6 +63,7 @@ private:
 	std::shared_ptr<TextRenderer> m_tRenderer{ nullptr };
 	std::shared_ptr<UIRenderer> m_uRenderer{ nullptr };
 	std::shared_ptr<EmitterRenderer> m_eRenderer{ nullptr };
+	std::shared_ptr<SpriteRenderer> m_sRenderer{ nullptr };
 
 	// The index of the currently selected emitter.
 	int m_emitter{ 0 };

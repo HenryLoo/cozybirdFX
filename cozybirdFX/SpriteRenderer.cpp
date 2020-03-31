@@ -10,7 +10,6 @@ SpriteRenderer::SpriteRenderer(AssetLoader &assetLoader)
     m_shader = assetLoader.load<Shader>({ "sprite.vs", "sprite.fs" });
     if (m_shader != nullptr)
         m_shader->link();
-    m_texture = assetLoader.load<Texture>("particle.png");
 
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.
@@ -61,26 +60,36 @@ void SpriteRenderer::render(float deltaTime, const Camera &camera)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // TODO: Replace this test rendering code.
-    m_texture->bind();
     m_shader->use();
     glBindVertexArray(m_VAO);
 
-    glm::mat4 view{ camera.getView() };
-    glm::mat4 proj{ camera.getSceneProjection() };
+    glm::mat4 view{ 1.f };
+    glm::mat4 proj{ camera.getUIProjection() };
 
-    for (auto it = m_models.begin(); it != m_models.end(); ++it)
+    for (auto it = m_sprites.begin(); it != m_sprites.end(); ++it)
     {
-        glm::mat4 mvp = proj * view * (*it);
+        if (it->texture == nullptr || !it->isEnabled)
+            continue;
+
+        it->texture->bind();
+        glm::mat4 model{ glm::mat4(1.0f) };
+        model = glm::translate(model, glm::vec3(it->pos.x, it->pos.y, 0.f));
+        model = glm::scale(model, glm::vec3(it->size.x, it->size.y, 1.f));
+        glm::mat4 mvp{ proj * view * model };
         m_shader->setMat4("mvp", mvp);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
     glBindVertexArray(0);
-
-    m_models.clear();
 }
 
-void SpriteRenderer::addSprite(glm::mat4 model)
+SpriteRenderer::PropertiesIterator SpriteRenderer::addSprite(const SpriteRenderer::Properties &properties)
 {
-    m_models.push_back(model);
+    m_sprites.push_back(properties);
+    return std::prev(std::end(m_sprites));
+}
+
+void SpriteRenderer::clearSprites()
+{
+    m_sprites.clear();
 }

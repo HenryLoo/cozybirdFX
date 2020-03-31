@@ -13,7 +13,8 @@ bool UIText::handleInput(InputManager &inputManager,
 	return false;
 }
 
-void UIText::addToRenderer(UIRenderer &uRenderer, TextRenderer &tRenderer)
+void UIText::addToRenderer(SpriteRenderer &sRenderer, UIRenderer &uRenderer, 
+	TextRenderer &tRenderer)
 {
 	glm::vec2 textPos{ m_position + m_offset };
 
