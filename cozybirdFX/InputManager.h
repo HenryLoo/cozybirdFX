@@ -25,7 +25,7 @@ public:
 	bool isMouseDown(int button, int mods = 0) const;
 	bool isMousePressed(int button, int mods = 0) const;
 	glm::vec2 getMousePos() const;
-	bool isKeyDown(int key, int mods = 0) const;
+	bool isKeyDown(int key, int mods = 0, bool hasDelay = false) const;
 	bool isKeyPressed(int key, int mods = 0) const;
 
 	// Get the string result of the text callback so far, and then reset it.

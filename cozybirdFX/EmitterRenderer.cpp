@@ -131,6 +131,11 @@ float EmitterRenderer::getDuration() const
         if (!m_isLooping)
         {
             float tts{ m_emitters[i]->getTimeToSpawn() };
+
+            // Avoid divide by 0 error.
+            if (tts == 0.f)
+                tts = 1.f;
+
             float emDuration{ m_emitters[i]->getEmitterDuration() };
             float maxDuration{ emDuration == 0.f ? maxLife * 2 : 
                 maxLife + tts * glm::floor(emDuration / tts) };

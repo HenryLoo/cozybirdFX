@@ -50,9 +50,13 @@ glm::vec2 InputManager::getMousePos() const
 	return m_mousePos;
 }
 
-bool InputManager::isKeyDown(int key, int mods) const
+bool InputManager::isKeyDown(int key, int mods, bool hasDelay) const
 {
-	return isInputDown(m_keyStates, key, mods);
+	bool isDown{ isInputDown(m_keyStates, key, mods) };
+	if (hasDelay)
+		m_keyStates[key].currentState = GLFW_RELEASE;
+
+	return isDown;
 }
 
 bool InputManager::isKeyPressed(int key, int mods) const
@@ -127,7 +131,8 @@ bool InputManager::isInputDown(const std::vector<State> &states, int input,
 	int mods) const
 {
 	const auto &state{ states[input] };
-	return state.currentState == GLFW_PRESS &&
+	return (state.currentState == GLFW_PRESS || 
+		state.currentState == GLFW_REPEAT) &&
 		((state.mods & mods) || mods == 0);
 }
 

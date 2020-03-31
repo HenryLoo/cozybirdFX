@@ -47,18 +47,20 @@ bool UIField::handleInput(InputManager &inputManager,
 			m_oldValue = m_value;
 		}
 	}
-	// Deactivate text field when clicking outside the field's bounds.
+	// Deactivate and submit text field when clicking outside the field's bounds.
 	else if (m_isActivated && inputManager.isMousePressed(GLFW_MOUSE_BUTTON_1))
 	{
 		setActivation(false, inputManager);
 		m_isNewValue = hasChange = true;
+		m_hasError = !formatValue();
+		updateFieldValue();
 	}
 
 	// Handle text input if field is activated.
 	if (m_isActivated)
 	{
 		// Erase the last character from the field.
-		if (inputManager.isKeyPressed(GLFW_KEY_BACKSPACE))
+		if (inputManager.isKeyDown(GLFW_KEY_BACKSPACE, 0, true))
 		{
 			if (!m_value.empty())
 				m_value.erase(m_value.end() - 1);
