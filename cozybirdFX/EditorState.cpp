@@ -156,6 +156,11 @@ void EditorState::selectEmitter(int index)
         panel->updateUIFromEmitter(emitter);
 }
 
+int EditorState::getEmitterIndex() const
+{
+	return m_emitter;
+}
+
 void EditorState::update(float deltaTime, const Camera &camera)
 {
     // Update emitter with UI values.

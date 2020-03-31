@@ -83,6 +83,13 @@ void UIButton::setEnabled(bool isEnabled)
 		m_tProperties->isEnabled = isEnabled;
 }
 
+void UIButton::setLabel(const std::string &label)
+{
+	m_label = label;
+	if (m_tProperties != nullptr)
+		m_tProperties->text = m_label;
+}
+
 void UIButton::setAction(std::function<void()> action)
 {
 	m_action = action;

@@ -38,6 +38,7 @@ public:
 	virtual void enter() override;
 
 	void selectEmitter(int index);
+	int getEmitterIndex() const;
 
 	// Update the position of the clip box.
 	void updateClipBoxPos();

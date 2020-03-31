@@ -32,6 +32,7 @@ public:
 private:
 	void setCurrentButton(std::shared_ptr<UIButton> button);
 
+	const EditorState &m_editor;
 	std::shared_ptr<UIButton> m_currentButton{ nullptr };
 
 	std::shared_ptr<UIButton> m_particlesButton{ nullptr };

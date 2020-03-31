@@ -8,13 +8,20 @@
 #include "EmittersPanel.h"
 #include "RendererPanel.h"
 #include <iostream>
+
+namespace
+{
+    const std::string EMITTERS_LABEL{ "Emitters" };
+}
+
 TopRightPanel::TopRightPanel(EditorState &editor, SpriteRenderer &sRenderer, 
     TextRenderer &tRenderer, UIRenderer &uRenderer,
     std::shared_ptr<ParticlesPanel> particles,
     std::shared_ptr<VisualsPanel> visuals,
     std::shared_ptr<MovementPanel> movement,
     std::shared_ptr<EmittersPanel> emitters,
-    std::shared_ptr<RendererPanel> renderer)
+    std::shared_ptr<RendererPanel> renderer) :
+    m_editor(editor)
 {
     m_panel = std::make_unique<UIContainer>(glm::vec2(0.f, 0.f),
         glm::vec2(-1.f, -1.f));
@@ -25,7 +32,7 @@ TopRightPanel::TopRightPanel(EditorState &editor, SpriteRenderer &sRenderer,
         BUTTON_SIZE, true);
     m_movementButton = std::make_shared<UIButton>("Movement",
         BUTTON_SIZE, true);
-    m_emittersButton = std::make_shared<UIButton>("Emitters",
+    m_emittersButton = std::make_shared<UIButton>(EMITTERS_LABEL,
         BUTTON_SIZE, true);
     m_rendererButton = std::make_shared<UIButton>("Renderer",
         BUTTON_SIZE, true);
@@ -71,7 +78,10 @@ TopRightPanel::TopRightPanel(EditorState &editor, SpriteRenderer &sRenderer,
 }
 
 void TopRightPanel::update(float deltaTime, Emitter &emitter)
-{
+{    
+    // Update emitters label to show the currently selected emitter's index.
+    m_emittersButton->setLabel(EMITTERS_LABEL + " [" +
+        std::to_string(m_editor.getEmitterIndex() + 1) + "]");
 }
 
 void TopRightPanel::updateUIFromEmitter(const Emitter &emitter)

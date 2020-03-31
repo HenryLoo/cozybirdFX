@@ -19,6 +19,7 @@ public:
 	virtual void setPosition(glm::vec2 position) override;
 	virtual void setEnabled(bool isEnabled) override;
 
+	void setLabel(const std::string &label);
 	void setAction(std::function<void()> action);
 	void setToggled(bool isToggled);
 	bool isToggled() const;
