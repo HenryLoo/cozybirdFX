@@ -121,7 +121,7 @@ float EmitterRenderer::getDuration() const
     // Duration needs to bound the largest max particle life of all emitters,
     // while also being a multiple of timeToSpawn for that emitter.
     float duration{ 0.f };
-    float timeToSpawn{ 1.f };
+    float timeToSpawn{ 0.f };
     for (int i = 0; i < m_emitters.size(); ++i)
     {
         if (!m_isEnabled[i])
@@ -144,7 +144,13 @@ float EmitterRenderer::getDuration() const
     }
 
     if (m_isLooping)
+    {
+        // Avoid divide by 0 error.
+        if (timeToSpawn == 0.f)
+            timeToSpawn = 1.f;
+
         duration = timeToSpawn * glm::ceil(duration / timeToSpawn);
+    }
 
     return duration;
 }
