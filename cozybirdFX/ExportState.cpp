@@ -18,7 +18,7 @@ void ExportState::initMenu()
 	AssetLoader &assetLoader{ m_assetLoader };
 	EmitterRenderer &eRenderer{ m_eRenderer };
 
-	m_sheetButton = std::make_shared<UIButton>("Export as spritesheet...",
+	m_sheetButton = std::make_shared<UIButton>("Export as sprite sheet...",
 		BUTTON_SIZE, false, [&engine, &eRenderer]()
 		{
 			nfdchar_t *path{ nullptr };
