@@ -1,12 +1,23 @@
 #include "Engine.h"
+#include "EmitterRenderer.h"
 #include "SpriteRenderer.h"
+#include "TextRenderer.h"
+#include "UIRenderer.h"
 
 #include "TextureLoader.h"
 #include "ShaderLoader.h"
+#include "FontLoader.h"
+#include "Font.h"
 #include "Emitter.h"
+#include "EditorState.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+
+namespace
+{
+    const std::string WINDOW_TITLE{ "cozybirdFX" };
+}
 
 Engine::Engine(GLFWwindow *window) :
     m_window(window)
@@ -15,15 +26,22 @@ Engine::Engine(GLFWwindow *window) :
     m_assetLoader = std::make_unique<AssetLoader>();
     m_assetLoader->registerLoader<Texture>(new TextureLoader());
     m_assetLoader->registerLoader<Shader>(new ShaderLoader());
+    m_assetLoader->registerLoader<Font>(new FontLoader());
+
+    // Instantiate the input manager.
+    m_inputManager = std::make_unique<InputManager>(m_window);
 
     // Instantiate entity manager.
-    auto spriteRenderer{ std::make_unique<SpriteRenderer>(m_assetLoader.get()) };
-    m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), m_assetLoader.get());
+    //m_entityManager = std::make_unique<EntityManager>(spriteRenderer.get(), 
+    //    m_assetLoader.get());
 
-    // Instantiate renderers.
-    //m_renderers.push_back(std::move(spriteRenderer));
+    // Instantiate the camera.
+    glm::ivec2 windowSize{ getWindowSize() };
+    m_camera = std::make_unique<Camera>(windowSize, 1.f);
 
-    m_emitter = std::make_unique<Emitter>(m_assetLoader.get());
+    // Default to editor state.
+    EditorState *state{ new EditorState(*this, *m_assetLoader) };
+    pushState(state);
 }
 
 Engine::~Engine()
@@ -33,18 +51,12 @@ Engine::~Engine()
 
 void Engine::start()
 {
+    setWindowTitle();
     double lastFrame{ 0.f };
 
     // The main application loop.
     while (!glfwWindowShouldClose(m_window))
     {
-        // If the window size was changed, update the renderer.
-		if (m_hasNewWindowSize)
-		{
-			m_hasNewWindowSize = false;
-			Renderer::updateWindowSize(m_window);
-		}
-
         double currentFrame{ glfwGetTime() };
         float deltaTime{ static_cast<float>(currentFrame - lastFrame) };
         lastFrame = currentFrame;
@@ -55,44 +67,99 @@ void Engine::start()
     }
 }
 
+void Engine::pushState(IState *state)
+{
+    if (state == nullptr)
+        return;
+
+    m_states.push(std::move(std::unique_ptr<IState>(state)));
+    m_states.top()->enter();
+}
+
+void Engine::popState()
+{
+    m_states.pop();
+
+    if (!m_states.empty())
+        m_states.top()->enter();
+}
+
+IState *Engine::getState() const
+{
+    if (m_states.empty())
+        return nullptr;
+
+    return m_states.top().get();
+}
+
 void Engine::handleInput()
 {
     glfwPollEvents();
 
-    // TODO: Integrate input manager here.
+    // Handle input for the current state.
+    IState *state{ getState() };
+    if (state != nullptr)
+        state->handleInput(*m_inputManager);
+
+    m_inputManager->update();
 }
 
 void Engine::update(float deltaTime)
 {
     // TODO: Update values here.
-    if (m_entityManager != nullptr)
-        m_entityManager->update(deltaTime);
+    //if (m_entityManager != nullptr)
+    //    m_entityManager->update(deltaTime);
 
-    for (const auto &renderer : m_renderers)
-    {
-        if (renderer != nullptr)
-            renderer->update(deltaTime);
-    }
+    // Update the asset loader.
+    m_assetLoader->update(deltaTime);
+
+    // Update the current state.
+    IState *state{ getState() };
+    if (state != nullptr)
+        state->update(deltaTime, *this);
 }
 
 void Engine::render(float deltaTime)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
-    //// TODO: Integrate renderer functionality here.
-    //for (const auto &renderer : m_renderers)
-    //{
-    //    if (renderer != nullptr)
-    //        renderer->render();
-    //}
-
-    m_emitter->update(deltaTime);
-    m_emitter->render();
+    // Render the scene.
+    IState *state{ getState() };
+    if (state != nullptr)
+        state->render(deltaTime, *m_camera);
 
     glfwSwapBuffers(m_window);
 }
 
 void Engine::updateNewWindowSize()
 {
-    m_hasNewWindowSize = true;
+    glm::ivec2 windowSize{ getWindowSize() };
+    m_camera->setSize(windowSize);
+    updateViewport();
+}
+
+Camera &Engine::getCamera() const
+{
+    return *m_camera;
+}
+
+glm::ivec2 Engine::getWindowSize() const
+{
+    glm::ivec2 windowSize;
+    glfwGetWindowSize(m_window, &windowSize.x, &windowSize.y);
+    return windowSize;
+}
+
+void Engine::setWindowTitle(const std::string &title)
+{
+    std::string text{ title.empty() ? WINDOW_TITLE : 
+        WINDOW_TITLE + " - " + title };
+    glfwSetWindowTitle(m_window, text.c_str());
+}
+
+void Engine::updateViewport()
+{
+    glm::ivec2 windowSize{ getWindowSize() };
+    glViewport(0, 0, windowSize.x, windowSize.y);
 }

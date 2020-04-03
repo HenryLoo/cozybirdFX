@@ -11,6 +11,11 @@ public:
 	// Bind to this texture.
 	void bind() const;
 
+	// Getter functions.
+	int getWidth() const;
+	int getHeight() const;
+	int getNumChannels() const;
+
 private:
 	// This texture's id.
 	unsigned int m_textureId{ 0 };

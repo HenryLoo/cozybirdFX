@@ -5,40 +5,21 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <random>
+
+#include <iostream>
 
 namespace
 {
-    const int NUM_PARTICLE_ATTRIBUTES{ 6 };
-
-    const char *PARTICLE_ATTRIBUTES[NUM_PARTICLE_ATTRIBUTES]
-    {
-       "gsPosition",
-       "gsVelocity",
-       "gsColour",
-       "gsDuration",
-       "gsSize",
-       "gsType",
-    };
-
-    const int MAX_PARTICLES{ 1000 };
+    const int MAX_PARTICLES{ 100000 };
+    const int MS_PER_SECOND{ 1000 };
 }
 
-Emitter::Emitter(AssetLoader *assetLoader)
+Emitter::Emitter()
 {
-    m_texture = assetLoader->load<Texture>("sprite.png");
-
-    // Create update shader program.
-	m_updateShader = assetLoader->load<Shader>({ "emitter_update.vs", "", "emitter_update.gs" });
-    for (int i = 0; i < NUM_PARTICLE_ATTRIBUTES; ++i)
-	    glTransformFeedbackVaryings(m_updateShader->getProgramId(), 
-            NUM_PARTICLE_ATTRIBUTES, PARTICLE_ATTRIBUTES, GL_INTERLEAVED_ATTRIBS);
-	m_updateShader->link();
-
-    // Create render shader program.
-    m_renderShader = assetLoader->load<Shader>({ "emitter_render.vs", "emitter_render.fs", "emitter_render.gs" });
-    m_renderShader->link();
-
-    glGenTransformFeedbacks(1, &m_transFeedbackBuffer);
+    //glGenTransformFeedbacks(1, &m_transFeedbackBuffer);
+    glGenBuffers(1, &m_transFeedbackBuffer);
     glGenQueries(1, &m_query);
 
     glGenBuffers(2, m_particleBuffers);
@@ -54,62 +35,399 @@ Emitter::Emitter(AssetLoader *assetLoader)
         glBufferData(GL_ARRAY_BUFFER, sizeof(Particle) * MAX_PARTICLES, NULL, GL_DYNAMIC_DRAW);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Particle), &particle);
 
-        // Position
+        // x/y position
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)0);
 
-        // Velocity
+        // Speed and direction
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(3 * sizeof(float)));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(2 * sizeof(float)));
 
-        // Colour
+        // Rotation, size, current particle life, and total particle life
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(6 * sizeof(float)));
+        glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(4 * sizeof(float)));
 
-        // Duration
+        // Type (emitter or particle)
         glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(9 * sizeof(float)));
-
-        // Size
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *)(10 * sizeof(float)));
-
-        // Type
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(11 * sizeof(float)));
+        glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(Particle), (void *)(8 * sizeof(float)));
     }
 }
 
-void Emitter::update(float deltaTime)
+void Emitter::update(float deltaTime, float currentTime, 
+    std::shared_ptr<Shader> updateShader, bool isLooping)
 {
-    m_updateShader->use();
+    // Update emitter position based on movement patterns.
+    updateMotion(currentTime);
+
+    updateShader->use();
 
     // Set emitter uniforms for the update shader.
-    m_updateShader->setFloat("deltaTime", deltaTime);
-    m_updateShader->setVec3("emPos", m_position);
-    m_updateShader->setVec3("emVelocityMin", m_velocityMin);
-    m_updateShader->setVec3("emVelocityOffset", m_velocityOffset);
-    m_updateShader->setVec3("emColour", m_colour);
-    m_updateShader->setFloat("emDuration", m_duration);
-    m_updateShader->setFloat("emSize", m_size);
+    updateShader->setFloat("deltaTime", deltaTime);
+    updateShader->setVec2("emPos", m_position);
+    updateShader->setVec3("emSpeed", m_speed);
+    updateShader->setVec3("emDirection", glm::radians(glm::vec3(m_direction)));
+    updateShader->setVec3("emRotation", glm::radians(glm::vec3(m_rotation)));
+    updateShader->setVec2("emLife", m_life);
+    updateShader->setVec3("emSize", m_size);
+    updateShader->setVec2("emDistribution", m_distribution);
+    updateShader->setBool("emIsFacingDirection", m_isFacingDirection);
 
-    m_spawnTimer += deltaTime;
-    if (m_spawnTimer >= m_timeToSpawn)
+    // Set the seed.
+    // Convert currentTime to ms to avoid precision loss when converting to
+    // unsigned integer. Otherwise, the seed will be unchanged over 
+    // multiple frames.
+    std::mt19937 generator(static_cast<unsigned int>(currentTime * MS_PER_SECOND));
+    std::uniform_real_distribution<> distrib(-100, 100);
+    updateShader->setFloat("randomSeed", static_cast<float>(distrib(generator)));
+
+    // Update spawn timer and flag the emitter to spawn particles if necessary.
+    bool isAboveLowerBound{ currentTime >= m_delayBeforeStart };
+    bool isBelowUpperBound{ (currentTime < m_delayBeforeStart + m_emitterDuration ||
+        m_emitterDuration == 0.f) };
+    bool isLoopingOrExpired{ (isLooping || currentTime < m_life.y) };
+    if (isAboveLowerBound && isBelowUpperBound && isLoopingOrExpired)
     {
-        m_spawnTimer -= m_timeToSpawn;
-        m_updateShader->setInt("emNumToGenerate", m_numToGenerate);
+        m_spawnTimer += deltaTime;
+        if (m_spawnTimer >= m_timeToSpawn)
+        {
+            while (m_spawnTimer >= m_timeToSpawn)
+                m_spawnTimer -= m_timeToSpawn;
+            updateShader->setInt("emNumToGenerate", m_numToGenerate);
+        }
+        else
+        {
+            updateShader->setInt("emNumToGenerate", 0);
+        }
     }
     else
     {
-        m_updateShader->setInt("emNumToGenerate", 0);
+        // Get ready to spawn particles as soon as the next iteration starts.
+        if (currentTime >= m_delayBeforeStart + m_emitterDuration)
+            m_spawnTimer = m_timeToSpawn;
+
+        updateShader->setInt("emNumToGenerate", 0);
     }
 
+    update();
+}
+
+void Emitter::clear(std::shared_ptr<Shader> updateShader)
+{
+    updateShader->use();
+    updateShader->setBool("isClearParticles", true);
+
+    update();
+
+    updateShader->setBool("isClearParticles", false);
+    m_spawnTimer = m_timeToSpawn;
+}
+
+int Emitter::getNumParticles() const
+{
+    return m_numParticles;
+}
+
+void Emitter::setTexture(AssetLoader &assetLoader, const std::string &filePath)
+{
+    std::shared_ptr<Texture> texture{ assetLoader.load<Texture>(filePath) };
+    if (texture != nullptr)
+        setTexture(texture, filePath);
+}
+
+void Emitter::setTexture(std::shared_ptr<Texture> texture, const std::string &filePath)
+{
+    if (texture != nullptr)
+    {
+        m_texture = texture;
+        m_textureName = filePath;
+    }
+}
+
+void Emitter::setNumToGenerate(int num)
+{
+    if (num < 0)
+        return;
+
+    m_numToGenerate = num;
+}
+
+void Emitter::setPosition(glm::vec2 position)
+{
+    m_origin = position;
+}
+
+void Emitter::setDistribution(glm::vec2 widthHeight)
+{
+    m_distribution = widthHeight;
+}
+
+void Emitter::setTimeToSpawn(float duration)
+{
+    if (duration <= 0.f)
+        return;
+
+    m_timeToSpawn = duration;
+}
+
+void Emitter::setSpeedMin(float speed)
+{
+    m_speed.x = speed;
+}
+
+void Emitter::setSpeedMax(float speed)
+{
+    m_speed.y = speed;
+}
+
+void Emitter::setSpeedGrowth(float amount)
+{
+    m_speed.z = amount;
+}
+
+void Emitter::setDirectionMin(int degAngle)
+{
+    m_direction.x = degAngle;
+}
+
+void Emitter::setDirectionMax(int degAngle)
+{
+    m_direction.y = degAngle;
+}
+
+void Emitter::setDirectionGrowth(int degAngle)
+{
+    m_direction.z = degAngle;
+}
+
+void Emitter::setIsFacingDirection(bool isFacing)
+{
+    m_isFacingDirection = isFacing;
+}
+
+void Emitter::setRotationMin(int degAngle)
+{
+    m_rotation.x = degAngle;
+}
+
+void Emitter::setRotationMax(int degAngle)
+{
+    m_rotation.y = degAngle;
+}
+
+void Emitter::setRotationGrowth(int degAngle)
+{
+    m_rotation.z = degAngle;
+}
+
+void Emitter::setSizeMin(float size)
+{
+    m_size.x = size;
+}
+
+void Emitter::setSizeMax(float size)
+{
+    m_size.y = size;
+}
+
+void Emitter::setSizeGrowth(float amount)
+{
+    m_size.z = amount;
+}
+
+void Emitter::setLifeMin(float duration)
+{
+    m_life.x = duration;
+}
+
+void Emitter::setLifeMax(float duration)
+{
+    m_life.y = duration;
+}
+
+void Emitter::setBlendMode(BlendMode mode)
+{
+    m_blendMode = mode;
+}
+
+void Emitter::setColour(glm::vec4 colour)
+{
+    m_colour = colour;
+}
+
+void Emitter::setBirthColour(glm::vec4 colour)
+{
+    m_birthColour = colour;
+}
+
+void Emitter::setDeathColour(glm::vec4 colour)
+{
+    m_deathColour = colour;
+}
+
+void Emitter::setDelayBeforeStart(float duration)
+{
+    m_delayBeforeStart = duration;
+}
+
+void Emitter::setEmitterDuration(float duration)
+{
+    m_emitterDuration = duration;
+}
+
+void Emitter::setHSineAmplitude(float amount)
+{
+    m_hSineAmplitude = amount;
+}
+
+void Emitter::setHSinePeriod(float period)
+{
+    m_hSinePeriod = period;
+}
+
+void Emitter::setVSineAmplitude(float amount)
+{
+    m_vSineAmplitude = amount;
+}
+
+void Emitter::setVSinePeriod(float period)
+{
+    m_vSinePeriod = period;
+}
+
+void Emitter::setCircleRadius(float radius)
+{
+    m_circleRadius = radius;
+}
+
+void Emitter::setCirclePeriod(float period)
+{
+    m_circlePeriod = period;
+}
+
+const std::string &Emitter::getTextureName() const
+{
+    return m_textureName;
+}
+
+int Emitter::getNumToGenerate() const
+{
+	return m_numToGenerate;
+}
+
+glm::vec2 Emitter::getPosition() const
+{
+    return m_origin;
+}
+
+glm::vec2 Emitter::getDistribution() const
+{
+    return m_distribution;
+}
+
+float Emitter::getTimeToSpawn() const
+{
+    return m_timeToSpawn;
+}
+
+glm::vec3 Emitter::getSpeed() const
+{
+    return m_speed;
+}
+
+glm::ivec3 Emitter::getDirection() const
+{
+    return m_direction;
+}
+
+bool Emitter::isFacingDirection() const
+{
+	return m_isFacingDirection;
+}
+
+glm::ivec3 Emitter::getRotation() const
+{
+    return m_rotation;
+}
+
+glm::vec3 Emitter::getSize() const
+{
+    return m_size;
+}
+
+glm::vec2 Emitter::getLife() const
+{
+    return m_life;
+}
+
+glm::vec4 Emitter::getColour() const
+{
+    return m_colour;
+}
+
+Emitter::BlendMode Emitter::getBlendMode() const
+{
+    return m_blendMode;
+}
+
+glm::vec4 Emitter::getBirthColour() const
+{
+    return m_birthColour;
+}
+
+glm::vec4 Emitter::getDeathColour() const
+{
+    return m_deathColour;
+}
+
+float Emitter::getDelayBeforeStart() const
+{
+    return m_delayBeforeStart;
+}
+
+float Emitter::getEmitterDuration() const
+{
+    return m_emitterDuration;
+}
+
+float Emitter::getHSineAmplitude() const
+{
+    return m_hSineAmplitude;
+}
+
+float Emitter::getHSinePeriod() const
+{
+    return m_hSinePeriod;
+}
+
+float Emitter::getVSineAmplitude() const
+{
+    return m_vSineAmplitude;
+}
+
+float Emitter::getVSinePeriod() const
+{
+    return m_vSinePeriod;
+}
+
+float Emitter::getCircleRadius() const
+{
+    return m_circleRadius;
+}
+
+float Emitter::getCirclePeriod() const
+{
+    return m_circlePeriod;
+}
+
+void Emitter::update()
+{
     // Disable rasterization because there is no graphical output when 
     // updating particles.
     glEnable(GL_RASTERIZER_DISCARD);
 
     // Set up transform feedback.
-    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transFeedbackBuffer);
+    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, m_transFeedbackBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_transFeedbackBuffer);
     glBindVertexArray(m_vao[m_currentReadBuffer]);
 
     // Enable velocity attribute when updating.
@@ -135,57 +453,66 @@ void Emitter::update(float deltaTime)
     m_currentReadBuffer = 1 - m_currentReadBuffer;
 
     // Unbind the transform feedback object.
-    glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+    //glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Reset changes.
+    glDisable(GL_RASTERIZER_DISCARD);
 }
 
-void Emitter::render()
+void Emitter::updateMotion(float currentTime)
+{
+    m_position = m_origin;
+
+    // Oscillate horizontally. 
+    if (m_hSinePeriod != 0)
+    {
+        float hTime = currentTime / m_hSinePeriod * glm::two_pi<float>();
+        m_position.x += m_hSineAmplitude * glm::sin(hTime);
+    }
+
+    // Oscillate vertically.
+    if (m_vSinePeriod != 0)
+    {
+        float vTime = currentTime / m_vSinePeriod * glm::two_pi<float>();
+        m_position.y += m_vSineAmplitude * glm::sin(vTime);
+    }
+
+    // Parametric equation of circle: x = r*cos(t), y = r*sin(t)
+    if (m_circlePeriod != 0)
+    {
+        float cTime = currentTime / m_circlePeriod * glm::two_pi<float>();
+        m_position.x += m_circleRadius * glm::cos(cTime);
+        m_position.y += m_circleRadius * glm::sin(cTime);
+    }
+}
+
+void Emitter::render(std::shared_ptr<Shader> renderShader)
 {
     glEnable(GL_BLEND);
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    
-    // Disable writing to depth buffer.
-    glDepthMask(0);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     // Enable rasterizer for graphical output.
     glDisable(GL_RASTERIZER_DISCARD);
-    m_renderShader->use();
+    renderShader->use();
 
-    // TODO: Replace this with something more flexible.
-    glm::mat4 view{ glm::mat4(1.0f) };
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    glm::mat4 proj{ glm::perspective(glm::radians(45.0f),
-        (float)1280 / 720, 0.1f, 100.0f) };
-    glm::mat4 mvp = proj * view;
-    m_renderShader->setMat4("mvp", mvp);
+    renderShader->setVec4("colour", m_colour);
+    renderShader->setVec4("birthColour", m_birthColour);
+    renderShader->setVec4("deathColour", m_deathColour);
+    renderShader->setFloat("additivity", m_blendMode == BlendMode::Linear ? 0.f : 1.f);
 
-    glm::vec3 viewVec{ 0.f, 0.f, -1.f };
-    glm::vec3 upVec{ 0.f, 1.f, 0.f };
-    glm::vec3 axis1{ glm::cross(viewVec, upVec) };
-    axis1 = glm::normalize(axis1);
-    glm::vec3 axis2{ glm::cross(viewVec, axis1) };
-    axis2 = glm::normalize(axis2);
-    m_renderShader->setVec3("axis1", axis1);
-    m_renderShader->setVec3("axis2", axis2);
-
+    // Bind to the read buffer's vertex array object.
     glBindVertexArray(m_vao[m_currentReadBuffer]);
 
     // Disable velocity attribute since it isn't used for rendering.
     glDisableVertexAttribArray(1);
 
-    // Render the particles.
+    // Draw the particles.
     m_texture->bind();
     glDrawArrays(GL_POINTS, 0, m_numParticles);
 
     // Reset configurations after rendering.
-    glDepthMask(1);
     glDisable(GL_BLEND);
-}
-
-void Emitter::clear()
-{
-}
-
-int Emitter::getNumParticles() const
-{
-    return m_numParticles;
+    glBindVertexArray(0);
 }

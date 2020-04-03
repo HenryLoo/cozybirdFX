@@ -1,26 +1,27 @@
 #include "SpriteRenderer.h"
 #include "AssetLoader.h"
+#include "Camera.h"
 
 #include <glad/glad.h>
 
-SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
+SpriteRenderer::SpriteRenderer(AssetLoader &assetLoader)
 {
     // TODO: Clean up this initialization code.
-    m_shader = assetLoader->load<Shader>({ "sprite.vs", "sprite.fs" });
-    m_shader->link();
-    m_texture = assetLoader->load<Texture>("sprite.png");
+    m_shader = assetLoader.load<Shader>({ "sprite.vs", "sprite.fs" });
+    if (m_shader != nullptr)
+        m_shader->link();
 
     // Create the vertex array object and bind to it.
     // All subsequent VBO settings will be saved to this VAO.
-    glGenVertexArrays(1, &m_vao);
-    glBindVertexArray(m_vao);
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
 
     // Create the vertex buffer object and bind to it.
-    glGenBuffers(1, &m_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glGenBuffers(1, &m_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
     // Copy the vertices into the buffer for OpenGL.
-    float vertices[]
+    const float vertices[]
     {
         // position        // texCoord
         0.5f,  0.5f, 0.0f, 1.0f, 1.0f,   // top right
@@ -32,8 +33,8 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Create the element buffer object and bind to it.
-    glGenBuffers(1, &m_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glGenBuffers(1, &m_EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 
     // Copy indices into the element buffer for OpenGL.
     unsigned int indices[]
@@ -50,46 +51,45 @@ SpriteRenderer::SpriteRenderer(AssetLoader *assetLoader)
 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+}
 
+void SpriteRenderer::render(float deltaTime, const Camera &camera)
+{
     // Enable blending.
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Enable depth testing.
-    glEnable(GL_DEPTH_TEST);
-}
-
-void SpriteRenderer::update(float deltaTime)
-{
-
-}
-
-void SpriteRenderer::render()
-{
     // TODO: Replace this test rendering code.
-    m_texture->bind();
     m_shader->use();
-    glBindVertexArray(m_vao);
+    glBindVertexArray(m_VAO);
 
-    glm::mat4 view{ glm::mat4(1.0f) };
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 view{ 1.f };
+    glm::mat4 proj{ camera.getUIProjection() };
 
-    glm::mat4 proj{ glm::perspective(glm::radians(45.0f),
-        (float)m_windowSize.x / m_windowSize.y, 0.1f, 100.0f) };
-
-    for (auto it = m_models.begin(); it != m_models.end(); ++it)
+    for (auto it = m_sprites.begin(); it != m_sprites.end(); ++it)
     {
-        glm::mat4 mvp = proj * view * (*it);
+        if (it->texture == nullptr || !it->isEnabled)
+            continue;
+
+        it->texture->bind();
+        glm::mat4 model{ glm::mat4(1.0f) };
+        model = glm::translate(model, glm::vec3(it->pos.x, it->pos.y, 0.f));
+        model = glm::scale(model, glm::vec3(it->size.x, -it->size.y, 1.f));
+        glm::mat4 mvp{ proj * view * model };
         m_shader->setMat4("mvp", mvp);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
     glBindVertexArray(0);
-
-    m_models.clear();
 }
 
-void SpriteRenderer::addSprite(glm::mat4 model)
+SpriteRenderer::PropertiesIterator SpriteRenderer::addSprite(const SpriteRenderer::Properties &properties)
 {
-    m_models.push_back(model);
+    m_sprites.push_back(properties);
+    return std::prev(std::end(m_sprites));
+}
+
+void SpriteRenderer::clearSprites()
+{
+    m_sprites.clear();
 }

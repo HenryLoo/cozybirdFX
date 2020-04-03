@@ -6,6 +6,9 @@
 namespace
 {
 	const std::string ASSET_PATH{ "assets/" };
+
+	// The maximum duration that an asset can remain in the cache, in seconds.
+	const float MAX_CACHE_DURATION{ 300.f };
 }
 
 ITypeLoader::ITypeLoader(const std::string &typePath) :
@@ -14,10 +17,42 @@ ITypeLoader::ITypeLoader(const std::string &typePath) :
 
 }
 
-std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::string> &fileNames)
+void ITypeLoader::update(float deltaTime)
 {
+	for (auto it = m_cachedAssets.begin(); it != m_cachedAssets.end();)
+	{
+		// If the only instance of using this asset is from this cache, then
+		// start timing it for deletion.
+		if (it->second.asset.use_count() == 1)
+			it->second.elapsedTime += deltaTime;
+		// Reset the timer as long as there is another object using this asset.
+		else
+			it->second.elapsedTime = 0.f;
+
+		// Delete this asset from the cache if its elapsed time exceeds the max
+		// cache duration.
+		if (it->second.elapsedTime >= MAX_CACHE_DURATION)
+		{
+			std::cout << "ITypeLoader::update: '" << it->first << "' deleted from cache." << std::endl;
+			it = m_cachedAssets.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+
+std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::string> &fileNames, 
+	int flag, bool isAbsPath)
+{
+	// Get the asset's name.
+	std::string flagStr{ "" };
+	if (flag)
+		flagStr = "_" + std::to_string(flag);
+	const std::string assetName{ *fileNames.begin() + flagStr };
+
 	// First, check cache for this asset.
-	const std::string assetName{ *fileNames.begin() };
 	std::shared_ptr<IAsset> cached{ loadCached(assetName) };
 	if (cached != nullptr)
 		return cached;
@@ -33,7 +68,9 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 		}
 
 		// Get the file path.
-		const std::string filePath{ ASSET_PATH + m_typePath + fileName };
+		std::string filePath{ fileName };
+		if (!isAbsPath)
+			filePath = ASSET_PATH + m_typePath + filePath;
 
 		// If asset was not found in cache, then load it.
 		std::ifstream stream(filePath, std::ifstream::binary);
@@ -41,6 +78,7 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 		{
 			std::cout << "ITypeLoader::load: Failed to open file in stream '"
 				<< filePath << "'" << std::endl;
+			return nullptr;
 		}
 
 		// Get the file size.
@@ -59,7 +97,7 @@ std::shared_ptr<IAsset> ITypeLoader::load(const std::initializer_list<std::strin
 	}
 
 	// Interpret the asset.
-	std::shared_ptr<IAsset> asset{ interpretAsset(data) };
+	std::shared_ptr<IAsset> asset{ interpretAsset(data, flag) };
 
 	// Clean up.
 	for (auto &item : data)
@@ -79,10 +117,10 @@ std::shared_ptr<IAsset> ITypeLoader::loadCached(const std::string &fileName)
 		return nullptr;
 	}
 
-	return it->second;
+	return it->second.asset;
 }
 
 void ITypeLoader::cache(const std::string &fileName, std::shared_ptr<IAsset> asset)
 {
-	m_cachedAssets.insert({ fileName, asset });
+	m_cachedAssets.insert({ fileName, { asset, 0.f } });
 }

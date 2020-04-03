@@ -37,6 +37,24 @@
     <Filter Include="Source Files\ECS">
       <UniqueIdentifier>{4c0862e2-683e-42b4-9a54-61e399d3c778}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\UI">
+      <UniqueIdentifier>{8fff68dc-146f-4855-9f66-98009c38df99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UI">
+      <UniqueIdentifier>{2e42a475-9bbd-4e0c-b3be-646804d5eb7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\States">
+      <UniqueIdentifier>{0589d33d-4604-4a0a-a32b-d3df9636814f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\States">
+      <UniqueIdentifier>{b2e09c86-7f36-47ed-8692-4dc2609f65f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\States\Editor Panels">
+      <UniqueIdentifier>{819a226c-a1b1-482e-9fa4-986d90bc05f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\States\Editor Panels">
+      <UniqueIdentifier>{a43a4bbb-8f8b-4553-98b1-72ccd3a91513}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine.h">
@@ -62,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Assets</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Header Files\Renderers</Filter>
     </ClInclude>
     <ClInclude Include="SpriteRenderer.h">
       <Filter>Header Files\Renderers</Filter>
@@ -93,6 +108,105 @@
     <ClInclude Include="EmitterSystem.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FontLoader.h">
+      <Filter>Header Files\Asset Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Header Files\Assets</Filter>
+    </ClInclude>
+    <ClInclude Include="TextRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="IUserInterface.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="UIContainer.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIButton.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UISlider.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIText.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="EmitterRenderer.h">
+      <Filter>Header Files\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="IEditorPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="TopLeftPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="TopRightPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="BottomPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticlesPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualsPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="EmittersPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="FileState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="IMenuState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="NewState.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererPanel.h">
+      <Filter>Header Files\States\Editor Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="UIField.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIIntField.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UIFloatField.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UndoableAction.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="UISprite.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -109,9 +223,6 @@
     </ClCompile>
     <ClCompile Include="TextureLoader.cpp">
       <Filter>Source Files\Asset Loaders</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files\Renderers</Filter>
     </ClCompile>
     <ClCompile Include="SpriteRenderer.cpp">
       <Filter>Source Files\Renderers</Filter>
@@ -143,5 +254,106 @@
     <ClCompile Include="Emitter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FontLoader.cpp">
+      <Filter>Source Files\Asset Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Source Files\Assets</Filter>
+    </ClCompile>
+    <ClCompile Include="TextRenderer.cpp">
+      <Filter>Source Files\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UIRenderer.cpp">
+      <Filter>Source Files\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="UIContainer.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IUserInterface.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIButton.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UISlider.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIText.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TopLeftPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="TopRightPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="BottomPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticlesPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualsPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="EmittersPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="IEditorPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="EmitterRenderer.cpp">
+      <Filter>Source Files\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="FileState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="IState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="IMenuState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="NewState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="RendererPanel.cpp">
+      <Filter>Source Files\States\Editor Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="UIField.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIFloatField.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UIIntField.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="AssetLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UISprite.cpp">
+      <Filter>Source Files\UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cozybirdFX.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

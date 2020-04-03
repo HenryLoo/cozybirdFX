@@ -9,8 +9,6 @@
 // Set the viewport to determine the size of the rendering window.
 void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
-    glViewport(0, 0, width, height);
-
     Engine *engine{ (Engine *)glfwGetWindowUserPointer(window) };
     if (engine != nullptr)
     {
@@ -27,14 +25,14 @@ int main()
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
 
     // Create the window and its OpenGL context.
     GLFWwindow* window;
     const int WINDOW_WIDTH{ 1280 }, WINDOW_HEIGHT{ 720 };
-    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "cozybirdFX", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "", NULL, NULL);
     if (!window)
     {
         std::cout << "Main: Failed to create window." << std::endl;
@@ -42,6 +40,7 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSetWindowSizeLimits(window, WINDOW_WIDTH, WINDOW_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     // Initialize GLAD.
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -52,6 +51,9 @@ int main()
     
     // Set viewport.
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Disable depth testing.
+    glDisable(GL_DEPTH_TEST);
 
     // Set window resize callback.
     glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);

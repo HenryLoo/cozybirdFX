@@ -82,6 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(SolutionDir)\Libraries\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\Libraries\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,7 +107,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;freetype_d.lib;icuuc.lib;nfd_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -134,49 +136,117 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;freetype.lib;icuuc.lib;nfd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AssetLoader.h" />
+    <ClInclude Include="BottomPanel.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="ECSComponent.h" />
     <ClInclude Include="ECSSystem.h" />
+    <ClInclude Include="EditorState.h" />
     <ClInclude Include="Emitter.h" />
+    <ClInclude Include="EmitterRenderer.h" />
+    <ClInclude Include="EmittersPanel.h" />
     <ClInclude Include="EmitterSystem.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="EntityManager.h" />
+    <ClInclude Include="ExportState.h" />
+    <ClInclude Include="FileState.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="FontLoader.h" />
     <ClInclude Include="IAsset.h" />
+    <ClInclude Include="IEditorPanel.h" />
+    <ClInclude Include="IMenuState.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="IState.h" />
     <ClInclude Include="ITypeLoader.h" />
+    <ClInclude Include="MovementPanel.h" />
+    <ClInclude Include="NewState.h" />
+    <ClInclude Include="ParticlesPanel.h" />
     <ClInclude Include="PhysicsSystem.h" />
-    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="IRenderer.h" />
+    <ClInclude Include="RendererPanel.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="SpriteRenderer.h" />
     <ClInclude Include="SpriteSystem.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TextRenderer.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureLoader.h" />
+    <ClInclude Include="IUserInterface.h" />
+    <ClInclude Include="TopLeftPanel.h" />
+    <ClInclude Include="TopRightPanel.h" />
+    <ClInclude Include="UIButton.h" />
+    <ClInclude Include="UIFloatField.h" />
+    <ClInclude Include="UIIntField.h" />
+    <ClInclude Include="UISprite.h" />
+    <ClInclude Include="UIText.h" />
+    <ClInclude Include="UIField.h" />
+    <ClInclude Include="UIRenderer.h" />
+    <ClInclude Include="UIContainer.h" />
+    <ClInclude Include="UISlider.h" />
+    <ClInclude Include="UndoableAction.h" />
+    <ClInclude Include="VisualsPanel.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AssetLoader.cpp" />
+    <ClCompile Include="BottomPanel.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ECSSystem.cpp" />
+    <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="Emitter.cpp" />
+    <ClCompile Include="EmitterRenderer.cpp" />
+    <ClCompile Include="EmittersPanel.cpp" />
     <ClCompile Include="EmitterSystem.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="ExportState.cpp" />
+    <ClCompile Include="FileState.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="FontLoader.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="IEditorPanel.cpp" />
+    <ClCompile Include="IMenuState.cpp" />
+    <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="IState.cpp" />
     <ClCompile Include="ITypeLoader.cpp" />
+    <ClCompile Include="IUserInterface.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MovementPanel.cpp" />
+    <ClCompile Include="NewState.cpp" />
+    <ClCompile Include="ParticlesPanel.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererPanel.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
     <ClCompile Include="SpriteSystem.cpp" />
+    <ClCompile Include="TextRenderer.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
+    <ClCompile Include="TopLeftPanel.cpp" />
+    <ClCompile Include="TopRightPanel.cpp" />
+    <ClCompile Include="UIButton.cpp" />
+    <ClCompile Include="UIFloatField.cpp" />
+    <ClCompile Include="UIIntField.cpp" />
+    <ClCompile Include="UISprite.cpp" />
+    <ClCompile Include="UIText.cpp" />
+    <ClCompile Include="UIRenderer.cpp" />
+    <ClCompile Include="UIContainer.cpp" />
+    <ClCompile Include="UISlider.cpp" />
+    <ClCompile Include="UIField.cpp" />
+    <ClCompile Include="VisualsPanel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cozybirdFX.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.h"
+#include "IRenderer.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -9,33 +9,46 @@
 
 class AssetLoader;
 
-class SpriteRenderer : public Renderer
+class SpriteRenderer : public IRenderer
 {
 public:
-	SpriteRenderer(AssetLoader *assetLoader);
+	struct Properties
+	{
+		// The sprite texture.
+		Texture *texture{ nullptr };
 
-	virtual void update(float deltaTime);
+		// Top-left position.
+		glm::vec2 pos{ 0.f };
 
-	virtual void render();
+		// Width and height.
+		glm::vec2 size{ 0.f };
 
-	void addSprite(glm::mat4 model);
+		// Flag for if this element should be rendered.
+		bool isEnabled{ true };
+	};
+
+	SpriteRenderer(AssetLoader &assetLoader);
+
+	virtual void render(float deltaTime, const Camera &camera) override;
+
+	typedef std::list<Properties>::iterator PropertiesIterator;
+	PropertiesIterator addSprite(const Properties &properties);
+
+	void clearSprites();
 
 private:
 	// The renderer's shader program.
 	std::shared_ptr<Shader> m_shader;
 
 	// Vertex array object.
-	unsigned int m_vao;
+	unsigned int m_VAO;
 	
 	// Vertex buffer object.
-	unsigned int m_vbo;
+	unsigned int m_VBO;
 
 	// Element buffer object.
-	unsigned int m_ebo;
+	unsigned int m_EBO;
 
-	// TODO: Remove this later.
-	std::shared_ptr<Texture> m_texture;
-
-	// Hold model matrices for all sprites to render.
-	std::list<glm::mat4> m_models;
+	// Sprites to render.
+	std::list<Properties> m_sprites;
 };

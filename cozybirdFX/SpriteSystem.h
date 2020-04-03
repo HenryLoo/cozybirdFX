@@ -17,7 +17,7 @@ public:
 		std::vector<ECSComponent::Transform> &transforms);
 
 protected:
-	virtual void updateEntity(int entityId, float deltaTime);
+	virtual void updateEntity(int entityId, float deltaTime) override;
 
 private:
 	// Pointer to the EntityManager's renderer.

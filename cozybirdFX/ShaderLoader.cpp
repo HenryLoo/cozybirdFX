@@ -15,7 +15,7 @@ ShaderLoader::ShaderLoader() : ITypeLoader(SHADER_PATH)
 }
 
 std::shared_ptr<IAsset> ShaderLoader::interpretAsset(
-    const std::vector<AssetBuffer> &data) const
+    const std::vector<AssetBuffer> &data, int flag) const
 {
     // Compile vertex shader.
     GLuint vertexShader{ glCreateShader(GL_VERTEX_SHADER) };
@@ -60,7 +60,7 @@ std::shared_ptr<IAsset> ShaderLoader::interpretAsset(
     bool hasGeometryShader{ data.size() == 3 };
     if (hasGeometryShader)
     {
-        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER_ARB);
         std::string geometrySrc(data[2].buffer);
         geometrySrc = geometrySrc.substr(0, data[2].length);
         const char *geometryCSrc{ geometrySrc.c_str() };

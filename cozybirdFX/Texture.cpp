@@ -26,3 +26,18 @@ void Texture::bind() const
 {
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 }
+
+int Texture::getWidth() const
+{
+    return m_width;
+}
+
+int Texture::getHeight() const
+{
+    return m_height;
+}
+
+int Texture::getNumChannels() const
+{
+    return m_numChannels;
+}
