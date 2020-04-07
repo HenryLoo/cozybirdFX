@@ -104,6 +104,10 @@ void main()
 
         // Update size.
         gsRotationSizeLife.y += emSize.z * deltaTime;
+        if (gsRotationSizeLife.y < 0.0)
+        {
+            gsRotationSizeLife.y = 0.0;
+        }
 
         // Otherwise, this is a particle. So just emit it.
         if (!isClearParticles && gsRotationSizeLife.z > 0.0)

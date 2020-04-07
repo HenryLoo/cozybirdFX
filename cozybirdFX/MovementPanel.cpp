@@ -4,6 +4,7 @@
 #include "UISlider.h"
 #include "UIText.h"
 #include "UIFloatField.h"
+#include "UIIntField.h"
 
 MovementPanel::MovementPanel(SpriteRenderer &sRenderer, 
     TextRenderer &tRenderer, UIRenderer &uRenderer)
@@ -26,7 +27,7 @@ MovementPanel::MovementPanel(SpriteRenderer &sRenderer,
     m_speedMax->setDescription("The maximum speed that a particle can move at.");
     m_panel->addElement(m_speedMax);
 
-    m_speedGrowth = std::make_shared<UIFloatField>("Growth", UIField::SMALL_MAX_CHARS, 
+    m_speedGrowth = std::make_shared<UIFloatField>("+", UIField::SMALL_MAX_CHARS, 
         THREE_VAL_SIZE);
     m_speedGrowth->setDescription("The rate at which a particle's speed will grow by.");
     m_panel->addElement(m_speedGrowth);
@@ -44,7 +45,8 @@ MovementPanel::MovementPanel(SpriteRenderer &sRenderer,
     m_directionMax->setDescription("The maximum angle that a particle can move toward.");
     m_panel->addElement(m_directionMax);
 
-    m_directionGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_directionGrowth = std::make_shared<UIIntField>("+", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_directionGrowth->setDescription("The rate at which a particle's direction angle will grow by.");
     m_panel->addElement(m_directionGrowth);
 
@@ -149,8 +151,11 @@ void MovementPanel::update(float deltaTime, Emitter &emitter)
     emitter.setDirectionMax(directionMax);
 
     // Set direction growth rate.
-    int directionGrowth{ m_directionGrowth->getValue() };
-    emitter.setDirectionGrowth(directionGrowth);
+    int directionGrowth;
+    if (m_directionGrowth->getValue(directionGrowth))
+    {
+        emitter.setDirectionGrowth(directionGrowth);
+    }
 
     // Set horizontal sine movement amplitude.
     float hSinAmp;

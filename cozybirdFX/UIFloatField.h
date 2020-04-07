@@ -6,7 +6,7 @@ class UIFloatField : public UIField
 {
 public:
 	UIFloatField(std::string label, int maxChars, glm::vec2 size, 
-		int precision = 1, glm::vec2 position = { 0.f, 0.f });
+		int precision = 2, glm::vec2 position = { 0.f, 0.f });
 
 	// Set the current value.
 	void setValue(float value);

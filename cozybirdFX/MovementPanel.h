@@ -7,6 +7,7 @@ class TextRenderer;
 class UIRenderer;
 class UISlider;
 class UIFloatField;
+class UIIntField;
 
 class MovementPanel : public IEditorPanel
 {
@@ -24,7 +25,7 @@ private:
 	std::shared_ptr<UIFloatField> m_speedGrowth{ nullptr };
 	std::shared_ptr<UISlider> m_directionMin{ nullptr };
 	std::shared_ptr<UISlider> m_directionMax{ nullptr };
-	std::shared_ptr<UISlider> m_directionGrowth{ nullptr };
+	std::shared_ptr<UIIntField> m_directionGrowth{ nullptr };
 	std::shared_ptr<UIFloatField> m_hSineAmplitude{ nullptr };
 	std::shared_ptr<UIFloatField> m_hSinePeriod{ nullptr };
 	std::shared_ptr<UIFloatField> m_vSineAmplitude{ nullptr };

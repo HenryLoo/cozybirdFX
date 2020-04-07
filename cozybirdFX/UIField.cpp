@@ -7,7 +7,7 @@
 
 const int UIField::BIG_MAX_CHARS{ 25 };
 const int UIField::MID_MAX_CHARS{ 10 };
-const int UIField::SMALL_MAX_CHARS{ 5 };
+const int UIField::SMALL_MAX_CHARS{ 7 };
 
 namespace
 {

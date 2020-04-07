@@ -102,7 +102,7 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_sizeMax->setDescription("The maximum size that a particle can be created with.");
     m_panel->addElement(m_sizeMax);
 
-    m_sizeGrowth = std::make_shared<UIFloatField>("Growth", UIField::SMALL_MAX_CHARS, 
+    m_sizeGrowth = std::make_shared<UIFloatField>("+", UIField::SMALL_MAX_CHARS, 
         THREE_VAL_SIZE);
     m_sizeGrowth->setDescription("The rate at which a particle's size will grow by.");
     m_panel->addElement(m_sizeGrowth);
@@ -127,7 +127,8 @@ ParticlesPanel::ParticlesPanel(const EditorState &state,
     m_rotationMax->setDescription("The maximum rotation angle that a particle can be created with.");
     m_panel->addElement(m_rotationMax);
 
-    m_rotationGrowth = std::make_shared<UISlider>("Growth", ANGLE_RANGE, THREE_VAL_SIZE);
+    m_rotationGrowth = std::make_shared<UIIntField>("+", UIField::SMALL_MAX_CHARS, 
+        THREE_VAL_SIZE);
     m_rotationGrowth->setDescription("The rate at which a particle's rotation angle will grow by.");
     m_panel->addElement(m_rotationGrowth);
 
@@ -208,8 +209,11 @@ void ParticlesPanel::update(float deltaTime, Emitter &emitter)
     emitter.setRotationMax(rotationMax);
 
     // Set rotation growth rate.
-    int rotationGrowth{ m_rotationGrowth->getValue() };
-    emitter.setRotationGrowth(rotationGrowth);
+    int rotationGrowth;
+    if (m_rotationGrowth->getValue(rotationGrowth))
+    {
+        emitter.setRotationGrowth(rotationGrowth);
+    }
 
     // Set minimum particle size.
     float sizeMin;

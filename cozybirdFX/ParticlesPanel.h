@@ -35,7 +35,7 @@ private:
 	std::shared_ptr<UIButton> m_facingDir{ nullptr };
 	std::shared_ptr<UISlider> m_rotationMin{ nullptr };
 	std::shared_ptr<UISlider> m_rotationMax{ nullptr };
-	std::shared_ptr<UISlider> m_rotationGrowth{ nullptr };
+	std::shared_ptr<UIIntField> m_rotationGrowth{ nullptr };
 	std::shared_ptr<UIFloatField> m_sizeMin{ nullptr };
 	std::shared_ptr<UIFloatField> m_sizeMax{ nullptr };
 	std::shared_ptr<UIFloatField> m_sizeGrowth{ nullptr };
