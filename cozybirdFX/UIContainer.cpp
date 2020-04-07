@@ -17,7 +17,8 @@ bool UIContainer::handleInput(InputManager &inputManager,
 
 	for (const auto &element : m_elements)
 	{
-		hasChange = hasChange || element->process(inputManager, action);
+		bool isProcessChange{ element->process(inputManager, action) };
+		hasChange = hasChange || isProcessChange;
 	}
 
 	return hasChange;
